@@ -1,0 +1,140 @@
+package com.frontrow.common;
+
+public class Constants {
+
+	public static final String APP_DEBUG_TAG = "FRONTROW";
+	public static final String BASIC = "Basic ";
+	public static final String AUTHORIZATION = "Authorization";
+	public static final String VALUE_SEPERATOR = "|";
+	public static final String SEPERATOR_PIPE = "|";
+	public static final String VAL_CONNECTOR = "/";
+
+
+	/* Network related */
+	public static final int NETWORK_SUCCESS = 200;
+	public static final int NETWORK_NOT_AVAILABLE = 701;
+	public static final int NETWORK_PARSE_ERROR = 407;
+	public static boolean isNetworkAailable;
+	public static final String NETWORK_STATUS = "FRSNetwork";
+	public static final String NATIVE_MAP_PATH = "http://maps.google.com/maps?";
+	public static final String SADDR= "saddr=";
+	public static final String DADDR = "daddr=";
+
+
+	/* Bundle Values */
+	public static final	String USER_NAME= "UserName";
+
+	public static final String SUBMIT_TYPE = "messages/message";
+	public static final String CLIENT_TYPE = "clients/client";
+	public static final String GET_TERMS = "getterms";
+	public static final String SEARCH_TERM = "clients";
+
+	public static final String OFFLINE_MSG_CLIENT_TYPE = "AddClient";
+	public static final String OFFLINE_MSG_SUBMIT_TYPE = "SubmitText";
+
+	public static final String CLIENT_NUMBER = "ClientNumber";
+	public static final String CARD_TYPE ="CardType";
+	public static final String CLIENT_ID = "ClientID";
+
+
+	/* CardSource Attributes */
+	public static final int DEFAULT_CARD = 0;
+	public static final int CLIENT_CARD = 1;
+	public static final int USER_CARD = 2;
+
+	/* Shared Preferences */
+	public static final String AUTH_PREF = "UserPreferance";
+	public static final byte SAVE_CREDENTIALS = 1;
+	public static final byte LOAD_CREDENTIALS = 2;
+
+	/* Login Credentials msgs */
+
+	public static final String COMPANY_NAME = "CompanyName";
+	public static final String MOBILE_NO = "MobileNo";
+	public static final String PASSWORD = "Password";
+	public static final String USER_ID = "UserId";
+	public static final String USERNAME = "UserName";
+	public static final String USER_TOKEN = "Token";
+	public static final String IS_SAVED = "IsSaved";
+	public static final String IS_SINGLE_VIEW = "IsSingle";
+
+	/* Message Status */
+
+	public static final int FAILED = 1;
+	public static final int PENDING =2;
+	public static final int SUCCESS = 3;
+	public static final String MESSAGE = "Message";
+	public static final String UPDATE = "Update";
+	public static final String NEW_CLIENT = "New Client";
+
+	/* Progress Dialog*/
+	public static final int SHOW_DIALOG = 2;
+	public static final int DISMISS_DIALOG  =3;
+	public static final int UPDATE_ALERT = 4;
+	public static final int SEARCH_MORE = 5;
+
+	/* Device Dencity */
+	public static float SMALL_DENCITY = 120;
+	public static float NORMAL_DENCITY = 160;
+	public static float HIGH_DENCITY = 240;
+
+	/* Field Types */
+
+	public static final int TYPE_SPINNER = 1;
+	public static final int TYPE_NUMERIC = 2;
+	public static final int TYPE_ALPHA_NUMERIC = 3;
+	public static final int TYPE_FORECAST = 4;
+	public static final int TYPE_DATE = 5;
+	public static final int TYPE_DATE_TIME =6;
+
+	/*Date Time Constants */
+	public static final String DATE = "Date";
+	public static final String TIME ="Time";
+	public static final String DATE_TIME = "DateTime";
+
+	/*Parceble Key */
+	public static final String PARCEBLE_KEY ="FRS"; 
+
+	/* Activity Card All */
+	public static final String ALL_ACTIVITY_CARD = "*All";
+
+	/* Terms Keys */
+
+	public static final String ACTIVITY_CARD_KEY ="Activity Card";
+	public static final String FIELD_AGENT_KEY ="Field Agent";
+	public static final String REGION_KEY ="Region";
+	public static final String CLIENT_KEY = "Client";
+	public static final String CARD_KEY = "Card";
+
+	public static final String MARKET_URL = "market://details?id=com.frontrow.ui";
+	public static final String APP_USR ="AppUsr";
+
+	/* TabMenu */
+	public static final String ACTIVITY_TYPE = "Activity";
+
+	/* referance */
+	public static final int MESSAGES_REF = 1;
+	public static final int CLIENTS_REF = 2;
+	public static final int SETTINGS_REF = 3;
+
+	/* Note */
+	public static final String NOTE_ID = "NoteID";
+	public static final String NOTE_TEXT = "NoteText";
+
+	/* Alert Dialog Types */
+	public static final int ERROR_DIALOG = 1;
+	public static final String ERROR_D ="Error";
+	public static final String TYPE ="Type";
+	public static final String NAVIGATE_TO_PREVIOUS_PAGE_TYPE ="NavigateType";
+	public static final int ADD_NOTE_DIALOG =6;
+	public static final int SHOW_CONTACTS_PHONE=7;
+	public static final String CONTACT="Contact";
+	public static final String GENARAL_ERROR_TYPE ="GenaralErrorType";
+	
+	/* Contact List Button Type */
+	public static final int CALL_BTN = 1;
+	public static final int NUMBERS_BTN=2;
+	public static final int MAP_BTN=3;
+	public static final int DIRECTION_BTN=4;
+	public static final int EMAIL_BTN=5;
+}

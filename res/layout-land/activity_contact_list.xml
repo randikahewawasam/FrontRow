@@ -1,0 +1,25 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/mainbg"
+    android:orientation="vertical" >
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/nocontactmsg"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/NO_CONTACT_INFO_MSG"
+        android:textColor="@color/Default_Text_Color"
+       android:gravity="center"
+        
+        />
+
+    <ListView
+        android:id="@+id/contactlist"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:cacheColorHint="#09476b"
+        android:divider="@null"
+        android:scrollingCache="false" />
+
+</LinearLayout>

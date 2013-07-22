@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/mainbg"
+    android:orientation="vertical" >
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="15dp" />
+
+    <!-- <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:scaleType="fitXY"
+        android:src="@drawable/mainlogo" /> -->
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="15dp" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0px"
+        android:layout_weight="1" >
+
+        <TableLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal" >
+
+            <TableRow>
+
+                <TextView
+                    android:layout_column="0"
+                    android:layout_weight="0.2" />
+
+                <TextView
+                    style="?textTitle"
+                    android:layout_width="0px"
+                    android:layout_column="1"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:text="@string/COMPANY_ID" />
+
+                <EditText
+                    android:id="@+id/cmpid"
+                    android:layout_column="2"
+                    android:layout_weight="1"
+                    android:gravity="left|center_vertical"
+                    android:imeOptions="actionNext"
+                    android:nextFocusDown="@string/USER_ID"
+                    android:singleLine="true"
+                    android:textSize="14sp"
+                    android:width="0px" />
+
+                <TextView
+                    android:layout_column="3"
+                    android:layout_weight="0.2" />
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:layout_column="0"
+                    android:layout_weight="0.2" />
+
+                <TextView
+                    style="?textTitle"
+                    android:layout_width="0px"
+                    android:layout_column="1"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:text="@string/USER_ID" />
+
+                <EditText
+                    android:id="@+id/userid"
+                    android:layout_column="2"
+                    android:layout_weight="1"
+                    android:gravity="left|center_vertical"
+                    android:imeOptions="actionNext"
+                    android:nextFocusDown="@+id/loginChkRememberMe"
+                    android:nextFocusUp="@+id/loginTxtUserName"
+                    android:singleLine="true"
+                    android:width="0px" />
+
+                <TextView
+                    android:layout_column="3"
+                    android:layout_weight="0.2" />
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:layout_column="0"
+                    android:layout_weight="0.2" />
+
+                <TextView
+                    style="?textTitle"
+                    android:layout_width="0px"
+                    android:layout_column="1"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:text="@string/PASSWORD" />
+
+                <EditText
+                    android:id="@+id/loginETPassword"
+                    android:layout_column="2"
+                    android:layout_weight="1"
+                    android:gravity="left|center_vertical"
+                    android:imeOptions="actionSend"
+                    android:nextFocusDown="@+id/loginChkRememberMe"
+                    android:nextFocusUp="@+id/loginTxtUserName"
+                    android:password="true"
+                    android:singleLine="true"
+                    android:width="0px" />
+
+                <TextView
+                    android:layout_column="3"
+                    android:layout_weight="0.2" />
+            </TableRow>
+
+            <TableRow android:layout_weight="0.3" >
+
+                <TextView
+                    android:layout_column="0"
+                    android:layout_weight="0.2" />
+
+                <Button
+                    android:id="@+id/loginBtnLogin"
+                    style="?buttonText"
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_column="1"
+                    android:layout_marginRight="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/button"
+                    android:minHeight="35dp"
+                    android:nextFocusDown="@+id/loginBtnCancel"
+                    android:nextFocusLeft="@+id/loginBtnCancel"
+                    android:nextFocusRight="@+id/loginBtnCancel"
+                    android:nextFocusUp="@+id/loginChkRememberMe"
+                    android:text="@string/LOGIN"
+                    android:textColor="@color/ColorPureWhite"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/loginBtnCancel"
+                    style="?buttonText"
+                    android:layout_width="0px"
+                    android:layout_column="2"
+                    android:layout_weight="1"
+                    android:background="@drawable/button"
+                    android:minHeight="35dp"
+                    android:nextFocusDown="@+id/loginBtnLogin"
+                    android:nextFocusLeft="@+id/loginBtnLogin"
+                    android:nextFocusRight="@+id/loginBtnLogin"
+                    android:nextFocusUp="@+id/loginChkRememberMe"
+                    android:text="@string/CANCEL"
+                    android:textColor="@color/ColorPureWhite"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_column="3"
+                    android:layout_weight="0.2" />
+            </TableRow>
+
+            <TableRow android:layout_weight="1" >
+
+                <TextView
+                    android:layout_column="0"
+                    android:layout_weight="1" />
+            </TableRow>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="2dp" />
+
+            <ViewStub
+                android:id="@+id/loginStubProgress"
+                android:layout_weight="3"
+                android:inflatedId="@+id/loginShowProgress"
+                android:layout="@layout/loginstubprogress" />
+
+            <ViewStub
+                android:id="@+id/loginStubErrorMsg"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="3"
+                android:inflatedId="@+id/loginShowErrorMsg"
+                android:layout="@layout/loginstuberrormsg" />
+        </TableLayout>
+    </LinearLayout>
+</LinearLayout>

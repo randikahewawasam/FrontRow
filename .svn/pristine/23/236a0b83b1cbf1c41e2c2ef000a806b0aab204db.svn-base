@@ -1,0 +1,233 @@
+package com.frontrow.ui;
+
+import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewStub;
+import android.view.Window;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.frontrow.android.db.ActivityCardDB;
+import com.frontrow.base.BaseActivity;
+import com.frontrow.common.Constants;
+import com.frontrow.common.SharedMethods;
+import com.frontrow.core.ApplicationUser;
+import com.frontrow.datamanagers.AuthDataManager;
+import com.frontrow.datamanagers.ClientDataManager;
+import com.frontrow.interfaces.IFrontResponseReceiver;
+import com.row.mix.beans.ActivityCard;
+import com.row.mix.response.NewClientResponse;
+
+public class FRSNewClient extends BaseActivity implements IFrontResponseReceiver,OnItemSelectedListener{
+	private EditText clientName;
+	private EditText clientNumber;
+	private Button create;
+	private Spinner cardSpinner;
+	private int cardId;
+	private ArrayList<ActivityCard> cardTypeList;
+	private ArrayList<CardSpinner> cardList;
+
+	/*errors */
+	private ViewStub stubErrorMsg;
+	private View inflatedErrorMsg;
+	private ViewStub stubProgress;	
+	private View inflatedProgress;	
+	private TextView txtErrorMsg;
+
+	private TextView newClient,clientNumberLbl;
+
+	/* Web Response  */
+	Object response;
+
+	@Override
+	protected void initializeUI() {
+		titlename.setText("");
+		// TODO Auto-generated method stub
+		cardList = new ArrayList<CardSpinner>();
+		clientName = (EditText) findViewById(R.id.cname);
+		clientNumber = (EditText) findViewById(R.id.cnumber);
+		create = (Button) findViewById(R.id.createClient);
+		cardSpinner = (Spinner) findViewById(R.id.cards);
+		newClient = (TextView) findViewById(R.id.newClient);
+		clientNumberLbl = (TextView) findViewById(R.id.clientNumber);
+		String clentText = (appUsr == null)?getResources().getString(R.string.CLIENT_NAME):appUsr.getAllTerms().get(Constants.CLIENT_KEY)+" "+getResources().getString(R.string.NAME);
+		String clientNo =  (appUsr == null)?getResources().getString(R.string.CLIENT_NAME):appUsr.getAllTerms().get(Constants.CLIENT_KEY)+" "+getResources().getString(R.string.NUMBER);
+		newClient.setText(clentText);
+		clientNumberLbl.setText(clientNo);
+		ActivityCardDB cardDB = new ActivityCardDB(this);
+		//cardDB.open();
+		cardTypeList = cardDB.getAllActivityCards();
+
+
+		//cardTypeList = AuthDataManager.getSharedInstance().getCardTypes();
+
+		for(ActivityCard card : this.cardTypeList){
+			cardList.add(new CardSpinner(card.getCardType(), card.getCardId()));
+		}
+		ArrayAdapter<CardSpinner> cAdapter = new ArrayAdapter<CardSpinner>(this, R.layout.spinnertext, cardList);
+		cAdapter.setDropDownViewResource(R.layout.spinnerdropdown);
+		cardSpinner.setAdapter(cAdapter);
+
+		cardSpinner.setOnItemSelectedListener(this);
+
+
+		if (stubErrorMsg == null) {
+			stubErrorMsg = (ViewStub) findViewById(R.id.loginStubErrorMsg);
+			inflatedErrorMsg = stubErrorMsg.inflate();
+			txtErrorMsg = (TextView) inflatedErrorMsg.findViewById(R.id.loginTVError);
+		}
+
+		if (stubProgress == null) {
+			stubProgress = (ViewStub) findViewById(R.id.loginStubProgress);
+			inflatedProgress = stubProgress.inflate();
+			inflatedProgress.setVisibility(View.GONE);
+		}
+
+		addActionListeners();
+	}
+
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		ClientDataManager.getSharedInstance().registerForDineSafe(this);
+	}
+
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		ClientDataManager.getSharedInstance().unregisterForDineSafe(this);
+	}
+
+	@Override
+	protected void refreshUI() {
+		// TODO Auto-generated method stub
+		if(response instanceof NewClientResponse){
+			int code =	((NewClientResponse) response).getResponseCode();
+			if(code ==Constants.NETWORK_SUCCESS ){
+				Toast toast = Toast.makeText(this, getResources().getString(R.string.CLIENT_ADD_SUCCESS), 5000);
+				toast.show();
+				getTxtErrorMsg().setText("");
+				clientName.setText("");
+				clientNumber.setText("");
+				String currentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
+				SharedMethods.saveFromFile("sucessfully Created New Client - "+ currentDateTimeString,false,this);
+			}else{
+				getTxtErrorMsg().setText(((NewClientResponse) response).getResponseMessage());
+			}
+			getInflatedProgress().setVisibility(View.GONE);
+		}
+
+	}
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		//android.os.Debug.waitForDebugger(); 
+		View newClientView = LayoutInflater.from(this.getParent()).inflate(R.layout.newclient, null);
+		setContentView(newClientView);
+		super.onCreate(savedInstanceState);
+	}
+
+	@Override
+	public void onItemSelected(AdapterView<?> arg0, View arg1, int position,
+			long arg3) {
+		// TODO Auto-generated method stub
+		if(arg0 == cardSpinner){
+			CardSpinner cs = cardList.get(position);
+			cardId = cs.getCardId();
+		}
+
+	}
+
+	@Override
+	public void onNothingSelected(AdapterView<?> arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		// TODO Auto-generated method stub
+		super.onSaveInstanceState(outState);
+	}
+
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onRestoreInstanceState(savedInstanceState);
+	}
+
+	@Override
+	public void webResponseRecievedFromDataManager(Object response) {
+		// TODO Auto-generated method stub
+		if(response != null){
+			this.response = response;
+			refreshViewInTheUIThread();
+		}
+	}
+
+	private void addActionListeners() {
+		create.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				String name = clientName.getText().toString();
+				String number = clientNumber.getText().toString();
+				if((name != null && name.trim().length() > 0) && (number != null && number.trim().length() > 0)){
+					getInflatedProgress().setVisibility(View.VISIBLE);
+					getTxtErrorMsg().setText("");
+					ClientDataManager.getSharedInstance().addNewClientrequest(name, number, cardId);
+				}else{
+					getTxtErrorMsg().setText(getResources().getString(R.string.LOGIN_DETAILS_EMPTY));
+				}
+
+			}
+		});
+	}
+
+	public View getInflatedProgress() {
+		return inflatedProgress;
+	}
+
+	public TextView getTxtErrorMsg() {
+		return txtErrorMsg;
+	}
+
+}
+
+class CardSpinner{
+	String cardName ="";
+	int cardId;
+
+	public CardSpinner(String cardname,int cardId) {
+		// TODO Auto-generated constructor stub
+		this.cardName = cardname;
+		this.cardId = cardId;
+	}
+	public String getCardName() {
+		return cardName;
+	}
+	public int getCardId() {
+		return cardId;
+	}
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return cardName;
+	}
+}

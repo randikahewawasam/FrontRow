@@ -1,0 +1,8 @@
+<resources>
+
+    <dimen name="tab_bar_height">90dp</dimen>
+    
+    <!-- Title Bar Height -->
+    <dimen name="Title_Height">55dp</dimen>
+
+</resources>

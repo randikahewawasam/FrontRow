@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="5dp" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/client_list_bg"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:focusableInTouchMode="true"
+            android:padding="5dp" >
+
+            <TextView
+                android:id="@+id/clientViewText"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/ACTIVITY_CARD"
+                android:textColor="@color/ColorPureWhite"
+                android:textSize="@dimen/Clinet_List_Text_Size"
+                android:textStyle="bold" />
+
+            <Spinner
+                android:id="@+id/clientViewSelectCards"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/frs_spinner" />
+
+            <EditText
+                android:id="@+id/clientHInt"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/frs_edit_text"
+                android:hint="@string/SEARCH_CLIENT_HINT"
+                android:minHeight="35dp"
+                android:paddingLeft="5dp"
+                android:singleLine="true" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/notification"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="@string/NO_CLIENTS"
+        android:textColor="@color/ColorPureWhite"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
+    <ListView
+        android:id="@+id/cList"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:cacheColorHint="#09476b"
+        android:divider="@null"
+        android:scrollingCache="false" >
+    </ListView>
+
+</LinearLayout>

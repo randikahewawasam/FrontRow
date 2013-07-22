@@ -1,0 +1,83 @@
+package com.frontrow.datamanagers;
+
+import java.util.ArrayList;
+import com.frontrow.android.db.ClientDB;
+import com.frontrow.android.db.MessagesDB;
+import com.frontrow.base.DataManagerBase;
+import com.frontrow.common.Constants;
+import com.frontrow.core.ApplicationUser;
+import com.row.mix.beans.Client;
+import com.row.mix.request.NewClientRequest;
+import com.row.mix.response.NewClientResponse;
+import com.row.mix.response.SearchResponse;
+
+public class ClientDataManager extends DataManagerBase{
+
+	public static ClientDataManager instance;
+	private ArrayList<Client> cList;
+
+	public static ClientDataManager getSharedInstance(){
+		if(instance == null){
+			instance = new ClientDataManager();
+		}
+		return instance;
+	}
+
+	public ClientDataManager() {
+		// TODO Auto-generated constructor stub
+		cList = new ArrayList<Client>();
+	}
+
+	public void addNewClientrequest(String clientName, String clientNumber,int cardId){
+		NewClientRequest cRequest = new NewClientRequest();
+		cRequest.setClientName(clientName);
+		cRequest.setClientNumber(clientNumber);
+		cRequest.setCardId(cardId);
+		cRequest.setMobileNumber(ApplicationUser.getSharedInstance().getMobileNnumber());
+		cRequest.setCompanyId(ApplicationUser.getSharedInstance().getCompanyId());
+		cRequest.setToken(ApplicationUser.getSharedInstance().getToken());
+		sendDataRequest(cRequest);
+	}
+
+	@Override
+	public void priceResponseRecievedFromWeb(Object response) {
+		// TODO Auto-generated method stub
+		NewClientResponse cResponse = (NewClientResponse) response;
+		com.row.mix.beans.OfflineM offline = cResponse.getoMsg(); 
+		int responseCode = cResponse.getResponseCode();
+		if(responseCode == Constants.NETWORK_SUCCESS){
+			cList = cResponse.getClientList();
+			offline.setStatus(Constants.SUCCESS);
+			saveClientDetails();
+			addToMsgDB(offline);
+		}else if(responseCode == Constants.NETWORK_NOT_AVAILABLE){
+			MessagesDB msgDb = new MessagesDB(context);
+			msgDb.addOfflineMessages(cResponse.getoMsg(),ApplicationUser.getSharedInstance().getUserId());
+		}else if(responseCode == Constants.NETWORK_PARSE_ERROR){
+			offline.setStatus(Constants.FAILED);
+			new MessagesDB(context).addOfflineMessages(cResponse.getoMsg(),ApplicationUser.getSharedInstance().getUserId());
+		}
+		super.priceResponseRecievedFromWeb(response);
+	}
+
+	private void saveClientDetails() {
+		ClientDB clientDb = new ClientDB(context);
+		//clientDb.open();
+		clientDb.addClients(cList,ApplicationUser.getSharedInstance().getUserId());
+	}
+
+	private void addToMsgDB(com.row.mix.beans.OfflineM offMsg) {
+		MessagesDB msgDb = new MessagesDB(context);
+		msgDb.addOfflineMessages(offMsg,ApplicationUser.getSharedInstance().getUserId());
+	}
+	
+	public ArrayList<Client> getClientList(){
+		
+	 return cList;  	
+	}
+	
+	public void setClientList(SearchResponse res){
+		cList = res.getClientList();
+	}
+
+}

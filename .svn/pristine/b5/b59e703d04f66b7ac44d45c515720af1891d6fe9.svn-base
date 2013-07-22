@@ -1,0 +1,52 @@
+package com.frontrow.ui;
+
+import com.frontrow.common.Constants;
+import com.frontrow.common.SharedMethods;
+
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.os.Bundle;
+
+public class FRSTabNegotiator extends TabManager{
+	public static final String INTENT_KEY = "id";
+	private Bundle bundle;
+	private ProgressDialog dialog;
+	int refType = -1;
+
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onCreate(savedInstanceState);
+		bundle = getIntent().getExtras();
+		refType = bundle.getInt(Constants.ACTIVITY_TYPE);
+		SharedMethods.logError("Ref Type  :- " + refType);
+		redirect(refType);
+	}
+	
+	private void redirect(int type) {
+		switch (type) {
+		case Constants.MESSAGES_REF:
+			try {
+				startChild("Message_Activity", new Intent(this,
+						FRSMessages.class));	
+			} catch (Exception e) {
+				// TODO: handle exception
+				SharedMethods.logError("TabNe "+ e.getMessage());
+			}
+
+			break;
+		case Constants.CLIENTS_REF:
+			startChild("Client_Activity", new Intent(this,
+					FRSClientList.class));
+			break;
+		case Constants.SETTINGS_REF:
+			startChild("Settings_Activity", new Intent(this,
+					FRSSettings.class));
+			break;
+		
+		default:
+			break;
+		}
+	}
+}

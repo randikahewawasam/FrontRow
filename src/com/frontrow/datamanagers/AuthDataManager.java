@@ -1,0 +1,262 @@
+package com.frontrow.datamanagers;
+
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.LinkedHashMap;
+import com.frontrow.android.db.ActivityCardDB;
+import com.frontrow.android.db.ClientAccountTypeDB;
+import com.frontrow.android.db.ClientDB;
+import com.frontrow.android.db.FRSTermsDB;
+import com.frontrow.android.db.QuestionDB;
+import com.frontrow.android.db.RelationshipTypesDB;
+import com.frontrow.android.db.UserDB;
+import com.frontrow.base.DataManagerBase;
+import com.frontrow.common.Constants;
+import com.frontrow.common.SharedMethods;
+import com.frontrow.interfaces.IAuthenticator;
+import com.frontrow.interfaces.IFrontResponseReceiver;
+import com.frontrow.shared.DataBaseUpdater;
+import com.row.mix.beans.ActivityCard;
+import com.row.mix.beans.Answers;
+import com.row.mix.beans.Client;
+import com.row.mix.beans.ClientAccountType;
+import com.row.mix.beans.ContactRelationship;
+import com.row.mix.beans.ContactSetting;
+import com.row.mix.beans.Questions;
+import com.row.mix.beans.Terms;
+import com.row.mix.beans.User;
+import com.row.mix.request.AuthenticationRequest;
+import com.row.mix.response.AuthenticationResponse;
+import com.row.mix.response.FRSTermResponse;
+
+public class AuthDataManager extends DataManagerBase implements IAuthenticator{
+
+	private static AuthDataManager instance;
+	private ArrayList<String> questionTypes; 
+	private ArrayList<ActivityCard> cardTypes;
+	private ArrayList<ClientAccountType> clientAccountTypes;
+	private ArrayList<Client> clientList;
+	private LinkedHashMap<Questions, ArrayList<Answers>> qesAns;
+	private LinkedHashMap<ActivityCard, LinkedHashMap<Questions, ArrayList<Answers>>> cardQesAns;
+	private final DataBaseUpdater dbLoader = new DataBaseUpdater();
+	private User usr;
+	private ContactSetting contactSetting;
+	private ArrayList<ContactRelationship> clientContactList;
+	private ArrayList<ContactRelationship> contactPhoneList;
+	private ArrayList<ContactRelationship> contactAddressList;
+	private boolean contactStyle;
+
+	public static AuthDataManager getSharedInstance(){
+		if(instance == null){
+			instance = new AuthDataManager();
+		}
+		return instance;
+	}
+
+	public AuthDataManager() {
+		// TODO Auto-generated constructor stub
+		super();
+		questionTypes = new ArrayList<String>();
+		clientList = new ArrayList<Client>();
+		cardTypes = new ArrayList<ActivityCard>();
+		clientAccountTypes = new ArrayList<ClientAccountType>();
+		//this.dataManagerID = FrontDataManagerBase.DATA_MANAGER_AUTH;
+	}
+
+	@Override
+	public void sendAuthenticationRequest(String companyId, String userId,
+			String password) {
+		// TODO Auto-generated method stub
+		FRSTermsDB termsDb = new FRSTermsDB(context);
+		boolean b = termsDb.isTermsAvailableForCompany(companyId);
+		int i = (b)?0:1;
+		AuthenticationRequest request = new AuthenticationRequest();
+		request.setCompanyId(companyId);
+		request.setUserName(userId);
+		request.setPassword(password);
+		request.setIsTermsRequired(i);
+		sendDataRequest(request);
+
+	}
+
+	public void sendAuthRequest(String companyId, String userId, String password) {
+
+
+	}
+
+	@Override
+	public void priceResponseRecievedFromWeb(Object response) {
+		// TODO Auto-generated method stub
+		if(response instanceof AuthenticationResponse){		
+			AuthenticationResponse res = (AuthenticationResponse) response;
+			int code = res.getResponseCode();
+			if(code == Constants.NETWORK_SUCCESS){
+				
+				System.out.println("DB: "+ System.currentTimeMillis());
+				processQuestionResponse(response);
+				saveOrUpdateUserData(response);
+				//dbLoader.download(clientList,usr.getUserId(), context);
+				saveClientDetails();
+				addCardDetails();
+				addQuestionsAnswers();
+				saveTerms(response);
+				System.out.println("DB DONE : "+ System.currentTimeMillis());
+			}			
+			super.priceResponseRecievedFromWeb(response);
+		}		
+	}
+	
+	public void setResponseValues(AuthenticationResponse res) {
+		int code = res.getResponseCode();
+		if(code == Constants.NETWORK_SUCCESS){
+			
+			System.out.println("DB: "+ System.currentTimeMillis());
+			processQuestionResponse(res);
+			saveOrUpdateUserData(res);
+			//dbLoader.download(clientList,usr.getUserId(), context);
+			saveClientDetails();
+			addCardDetails();
+			addQuestionsAnswers();
+			saveTerms(res);
+			addClientAccountTypes();
+			addRelationshipTypes(Constants.ADDRESS_RELATIONSHIP, contactAddressList,true);
+			addRelationshipTypes(Constants.PHONE_RELATIONSHIP, contactPhoneList,false);
+			addRelationshipTypes(Constants.CONTACT_RELATIONSHIP, clientContactList,false);
+			System.out.println("DB DONE : "+ System.currentTimeMillis());
+		}		
+	}
+
+	private void processQuestionResponse (Object response) {
+		AuthenticationResponse res = (AuthenticationResponse) response;
+		ArrayList<ActivityCard> cardtypeList = res.getCardTypeList();
+		usr = res.getUsr();
+		cardQesAns = res.getCardQuesAns();		
+		for(int i=0 ;i< cardtypeList.size();i++){
+			ActivityCard card = cardtypeList.get(i);
+			questionTypes.add(card.getCardType());
+		}
+		cardTypes = cardtypeList;
+		clientList = res.getClientList();
+		qesAns = res.getQuesAns();
+		clientAccountTypes =res.getClientAccountTypeList();
+		clientContactList=res.getClientContactList();
+		contactAddressList=res.getContactAddressList();
+		contactPhoneList=res.getContactPhoneList();
+		contactSetting=res.getContactsetting();
+		contactStyle = usr.getContactStyle();
+	}
+
+	private void saveOrUpdateUserData(Object response) {
+		UserDB usrDb = new UserDB(context);
+		AuthenticationResponse res  = (AuthenticationResponse) response;			
+		//usrDb.open();
+		usrDb.addUserDetails(res.getUsr());
+
+	}
+
+	private void saveClientDetails() {
+		//dbLoader.download(clientList,usr.getUserId(), context);
+		ClientDB clientDb = new ClientDB(context);
+		//clientDb.open();
+		clientDb.addClients(clientList,usr.getUserId());
+
+	}
+
+	public ContactSetting getContactSetting() {
+		return contactSetting;
+	}
+
+
+
+	public ArrayList<ContactRelationship> getClientContactList() {
+		return clientContactList;
+	}
+
+
+
+	public ArrayList<ContactRelationship> getContactPhoneList() {
+		return contactPhoneList;
+	}
+
+	
+
+	public ArrayList<ContactRelationship> getContactAddressList() {
+		return contactAddressList;
+	}
+
+
+
+	private void saveTerms(Object response) {
+		ArrayList<Terms> termList = ((AuthenticationResponse) response).getTermsList();
+		addTerms(termList);
+	}
+	
+	
+
+	private void addCardDetails() {
+		ActivityCardDB cardDb = new ActivityCardDB(context);
+		//cardDb.open();
+		cardDb.addActivityCardDetails(cardTypes);
+
+	}
+	private void addQuestionsAnswers(){
+		QuestionDB qDb = new QuestionDB(context);
+		//qDb.open();
+		qDb.addQuestions(cardQesAns);
+	}
+
+	public boolean getContactStyle() {
+		return contactStyle;
+	}
+
+	public void setContactStyle(boolean contactStyle) {
+		this.contactStyle = contactStyle;
+	}
+
+	public ArrayList<String> getQuestionTypes() {
+		return questionTypes;
+	}
+
+	public void setQuestionTypes(ArrayList<String> questionTypes) {
+		this.questionTypes = questionTypes;
+	}
+
+	public ArrayList<Client> getClientList() {
+		return clientList;
+	}
+
+
+	public LinkedHashMap<Questions, ArrayList<Answers>> getQesAns() {
+		return qesAns;
+	}
+
+	public LinkedHashMap<ActivityCard, LinkedHashMap<Questions, ArrayList<Answers>>> getCardQesAns() {
+		return cardQesAns;
+	}
+
+	public User getUsr() {
+		return usr;
+	}
+
+	public ArrayList<ActivityCard> getCardTypes() {
+		return cardTypes;
+	}
+
+	private void addTerms(ArrayList<Terms> termList) {
+		FRSTermsDB termsDb = new FRSTermsDB(context);
+		termsDb.addTerms(termList,usr);
+	}
+	
+	private void addClientAccountTypes() {
+		ClientAccountTypeDB ctypeDb = new ClientAccountTypeDB(context);
+		ctypeDb.addClientAccountType(clientAccountTypes,usr);
+	}
+	
+	private void addRelationshipTypes(String type,ArrayList<ContactRelationship> list,Boolean initial)
+	{
+		RelationshipTypesDB rtypeDb = new RelationshipTypesDB(context);
+		rtypeDb.addClientAccountType(list, type,initial);
+		
+	}
+}

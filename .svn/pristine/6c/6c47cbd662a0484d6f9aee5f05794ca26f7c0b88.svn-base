@@ -1,0 +1,109 @@
+package com.frontrow.android.db;
+
+import java.util.ArrayList;
+
+import com.frontrow.common.SharedMethods;
+import com.row.mix.beans.ActivityCard;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.DatabaseUtils.InsertHelper;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
+
+public class ActivityCardDB extends FrontRowDBHelper{
+
+	public static final String CARD_ID = "CardId";
+	public static final String CARD_NAME = "CardName";
+	public static final String CARD_TYPE_ID = "CardTypeId";
+
+	public final static String TABLE ="ActivityCard";
+
+	public static ActivityCardDB instance;
+
+	/*	public static ActivityCardDB getSharedInstance(){
+		if(instance == null){
+			instance = new ActivityCardDB();
+		}
+		return instance;
+	}*/
+
+
+	/*@Override
+	public void open() {
+		// TODO Auto-generated method stub
+		super.open();
+	}*/
+
+	public ActivityCardDB(Context ctx) {
+		// TODO Auto-generated constructor stub
+		super();
+	}
+
+
+	public long addActivityCardDetails(ArrayList<ActivityCard> cardList){
+		System.out.println("Card StartUp : "+ System.currentTimeMillis());
+		long count  = -2;
+		deleteData();
+		SQLiteDatabase db= this.getWritableDatabase();
+		db.beginTransaction();
+		SQLiteStatement statement = db.compileStatement(this.ACTIVITY_CARD_QUERY);
+		try{
+
+			for(ActivityCard card : cardList){
+				statement.bindString(2, card.getCardType());
+				statement.bindLong(1, card.getCardId());
+				statement.execute();
+			}
+			db.setTransactionSuccessful();
+		}finally{
+			db.endTransaction();
+			db.close();
+		}
+		System.out.println("Card Stop : "+ System.currentTimeMillis());
+		return count;
+	}
+
+	public ArrayList<ActivityCard> getAllActivityCards(){
+		ArrayList<ActivityCard> allCards = new ArrayList<ActivityCard>();
+		SQLiteDatabase db = this.getWritableDatabase();
+		Cursor cursor = db.query(TABLE, null, null, null, null, null, null);
+		if(cursor != null){
+			if(cursor.moveToNext()){
+				do {
+					ActivityCard card = new ActivityCard();
+					card.setCardType(cursor.getString(cursor.getColumnIndex(CARD_NAME)));
+					card.setCardId(cursor.getInt(cursor.getColumnIndex(CARD_TYPE_ID)));
+					allCards.add(card);
+				} while (cursor.moveToNext());
+			}
+		}
+		db.close();
+		cursor.close();
+		return allCards;
+	}
+
+	public long deleteData() {
+		SQLiteDatabase db= this.getWritableDatabase();
+		long count =db.delete(TABLE, null, null);
+		db.close();
+		return count;
+	}
+
+	public ActivityCard getActivityCardForCardId(int cardId){
+		ActivityCard ac = new ActivityCard();
+		SQLiteDatabase db= this.getWritableDatabase();
+		Cursor cursor =db.query(TABLE, null, CARD_TYPE_ID+"=?", new String[]{Integer.toString(cardId)}, null, null, null);
+		if(cursor.moveToNext()){
+			do {
+				ac.setCardId(cursor.getInt(cursor.getColumnIndex(CARD_TYPE_ID)));
+				ac.setCardType(cursor.getString(cursor.getColumnIndex(CARD_NAME)));
+
+			} while (cursor.moveToNext());
+		}
+		db.close();
+		cursor.close();
+		return ac;
+	}
+}

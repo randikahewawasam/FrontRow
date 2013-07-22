@@ -1,0 +1,21 @@
+<resources>
+
+    <!-- Login View -->
+    <item name="Login_Page_View_Size" type="dimen">0.35</item>
+    <item name="Login_Page_EditText_Min_Height" type="dimen">35dip</item>
+    <item name="Login_Page_EditText_Font_Size" type="dimen">14sp</item>
+
+    
+    <!-- Title Bar -->
+    <dimen name="tab_bar_height">50dp</dimen>
+    <dimen name="Tab_Bar_Text_Height">18sp</dimen>
+
+    <!-- Title Bar Height -->
+    <dimen name="Title_Height">40dp</dimen>
+
+    <!-- Client List Page -->
+    <dimen name="Clinet_List_Text_Size">16sp</dimen>
+    
+    
+
+</resources>

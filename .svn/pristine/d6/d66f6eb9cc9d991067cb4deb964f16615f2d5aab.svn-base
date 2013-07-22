@@ -1,0 +1,35 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/mainbg"
+    android:orientation="vertical" >
+
+    <ListView
+        android:id="@+id/actvity_post_list"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:divider="@null"
+        android:drawSelectorOnTop="false" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="8dp" >
+    </View>
+
+    <Button
+        android:id="@+id/btnAddCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/login_button"
+        android:text="Submit Activity Card"
+        android:minHeight="35dip"
+        android:textColor="@color/ColorPureWhite"
+        android:textStyle="bold" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="15dp" >
+    </View>
+
+</LinearLayout>

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="TextPlane" parent="@android:style/TextAppearance">
+        <item name="android:textSize">15sp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/ColorPlain</item>
+    </style>
+
+    <style name="TextTitle" parent="@android:style/TextAppearance">
+        <item name="android:textSize">10sp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/ColorHeadingText</item>
+        <item name="android:typeface">serif</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextSalesGroup" parent="@android:style/TextAppearance">
+        <item name="android:textSize">14sp</item>
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingBottom">3dp</item>
+    </style>
+
+    <style name="SpinnerStyle" parent="@android:style/Widget.Spinner">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:clipChildren">true</item>
+        <item name="android:paddingBottom">5dp</item>
+        <item name="android:background">@drawable/dropdownbg</item>
+    </style>
+
+    <style name="customeDialog" parent="android:Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowBackground">@drawable/popupboxbg</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+        <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
+    </style>
+
+    <style name="FRSTabWidget" parent="@android:style/Widget.TabWidget">
+        <item name="android:background">@drawable/footer_bg</item>
+    </style>
+
+    <style name="My_Theme">
+        <item name="android:windowTitleSize">35dp</item>
+        <item name="android:windowTitleBackgroundStyle">@android:color/transparent</item>
+    </style>
+
+    <style name="WindowTitleBackground">
+        <item name="android:background">@drawable/headerbg</item>
+        <item name="android:padding">0px</item>
+    </style>
+
+    <!-- Theme for device sizes -->
+
+
+    <!-- Large theme -->
+    <style name="large_title_text">
+        <item name="android:textSize">24sp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/ColorPureWhite</item>
+    </style>
+
+    <style name="large_button_text">
+        <item name="android:textSize">24sp</item>
+    </style>
+
+    <style name="large_group_text">
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="large_child_text">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <!-- Small theme -->
+
+    <style name="small_title_text">
+        <item name="android:textSize">12sp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/ColorPureWhite</item>
+    </style>
+
+    <style name="small_button_text">
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="small_group_text">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="small_child_text">
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <!-- Normal theme -->
+
+    <style name="normal_title_text">
+        <item name="android:textSize">16sp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/ColorPureWhite</item>
+    </style>
+
+    <style name="normal_button_text">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="normal_group_text">
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="normal_child_text">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <!-- finish themes -->
+
+    <style name="Theme" parent="android:Theme"></style>
+
+    <style name="Theme.Small">
+        <item name="textTitle">@style/small_title_text</item>
+        <item name="buttonText">@style/small_button_text</item>
+        <item name="title">@style/large_title_text</item>
+        <item name="android:windowTitleBackgroundStyle">@style/LargeTitleTheme</item>
+        <item name="clientOther">@style/small_child_text</item>
+        <item name="groupRow">@style/small_group_text</item>
+    </style>
+
+    <style name="Theme.Large">
+        <item name="textTitle">@style/large_title_text</item>
+        <item name="buttonText">@style/large_button_text</item>
+        <item name="title">@style/large_title_text</item>
+        <item name="android:windowTitleBackgroundStyle">@style/LargeTitleTheme</item>
+        <item name="clientOther">@style/large_child_text</item>
+        <item name="groupRow">@style/large_group_text</item>
+    </style>
+
+    <style name="Theme.Medium">
+        <item name="textTitle">@style/normal_title_text</item>
+        <item name="buttonText">@style/normal_button_text</item>
+        <item name="title">@style/large_title_text</item>
+        <item name="android:windowTitleBackgroundStyle">@style/LargeTitleTheme</item>
+        <item name="childRow">@style/normal_child_text</item>
+        <item name="groupRow">@style/normal_group_text</item>
+    </style>
+
+</resources>

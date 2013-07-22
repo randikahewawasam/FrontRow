@@ -1,0 +1,192 @@
+package com.frontrow.android.db;
+
+import java.util.ArrayList;
+import com.frontrow.common.Constants;
+import com.frontrow.common.SharedMethods;
+import com.frontrow.core.ApplicationUser;
+import com.row.mix.beans.Client;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.DatabaseUtils.InsertHelper;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
+import android.database.sqlite.SQLiteDatabase.CursorFactory;
+
+public class ClientDB extends FrontRowDBHelper{
+
+	public static final String CARD_TYPE = "CardType";
+	public static final String CLIENT_NAME = "ClientName";
+	public static final String CLIENT_NUMBER = "ClientNumber";
+	public static final String CLIENT_ID = "ClientId";
+	public static final String ID = "_id";
+	public static final String USER_ID = "UserId";
+	public final static String TABLE = "Client";
+	public static final String CLIENT_CARD_ID = "ClientCardId";
+	public static final String POSTAL = "Postal";
+	public static final String PROVINCE = "Province";
+	public static final String CITY = "City";
+	public static final String NUMBER = "Number";
+	public static final String STREET = "Street";
+	public static final String MOBILENUMBER = "Mobilenumber";
+	public static final String LAN = "Lan";
+	public static final String LAT = "Lat";
+
+	public static ClientDB instance;
+
+	/*	public static ClientDB getSharedInstance(){
+		if(instance == null){
+			instance = new ClientDB();
+		}
+		return instance;
+	}*/
+
+
+	public ClientDB(Context ctx) {
+		// TODO Auto-generated constructor stub 
+		super(); 
+	}
+
+	public long addClients(ArrayList<Client> clientList,int usrId){
+		System.out.println("Client StartUp : "+ System.currentTimeMillis());
+		long count = 0;
+		isClientsAvailable();
+		SQLiteDatabase db= this.getWritableDatabase();
+		db.beginTransaction();
+		SQLiteStatement statement = db.compileStatement(this.CLIENT_QUERY);
+		try{
+			for(Client client : clientList){
+
+				statement.bindString(2, client.getCardtype());
+				statement.bindLong(6, client.getCardId());
+				statement.bindLong(1, client.getClientId());
+				statement.bindString(3, client.getClientName());
+				statement.bindString(4, client.getClientNumber());
+				statement.bindLong(5, usrId);
+				statement.bindString(7, client.getPostal());
+				statement.bindString(8, client.getProvince());
+				statement.bindString(9, client.getCity());
+				statement.bindString(10, client.getStreet());
+				statement.bindString(11, client.getMobilenumber());
+				statement.bindDouble(12, client.getLatitude());
+				statement.bindDouble(13, client.getLongitude());
+				statement.execute();
+				statement.clearBindings();
+			}
+			db.setTransactionSuccessful();
+		}finally{
+			db.endTransaction();
+			db.close();
+		}
+		System.out.println("Client End : "+ System.currentTimeMillis());
+		return count;
+	}
+
+	public void isClientsAvailable(){
+		boolean b= false;
+		Cursor cursor = this.getWritableDatabase().query(TABLE, null, null, null, null, null, null);
+		if(cursor != null){
+			if(cursor.moveToNext()){
+				SQLiteDatabase db= this.getWritableDatabase();
+				db.beginTransaction();
+				SQLiteStatement statement = db.compileStatement(this.CLIENT_DELETE_QUERY);
+				statement.execute();
+				statement.clearBindings();
+				db.setTransactionSuccessful();
+				db.endTransaction();
+				db.close();
+				//this.getWritableDatabase().delete(TABLE, null, null);
+			}
+		}
+		cursor.close();
+	}
+
+	public ArrayList<Client> getAllClinets(int usrId){
+		SQLiteDatabase db= this.getWritableDatabase();
+		Cursor cursor = db.query(TABLE, null, USER_ID+"=?", new String[]{Integer.toString(usrId)}, null, null, CLIENT_NAME+ " COLLATE NOCASE ASC");
+		ArrayList<Client> clientList = new ArrayList<Client>(); 
+		if(cursor != null){
+			if(cursor.moveToNext()){
+				do {
+					Client client =  new Client();
+					String cardType = cursor.getString(cursor.getColumnIndex(CARD_TYPE));
+					String clientName = cursor.getString(cursor.getColumnIndex(CLIENT_NAME));
+					String clientNumber = cursor.getString(cursor.getColumnIndex(CLIENT_NUMBER));
+					int clientId = cursor.getInt(cursor.getColumnIndex(CLIENT_ID));
+					int cardId = cursor.getInt(cursor.getColumnIndex(CLIENT_CARD_ID));
+					String street = cursor.getString(cursor.getColumnIndex(STREET));
+					String mobilenumber = cursor.getString(cursor.getColumnIndex(MOBILENUMBER));
+					String postal = cursor.getString(cursor.getColumnIndex(POSTAL));
+					String city = cursor.getString(cursor.getColumnIndex(CITY));
+					String province = cursor.getString(cursor.getColumnIndex(PROVINCE));
+					double lat=cursor.getDouble(cursor.getColumnIndex(LAT));
+					double lan=cursor.getDouble(cursor.getColumnIndex(LAN));
+					client.setCardtype(cardType);
+					client.setClientName(clientName);
+					client.setClientNumber(clientNumber);
+					client.setClientId(clientId);
+					client.setCardId(cardId);
+					client.setStreet(street);
+					client.setMobilenumber(mobilenumber);
+					client.setCity(city);
+					client.setPostal(postal);
+					client.setProvince(province);
+					client.setLatitude(lat);
+					client.setLongitude(lan);
+					clientList.add(client);
+					
+				} while (cursor.moveToNext());
+			}
+		}
+		db.close();
+		cursor.close();
+		return clientList;
+	}
+
+	public ArrayList<Client> getClientsForActivityCard(String cType,int usrId){
+		ArrayList<Client> clientList = new ArrayList<Client>(); 
+		SQLiteDatabase db= this.getWritableDatabase();
+		String searchSql = (cType.equals(Constants.ALL_ACTIVITY_CARD))?"SELECT * FROM "+ClientDB.TABLE+" ORDER BY "+ ClientDB.CLIENT_NAME+" COLLATE NOCASE ASC;":"SELECT * FROM "
+				+ClientDB.TABLE+" WHERE "+ClientDB.CARD_TYPE+"= '"+cType+"' AND "+ ClientDB.USER_ID+"= '"+Integer.toString(usrId)+"' ORDER BY "+ ClientDB.CLIENT_NAME+" COLLATE NOCASE ASC";
+		//String searchSql = 
+		SharedMethods.logError("SQL : "+searchSql);
+		Cursor clientCursor = db.rawQuery(searchSql, null);
+		if(clientCursor != null){
+			if(clientCursor.moveToNext()){
+				do {
+					Client client =  new Client();
+					String cardType = clientCursor.getString(clientCursor.getColumnIndex(CARD_TYPE));
+					String clientName = clientCursor.getString(clientCursor.getColumnIndex(CLIENT_NAME));
+					String clientNumber = clientCursor.getString(clientCursor.getColumnIndex(CLIENT_NUMBER));
+					int clientId = clientCursor.getInt(clientCursor.getColumnIndex(CLIENT_ID));
+					int cardId = clientCursor.getInt(clientCursor.getColumnIndex(CLIENT_CARD_ID));
+					String postal = clientCursor.getString(clientCursor.getColumnIndex(POSTAL));
+					String province = clientCursor.getString(clientCursor.getColumnIndex(PROVINCE));
+					String city = clientCursor.getString(clientCursor.getColumnIndex(CITY));
+					String street = clientCursor.getString(clientCursor.getColumnIndex(STREET));
+					String mobilenumber = clientCursor.getString(clientCursor.getColumnIndex(MOBILENUMBER));
+					double lat=clientCursor.getDouble(clientCursor.getColumnIndex(LAT));
+					double lan=clientCursor.getDouble(clientCursor.getColumnIndex(LAN));
+					client.setCardtype(cardType);
+					client.setClientName(clientName);
+					client.setClientNumber(clientNumber);
+					client.setClientId(clientId);
+					client.setCardId(cardId);
+					client.setPostal(postal);
+					client.setProvince(province);
+					client.setCity(city);
+					client.setStreet(street);
+					client.setMobilenumber(mobilenumber);
+					client.setLatitude(lat);
+					client.setLongitude(lan);
+					clientList.add(client);
+
+				} while (clientCursor.moveToNext());
+			}
+		}
+		db.close();
+		clientCursor.close();
+		return clientList;
+	}
+}

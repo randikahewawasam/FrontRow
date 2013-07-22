@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/mainbg"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:background="@drawable/allclientsboxbg"
+            android:orientation="vertical"
+            android:padding="5dp" >
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="10dp" >
+
+                <TextView
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.4"
+                    android:singleLine="true"
+                    android:text="@string/CLIENT_NAME"
+                    android:textColor="@color/ColorPureWhite" />
+
+                <EditText
+                    android:id="@+id/cname"
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.6"
+                    android:singleLine="true" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.4"
+                    android:singleLine="true"
+                    android:text="@string/CLIENT_NUMBER"
+                    android:textColor="@color/ColorPureWhite" />
+
+                <EditText
+                    android:id="@+id/cnumber"
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.6"
+                    android:singleLine="true" />
+            </LinearLayout>
+
+            <Spinner
+                android:id="@+id/cards"
+                style="@style/SpinnerStyle"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <Button
+                    android:id="@+id/createClient"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/button"
+                    android:text="@string/CREATE"
+                    android:textColor="@color/ColorPureWhite"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="2dp" />
+
+            <TableLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal" >
+
+                <ViewStub
+                    android:id="@+id/loginStubProgress"
+                    android:layout_weight="3"
+                    android:inflatedId="@+id/loginShowProgress"
+                    android:layout="@layout/loginstubprogress" />
+
+                <ViewStub
+                    android:id="@+id/loginStubErrorMsg"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_weight="3"
+                    android:inflatedId="@+id/loginShowErrorMsg"
+                    android:layout="@layout/loginstuberrormsg" />
+            </TableLayout>
+        </LinearLayout>
+    </RelativeLayout>
+
+</LinearLayout>

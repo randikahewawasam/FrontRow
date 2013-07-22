@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- View styles -->
+    <attr format="reference" name="textTitle" />
+    <attr format="reference" name="buttonText" />
+    <attr format="reference" name="title" />
+    <attr format="reference" name="childRow" />
+    <attr format="reference" name="groupRow" />
+    <attr format="reference" name="clientOther" />
+
+</resources>

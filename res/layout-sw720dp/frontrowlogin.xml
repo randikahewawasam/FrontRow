@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/login_bg"
+    android:orientation="vertical" >
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="0px"
+        android:layout_weight="@dimen/Login_Page_View_Size" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0px"
+        android:layout_weight="1" >
+
+        <TableLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal" >
+
+            <TableRow>
+
+                <TextView
+                    android:layout_column="0"
+                    android:layout_weight="0.1" />
+
+                <EditText
+                    android:id="@+id/cmpid"
+                    android:layout_column="2"
+                    android:layout_weight="1"
+                    android:background="@drawable/frs_edit_text"
+                    android:gravity="left|center_vertical"
+                    android:hint="@string/COMPANY_ID"
+                    android:imeOptions="actionNext"
+                    android:minHeight="@dimen/Login_Page_EditText_Min_Height"
+                    android:nextFocusDown="@string/USER_ID"
+                    android:paddingLeft="5dp"
+                    android:singleLine="true"
+                    android:textSize="@dimen/Login_Page_EditText_Font_Size"
+                    android:width="0px" />
+
+                <TextView
+                    android:layout_column="3"
+                    android:layout_weight="0.1" />
+            </TableRow>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="5dp" />
+
+            <TableRow>
+
+                <TextView
+                    android:layout_column="0"
+                    android:layout_weight="0.1" />
+
+                <EditText
+                    android:id="@+id/userid"
+                    android:layout_column="2"
+                    android:layout_weight="1"
+                    android:background="@drawable/frs_edit_text"
+                    android:gravity="left|center_vertical"
+                    android:hint="@string/USER_ID"
+                    android:imeOptions="actionNext"
+                    android:minHeight="@dimen/Login_Page_EditText_Min_Height"
+                    android:nextFocusDown="@+id/loginChkRememberMe"
+                    android:nextFocusUp="@+id/loginTxtUserName"
+                    android:paddingLeft="5dp"
+                    android:singleLine="true"
+                    android:textSize="@dimen/Login_Page_EditText_Font_Size"
+                    android:width="0px" />
+
+                <TextView
+                    android:layout_column="3"
+                    android:layout_weight="0.1" />
+            </TableRow>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="5dp" />
+
+            <TableRow>
+
+                <TextView
+                    android:layout_column="0"
+                    android:layout_weight="0.1" />
+
+                <EditText
+                    android:id="@+id/loginETPassword"
+                    android:layout_column="2"
+                    android:layout_weight="1"
+                    android:background="@drawable/frs_edit_text"
+                    android:gravity="left|center_vertical"
+                    android:hint="@string/PASSWORD"
+                    android:imeOptions="actionSend"
+                    android:minHeight="@dimen/Login_Page_EditText_Min_Height"
+                    android:nextFocusDown="@+id/loginBtnLogin"
+                    android:nextFocusUp="@+id/loginTxtUserName"
+                    android:paddingLeft="5dp"
+                    android:password="true"
+                    android:singleLine="true"
+                    android:textSize="@dimen/Login_Page_EditText_Font_Size"
+                    android:width="0px" />
+
+                <TextView
+                    android:layout_column="3"
+                    android:layout_weight="0.1" />
+            </TableRow>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="15dp" />
+
+            <TableRow>
+
+                <TextView
+                    android:layout_column="0"
+                    android:layout_weight="0.1" />
+
+                <Button
+                    android:id="@+id/loginBtnLogin"
+                    style="?buttonText"
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_column="2"
+                    android:layout_weight="1"
+                    android:background="@drawable/login_button"
+                    android:minHeight="35dp"
+                    android:text="@string/LOGIN"
+                    android:textColor="@color/ColorPureWhite"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_column="3"
+                    android:layout_weight="0.1" />
+            </TableRow>
+
+            <TableRow android:layout_weight="1" >
+
+                <TextView
+                    android:layout_column="0"
+                    android:layout_weight="1" />
+            </TableRow>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="2dp" />
+
+            <ViewStub
+                android:id="@+id/loginStubProgress"
+                android:layout_weight="3"
+                android:inflatedId="@+id/loginShowProgress"
+                android:layout="@layout/loginstubprogress" />
+
+            <ViewStub
+                android:id="@+id/loginStubErrorMsg"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="3"
+                android:inflatedId="@+id/loginShowErrorMsg"
+                android:layout="@layout/loginstuberrormsg" />
+        </TableLayout>
+    </LinearLayout>
+
+</LinearLayout>

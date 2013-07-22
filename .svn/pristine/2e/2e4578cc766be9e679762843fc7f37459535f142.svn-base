@@ -1,0 +1,175 @@
+package com.frontrow.adapters;
+
+import java.util.List;
+
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TextView;
+
+import com.frontrow.common.Constants;
+import com.frontrow.interfaces.FRSContactListBtnListener;
+import com.frontrow.ui.R;
+import com.row.mix.beans.Contact;
+
+public class FrontRowContactAdapter extends ArrayAdapter<Contact>  {
+
+	private Context ctx;
+	private List<Contact> contactList;
+	private View view;
+	private FRSContactListBtnListener contactListBtnListener;
+	private ImageButton callbtn;
+	private Contact cmp;
+	private Button numbtn;
+	private Button conmapbtn;
+	private Button condirectionbtn;
+	private Button conemailbtn;
+	//private List<String> imgList;
+
+	public FRSContactListBtnListener getContactListBtnListener() {
+		return contactListBtnListener;
+	}
+
+	public void setContactListBtnListener(
+			FRSContactListBtnListener contactListBtnListener) {
+		this.contactListBtnListener = contactListBtnListener;
+	}
+
+	public FrontRowContactAdapter(Context context, int resource, List<Contact> objects){
+		super(context, resource, objects);
+		// TODO Auto-generated constructor stub
+		this.ctx = context;
+		this.contactList = objects;
+		
+	}
+	
+	@Override
+	public View getView(int position, View convertView, ViewGroup parent) {
+		// TODO Auto-generated method stub
+		view = convertView;
+		if(view == null){
+			LayoutInflater vi = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			view = vi.inflate(R.layout.contactlistrow, null);
+		}
+		
+		 cmp = contactList.get(position);
+		
+	
+		//Drawable dw = null;
+		if(cmp != null){
+			TextView cname = (TextView) view.findViewById(R.id.contactnametext);
+			cname.setText(cmp.getFirstName() +" "+cmp.getLastName());
+			TextView title = (TextView) view.findViewById(R.id.contacttitletext);
+			title.setText(cmp.getTitle());
+			TextView email = (TextView) view.findViewById(R.id.contactemailtext);
+			email.setText(cmp.getEmail());
+			
+			String street,city,postal,province,country;
+			if (cmp.getPrimaryAddress().getStreet()!=null && cmp.getPrimaryAddress().getStreet()!="" && !cmp.getPrimaryAddress().getStreet().equalsIgnoreCase("null"))
+			{
+				street=cmp.getPrimaryAddress().getStreet()+",";
+			}
+			else{
+				street="";
+			}
+			if(cmp.getPrimaryAddress().getCity()!=null  && cmp.getPrimaryAddress().getCity()!="" && !cmp.getPrimaryAddress().getCity().equalsIgnoreCase("null")){
+				
+			city=cmp.getPrimaryAddress().getCity()+",";	
+			}
+			else{
+				city="";
+			}
+			if(cmp.getPrimaryAddress().getPostal()!=null && cmp.getPrimaryAddress().getPostal()!="" && cmp.getPrimaryAddress().getPostal()!=null  && !cmp.getPrimaryAddress().getPostal().equalsIgnoreCase("null")){
+				postal=cmp.getPrimaryAddress().getPostal()+",";
+			}
+			else
+			{
+				postal="";
+			}
+			if(cmp.getPrimaryAddress().getProvince()!=null && cmp.getPrimaryAddress().getProvince()!="" && !cmp.getPrimaryAddress().getProvince().equalsIgnoreCase("null"))
+			{
+				province=cmp.getPrimaryAddress().getProvince()+",";
+			}
+			else{
+			    province="";
+			}
+			if(cmp.getPrimaryAddress().getCountry()!=null && cmp.getPrimaryAddress().getCountry()!="" && !cmp.getPrimaryAddress().getCountry().equalsIgnoreCase("null")){
+				country=cmp.getPrimaryAddress().getCountry()+",";
+			}
+			else{
+				country="";
+			}
+			
+				
+			String tempaddress = street+city+postal+province+country;
+			TextView address = (TextView) view.findViewById(R.id.contactaddresstext);
+			address.setText(tempaddress);
+			TextView phone = (TextView) view.findViewById(R.id.contacttpnumber);
+			phone.setText(cmp.getPrimaryPhone().getPhoneNumber());
+			callbtn =(ImageButton) view.findViewById(R.id.callbtn);
+			numbtn=(Button) view.findViewById(R.id.connumbersbtn);
+			conmapbtn=(Button) view.findViewById(R.id.conmapbtn);
+			condirectionbtn=(Button) view.findViewById(R.id.condirectionbtn);
+			conemailbtn=(Button) view.findViewById(R.id.conemailbtn);
+			
+	callbtn.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+			  
+					contactListBtnListener.doBtnWorks(view,Constants.CALL_BTN , cmp);
+					
+				}
+			});
+	
+	numbtn.setOnClickListener(new OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+	  
+			contactListBtnListener.doBtnWorks(view,Constants.NUMBERS_BTN , cmp);
+			
+		}
+	});
+	
+	conmapbtn.setOnClickListener(new OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+	  
+			contactListBtnListener.doBtnWorks(view,Constants.MAP_BTN , cmp);
+			
+		}
+	});
+	
+	condirectionbtn.setOnClickListener(new OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+	  
+			contactListBtnListener.doBtnWorks(view,Constants.DIRECTION_BTN , cmp);
+			
+		}
+	});
+	
+	conemailbtn.setOnClickListener(new OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+	  
+			contactListBtnListener.doBtnWorks(view,Constants.EMAIL_BTN , cmp);
+			
+		}
+	});
+	
+	
+
+		}
+		return view;
+	}
+}

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, FrontRowSplash!</string>
+    <string name="app_name">FrontRow</string>
+    <string name="COMPANY_ID">Company ID</string>
+    <string name="USER_ID">User ID</string>
+    <string name="PASSWORD">Password</string>
+    <string name="REMEMBER">Remember</string>
+    <string name="LOGIN">Login</string>
+    <string name="CANCEL">Cancel</string>
+    <string name="LOGIN_DETAILS_EMPTY">Fields cannot be empty</string>
+    <string name="COMPANY_BLANK">CompanyID cannot be blank</string>
+    <string name="USERID_BLANK">UserID cannot be blank</string>
+    <string name="PWD_BLANK">Password cannot be blank</string>
+    <string name="WELCOME_MSG">Welcome</string>
+    <string name="SALES_GROUP">Select Activity Card</string>
+    <string name="SELECT_CLIENT">Select Client</string>
+    <string name="CLIENT_SMILE">Client ID</string>
+    <string name="ACTIVITY_CARD">Activity Card</string>
+    <string name="ANSWER_CARD_SUBMIT_SUCCESS">Activity Card Submitted Successfully </string>
+    <string name="CLIENT_NAME">Client Name</string>
+    <string name="CLIENT_NUMBER">Client Number</string>
+    <string name="CREATE">Create</string>
+    <string name="SUBMIT_CARD_BTN">Submit Activity Card</string>
+    <string name="NETWOK_UNREACHABLE">Network not available</string>
+    <string name="INVALID_CREDENTIALS">Invalid Credentials</string>
+    <string name="EMPTY_MSG_LIST">No messages are available</string>
+    <string name="SEARCH_CLIENT_HINT">Enter Name, Number, City, State</string>
+    <string name="VIEW_PENDING">Pending</string>
+    <string name="VIEW_Failed">Failed</string>
+    <string name="VIEW_DILIVERD">Delivered</string>
+    <string name="VIEW_ALL">View All</string>
+    <string name="MESSAGE_HINT">Enter Message</string>
+    <string name="NET_STATUS">Network Status</string>
+    <string name="YES">Yes</string>
+    <string name="NO">No</string>
+    <string name="EXIT_MSG">Do you want to exit the application?</string>
+    <string name="SALES_PRO">Sales Pro</string>
+    <string name="RETRY_MSG">Do you want to resend the message?</string>
+    <string name="PROGRESS_MSG">Sending ...</string>
+    <string name="NETWRK_ERR_SAVED_TO_DB">NetWork not Available yet..</string>
+    <string name="CARD_ERROR">Error Occurred </string>
+    <string name="CLIENT_ADD_SUCCESS">Client Successfully Added</string>
+    <string name="DATE_TYPE_HINT">Click to select a date</string>
+    <string name="CLIENTS">Clients</string>
+    <string name="ADD_NEW_CLIENT">Add New Client</string>
+    <string name="VIEW_ALL_CLIENTS">View All Clients</string>
+    <string name="ADD_NEW">Add New</string>
+    <string name="NAME">Name</string>
+    <string name="NUMBER">Number</string>
+    <string name="SELECT">Select</string>
+    <string name="ID">ID</string>
+    <string name="NEXT">Next</string>
+    <string name="QUESTION_VIEW">Enable Full </string>
+    <string name="VIEW">View</string>
+    <string name="SEARCH_TYPE">Search Type</string>
+    <string name="SHOW_MORE">Show More</string>
+    <string name="NO_CLIENTS">No Clients Available</string>
+    <string name="UPDATE">Update</string>
+    <string name="UPDATES_AVAILABLE">New updates are available, update your application</string>
+    <string name="SEARCH_PROGRESS">Searching...</string>
+    <string name="SEARCH_TOAST"> Enter Name, Number, City, State to enable search function</string>
+    <string name="MESSAGES">Messages</string>
+    <string name="SETTINGS">Settings</string>
+
+    <string-array name="FILTER_TYPES">
+        <item>Client Name</item>
+        <item>Client Number</item>
+        <item>City</item>
+        <item>State</item>
+    </string-array>
+
+</resources>

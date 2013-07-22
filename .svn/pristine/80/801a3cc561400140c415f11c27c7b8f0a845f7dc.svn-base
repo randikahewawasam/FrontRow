@@ -1,0 +1,253 @@
+package com.frontrow.ui;
+
+import java.util.ArrayList;
+
+import com.frontrow.base.BaseActivity;
+import com.frontrow.common.Constants;
+import com.frontrow.datamanagers.AuthDataManager;
+import com.row.mix.beans.ContactRelationship;
+
+import android.os.Bundle;
+import android.app.Activity;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TableRow;
+import android.widget.TextView;
+
+public class FRSContactMaintenance extends BaseActivity implements OnItemSelectedListener {
+	
+	private Spinner contactrelationshipTypeSpinner;
+	private Spinner addressrelationshipTypeSpinner;
+	private Spinner phonerelationshipTypeSpinner;
+	private ArrayList<RelationshipTypeSpinner> ctypeList;
+	private ArrayList<RelationshipTypeSpinner> atypeList;
+	private ArrayList<RelationshipTypeSpinner> ptypeList;
+	private TextView addressText;
+	private TextView phoneText;
+	private TableRow phonerow;
+	private boolean isNewRecord;
+	private EditText salutation;
+	private EditText firstname;
+	private EditText lastname;
+	private CheckBox primary;
+	private EditText email;
+	private EditText title;
+	private EditText number1;
+	private EditText number2;
+	private EditText street;
+	private EditText city;
+	private EditText province;
+	private EditText postal;
+	private EditText country;
+	private ArrayList<ContactRelationship> contactRelationshipTypeList;
+	private ArrayList<ContactRelationship> addressRelationshipTypeList;
+	private ArrayList<ContactRelationship> phoneRelationshipTypeList;
+	
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+       
+        setContentView(R.layout.activity_frscontact_maintenance);
+        
+        View newContactMaintanceView = LayoutInflater.from(this.getParent()).inflate(R.layout.activity_frscontact_maintenance, null);
+        setContentView(newContactMaintanceView);
+		super.onCreate(savedInstanceState);
+       
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_frscontact_maintenance, menu);
+        return true;
+      
+    }
+
+	@Override
+	protected void initializeUI() {
+		
+		salutation = (EditText)findViewById(R.id.salutationid);
+		firstname = (EditText)findViewById(R.id.firstnameid);
+		lastname = (EditText)findViewById(R.id.lastnameid);
+		email = (EditText)findViewById(R.id.emailid);
+		title = (EditText)findViewById(R.id.titleid);
+		primary = (CheckBox)findViewById(R.id.primary_chk_boxid);
+		
+		number1 =(EditText) findViewById(R.id.number1id);
+		number2 =(EditText) findViewById(R.id.number2id);
+		
+		street =(EditText) findViewById(R.id.streetid);
+		city =(EditText) findViewById(R.id.cityid);
+		province = (EditText) findViewById(R.id.provinceid);
+		postal = (EditText) findViewById(R.id.postalid);
+		country = (EditText) findViewById(R.id.countryid);
+		
+		ctypeList =new ArrayList<RelationshipTypeSpinner>();
+		atypeList =new ArrayList<RelationshipTypeSpinner>();
+		ptypeList =new ArrayList<RelationshipTypeSpinner>();
+		contactrelationshipTypeSpinner =(Spinner) findViewById(R.id.contactreltypes);
+		addressrelationshipTypeSpinner = (Spinner) findViewById(R.id.addreltypes);
+		phonerelationshipTypeSpinner = (Spinner) findViewById(R.id.phnreltypes);
+		Bundle bundle = getIntent().getExtras();
+		if (bundle != null) {
+			isNewRecord=bundle.getBoolean(Constants.NEW_CONTACT_RECORD);
+			//.setText(clientName);
+		}
+
+		contactRelationshipTypeList=AuthDataManager.getSharedInstance().getClientContactList();
+		addressRelationshipTypeList=AuthDataManager.getSharedInstance().getContactAddressList();
+		phoneRelationshipTypeList = AuthDataManager.getSharedInstance().getContactPhoneList();
+		
+		for(ContactRelationship type : this.addressRelationshipTypeList){
+			atypeList.add(new RelationshipTypeSpinner(type.getRelationshipText(), type.getId()));
+		}
+		
+		for(ContactRelationship type : this.contactRelationshipTypeList){
+			ctypeList.add(new RelationshipTypeSpinner(type.getRelationshipText(), type.getId()));
+		}
+		
+		for(ContactRelationship type : this.phoneRelationshipTypeList){
+			ptypeList.add(new RelationshipTypeSpinner(type.getRelationshipText(), type.getId()));
+		}
+		
+		
+		ArrayAdapter<RelationshipTypeSpinner> cTypeAdapter = new ArrayAdapter<RelationshipTypeSpinner>(this, R.layout.spinnertext, ctypeList);
+		   cTypeAdapter.setDropDownViewResource(R.layout.spinnerdropdown);
+		   contactrelationshipTypeSpinner.setAdapter(cTypeAdapter);
+		   
+		   contactrelationshipTypeSpinner.setOnItemSelectedListener(this);
+		   
+		   ArrayAdapter<RelationshipTypeSpinner> aTypeAdapter = new ArrayAdapter<RelationshipTypeSpinner>(this, R.layout.spinnertext, atypeList);
+		   aTypeAdapter.setDropDownViewResource(R.layout.spinnerdropdown);
+		   addressrelationshipTypeSpinner.setAdapter(aTypeAdapter);
+		   
+		   addressrelationshipTypeSpinner.setOnItemSelectedListener(this);
+		   
+		   ArrayAdapter<RelationshipTypeSpinner> pTypeAdapter = new ArrayAdapter<RelationshipTypeSpinner>(this, R.layout.spinnertext, ptypeList);
+		   pTypeAdapter.setDropDownViewResource(R.layout.spinnerdropdown);
+		   phonerelationshipTypeSpinner.setAdapter(pTypeAdapter);		   
+		   phonerelationshipTypeSpinner.setOnItemSelectedListener(this);
+		
+		// TODO Auto-generated method stub
+		boolean contactstyle = AuthDataManager.getSharedInstance().getContactStyle();
+		    addressText = (TextView) findViewById(R.id.addressdetailtextid);
+	        phoneText =(TextView) findViewById(R.id.phonedetailtextid);
+	        phonerow = (TableRow) findViewById(R.id.number1row);
+	        
+			if(isNewRecord){
+				salutation.setEnabled(true);
+				firstname.setEnabled(true);
+				lastname.setEnabled(true);
+				email.setEnabled(true);
+				title.setEnabled(true);
+				primary.setEnabled(true);
+				
+				number1.setEnabled(true);
+				number2.setEnabled(true);
+				
+				street.setEnabled(true);
+				city.setEnabled(true);
+				province.setEnabled(true);
+				postal.setEnabled(true);
+				postal.setEnabled(true);
+				country.setEnabled(true);
+				
+				contactrelationshipTypeSpinner.setEnabled(true);
+				addressrelationshipTypeSpinner.setEnabled(true);
+				phonerelationshipTypeSpinner.setEnabled(true);
+			}
+			else
+			{
+				salutation.setEnabled(false);
+				firstname.setEnabled(false);
+				lastname.setEnabled(false);
+				email.setEnabled(false);
+				title.setEnabled(false);
+				primary.setEnabled(false);
+				
+				number1.setEnabled(false);
+				number2.setEnabled(false);
+				
+				street.setEnabled(false);
+				city.setEnabled(false);
+				province.setEnabled(false);
+				postal.setEnabled(false);
+				postal.setEnabled(false);
+				country.setEnabled(false);
+				
+				contactrelationshipTypeSpinner.setEnabled(false);
+				addressrelationshipTypeSpinner.setEnabled(false);
+				phonerelationshipTypeSpinner.setEnabled(false);
+				
+				
+			}
+		
+		if(contactstyle){
+			
+			phonerow.setVisibility(View.VISIBLE);
+			phoneText.setText(getResources().getString(R.string.PHONE_NUMBER_TXT));
+			addressText.setText(getResources().getString(R.string.ADDRESS_TXT));
+			addressrelationshipTypeSpinner.setVisibility(View.VISIBLE);
+			phonerelationshipTypeSpinner.setVisibility(View.VISIBLE);
+		}
+		else
+		{
+			addressrelationshipTypeSpinner.setVisibility(View.VISIBLE);
+			phonerelationshipTypeSpinner.setVisibility(View.VISIBLE);
+			phonerow.setVisibility(View.GONE);
+			phoneText.setText(getResources().getString(R.string.PRIMARY_PHONE_NUMBER_TXT));
+			addressText.setText(getResources().getString(R.string.PRIMARY_ADDRESS_TXT));	
+			
+			
+		}
+		
+	}
+
+	@Override
+	protected void refreshUI() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
+			long arg3) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onNothingSelected(AdapterView<?> arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+}
+class RelationshipTypeSpinner{
+	String relationshipName ="";
+	int relationshipId;
+
+	public RelationshipTypeSpinner(String relationshipName,int relationshipId) {
+		// TODO Auto-generated constructor stub
+		this.relationshipName = relationshipName;
+		this.relationshipId = relationshipId;
+	}
+	public String getRelationshipName() {
+		return relationshipName;
+	}
+	
+	public int getRelationshipId() {
+		return relationshipId;
+	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return relationshipName;
+	}
+}

@@ -1,0 +1,60 @@
+package com.frontrow.adapters;
+
+import java.text.SimpleDateFormat;
+import java.util.List;
+
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.TextView;
+
+import com.frontrow.ui.R;
+import com.row.mix.beans.ClientsNotes;
+import com.row.mix.beans.Contact;
+
+public class FrontRowContactAdapter extends ArrayAdapter<Contact>  {
+
+	private Context ctx;
+	private List<Contact> contactList;
+	private View view;
+	//private List<String> imgList;
+
+	public FrontRowContactAdapter(Context context, int resource, List<Contact> objects){
+		super(context, resource, objects);
+		// TODO Auto-generated constructor stub
+		this.ctx = context;
+		this.contactList = objects;
+		
+	}
+	
+	@Override
+	public View getView(int position, View convertView, ViewGroup parent) {
+		// TODO Auto-generated method stub
+		view = convertView;
+		if(view == null){
+			LayoutInflater vi = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			view = vi.inflate(R.layout.contactlistrow, null);
+		}
+		
+		Contact cmp = contactList.get(position);
+		
+	
+		//Drawable dw = null;
+		if(cmp != null){
+			TextView cname = (TextView) view.findViewById(R.id.contactnametext);
+			cname.setText(cmp.getFirstName() +" "+cmp.getLastName());
+			TextView title = (TextView) view.findViewById(R.id.contacttitletext);
+			title.setText(cmp.getTitle());
+			TextView email = (TextView) view.findViewById(R.id.contactemailtext);
+			email.setText(cmp.getEmail());
+			TextView address = (TextView) view.findViewById(R.id.contactaddresstext);
+			address.setText(cmp.getPrimaryAddress().getStreet()+","+cmp.getPrimaryAddress().getCity()+","+cmp.getPrimaryAddress().getProvince()+","+cmp.getPrimaryAddress().getPostal()+","+cmp.getPrimaryAddress().getCountry());
+			TextView phone = (TextView) view.findViewById(R.id.contacttpnumber);
+			phone.setText(cmp.getPrimaryPhone().getPhoneNumber());
+
+		}
+		return view;
+	}
+}

@@ -1,0 +1,211 @@
+/*******************************************************************************
+ * Copyright (c) 2012 mobileMe pvt Ltd.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the mobileMe pvt Ltd v1.0.
+ *
+ * Contributors:
+ *    Developer - Randika Hewawasam (hasitharandika@gmail.com)
+ *******************************************************************************/
+package com.frontrow.ui;
+
+import java.util.ArrayList;
+
+import com.frontrow.android.services.OfflineMessageService;
+import com.frontrow.common.SharedMethods;
+import android.app.Activity;
+import android.app.ActivityGroup;
+import android.app.LocalActivityManager;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.Window;
+
+import com.frontrow.android.services.OfflineMessageService;
+import com.frontrow.common.Constants;
+import com.frontrow.common.SharedMethods;
+
+public class TabManager extends ActivityGroup{
+
+	private ArrayList<String> activityList;
+	public static TabManager tabManager;
+	protected Activity current;
+	private Intent serviceIntent;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onCreate(savedInstanceState);		
+		tabManager = this;
+		if (activityList == null)
+			activityList = new ArrayList<String>();
+	}
+
+	public void startChild(String id, Intent newIntent) {
+
+		SharedMethods.logError("Activty ID : "+id);
+		Window window = getLocalActivityManager().startActivity(id,
+				newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+
+		if(serviceIntent == null){
+			serviceIntent = new Intent(this, OfflineMessageService.class);
+			startService(serviceIntent);
+		}
+
+		if (window != null) {
+			activityList.add(id);
+			setContentView(window.getDecorView());
+		}
+
+	}
+
+
+	public void	restartFRS(){
+		Intent i = getBaseContext().getPackageManager().getLaunchIntentForPackage( getBaseContext().getPackageName() );
+		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		startActivity(i);
+	}
+
+	public void setMain(String id, Intent newIntent){	
+
+		
+	loadInitialActivity();
+		/*Window window = getLocalActivityManager().getActivity("Client_Activity").getWindow();
+		if (window != null) {
+			setContentView(window.getDecorView());
+		}*/
+	}
+
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+	}
+
+	public void loadInitialActivity(){
+		LocalActivityManager startManager=getLocalActivityManager();
+		int index = activityList.size() - 1;
+		while(index>=1){
+			startManager.destroyActivity(activityList.get(index), true);
+			activityList.remove(index);
+			index--;
+		}
+		String lastId = activityList.get(index);
+		Intent lastIntent = startManager.getActivity(lastId).getIntent();
+		Window newWindow =startManager.startActivity(lastId, lastIntent);
+		setContentView(newWindow.getDecorView());
+
+	}
+
+
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		// TODO Auto-generated method stub
+		menu.clear();
+		Activity act = getLocalActivityManager().getCurrentActivity();
+		return act.onCreateOptionsMenu(menu);
+	}
+
+	/*
+	 * @Override public boolean onCreateOptionsMenu(Menu menu) { // TODO
+	 * Auto-generated method stub menu.clear(); Activity act =
+	 * getCurrentActivity(); return act.onCreateOptionsMenu(menu); }
+	 */
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// TODO Auto-generated method stub
+		Activity act = getLocalActivityManager().getCurrentActivity();
+		return act.onOptionsItemSelected(item);
+	}
+
+	@Override
+	public void finishFromChild(Activity child) {
+		// TODO Auto-generated method stub
+		// super.finishFromChild(child);
+		SharedMethods.logMessage(child.toString() + " Child Activity");
+		LocalActivityManager manager = getLocalActivityManager();
+		int index = activityList.size() - 1;
+		if (index < 1) {
+			finish();
+			return;
+		}
+
+		manager.destroyActivity(activityList.get(index), true);
+		activityList.remove(index);
+		index--;
+		String lastId = activityList.get(index);
+		Intent lastIntent = manager.getActivity(lastId).getIntent();
+		Window newWindow = manager.startActivity(lastId, lastIntent);
+		if(newWindow != null){
+			setContentView(newWindow.getDecorView());
+		}
+	}
+
+
+	public void closeAllActivities(){
+		getLocalActivityManager().removeAllActivities();
+	}
+
+
+
+
+	public boolean isActivityAlreadyAvailable(String child){
+		boolean b = false;
+		for(int i=0;i<activityList.size();i++){
+			String s = activityList.get(i);
+			if(s.trim().equalsIgnoreCase(child.trim())){
+				b = true;
+				return b;
+			}
+		}
+		return b;
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		// TODO Auto-generated method stub
+
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			backEvent();
+			return true;
+		}
+		return super.onKeyDown(keyCode, event);
+	}	
+
+	private void backEvent() {
+		int length = activityList.size();
+		if (length > 1) {
+			current = getLocalActivityManager().getActivity(
+					activityList.get(length - 1));
+			if(current.getClass().equals(FRSQuestions.class)){
+				current.onBackPressed();
+			}else{
+				current.finish();
+			}			
+		} /*else {
+			current = getLocalActivityManager().getActivity(
+					activityList.get(length - 1));
+
+		}*/
+		else {
+			current = getLocalActivityManager().getActivity(
+					activityList.get(length - 1));
+			if (current.getClass() == FRSSettings.class || current.getClass() == FRSMessages.class || current.getClass() == FRSClientList.class  ) {
+				/*	Bundle bundle = new Bundle();
+				bundle.putString(Constants.ERROR_D, getResources().getString(R.string.EXIT_MSG));
+				bundle.putString(Constants.TYPE, Constants.APP_EXIT_TYPE);				
+				showDialog(Constants.ERROR_DIALOG,bundle);*/
+
+				Bundle bundle = new Bundle();
+				bundle.putString(Constants.ERROR_D,
+						getResources().getString(R.string.EXIT_MSG));
+				bundle.putString(Constants.TYPE, Constants.APP_EXIT_TYPE);
+				// getParent().removeDialog(Constants.ERROR_DIALOG);
+				showDialog(Constants.ERROR_DIALOG, bundle);
+			}
+		}
+	}	
+}

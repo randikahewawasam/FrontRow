@@ -1,0 +1,87 @@
+package com.frontrow.ui;
+
+import java.util.HashMap;
+
+import android.os.Bundle;
+import android.view.Window;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.TextView;
+
+import com.frontrow.android.db.FRSTermsDB;
+import com.frontrow.android.pref.DataSerializer;
+import com.frontrow.base.BaseActivity;
+import com.frontrow.common.Constants;
+import com.frontrow.common.SharedMethods;
+import com.frontrow.core.ApplicationUser;
+
+public class FRSSettings extends BaseActivity{
+	private CheckBox displayBox;
+	private ApplicationUser applicationUsr;
+	private String cardTerm;
+	private HashMap<String, String> llTerms;
+	private TextView lbl;
+
+	@Override
+	protected void initializeUI() {
+		// TODO Auto-generated method stub
+		//appUsr = ApplicationUser.getSharedInstance();
+		displayBox = (CheckBox) findViewById(R.id.dspView);
+		displayBox.setChecked(applicationUsr.isSingleView());
+		lbl = (TextView) findViewById(R.id.questionLblId);
+
+		FRSTermsDB termsDB = new FRSTermsDB(this);
+		SharedMethods.logError("TErmes "+ appUsr +" , " + appUsr.getCompanyId() + " , "+ appUsr.getUserName());
+		llTerms = new FRSTermsDB(this).getAllTermsForCompanyID(applicationUsr.getCompanyId());
+		//llTerms = termsDB.getAllTermsForCompanyID(appUsr.getCompanyId());
+		cardTerm = (llTerms != null)?getResources().getString(R.string.QUESTION_VIEW)+ " "+llTerms.get(Constants.ACTIVITY_CARD_KEY)+getResources().getString(R.string.VIEW) :"Enable Full Card View";
+		lbl.setText(cardTerm);
+		addListeners();
+
+	}
+
+	@Override
+	protected void refreshUI() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
+		setContentView(R.layout.frssettings);		
+		applicationUsr = getIntent().getExtras().getParcelable(Constants.APP_USR);
+		SharedMethods.logError("Before Null");
+		if(DataSerializer.getContext() == null){
+			SharedMethods.logError("DataSerializer Null");
+			DataSerializer.setContext(this);
+			SharedMethods.logError("DataSerializer Not Null");
+		}
+		SharedMethods.logError("After Null");
+		DataSerializer.getQuestionValues();
+		super.onCreate(savedInstanceState);
+	}
+
+	private void addListeners() {
+		displayBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				// TODO Auto-generated method stub
+				String s = (isChecked)?"true":"false";
+				appUsr.setSingleView(isChecked);
+				DataSerializer.editQuestionValues();
+				SharedMethods.logError(s);
+			}
+		});
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		// TODO Auto-generated method stub
+		super.onSaveInstanceState(outState);
+		this.finish();
+	}
+}

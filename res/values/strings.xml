@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, FrontRowSplash!</string>
+    <string name="app_name">FrontRow</string>
+    <string name="COMPANY_ID">Company ID</string>
+    <string name="USER_ID">User ID</string>
+    <string name="PASSWORD">Password</string>
+    <string name="REMEMBER">Remember</string>
+    <string name="LOGIN">Login</string>
+    <string name="CANCEL">Cancel</string>
+    <string name="LOGIN_DETAILS_EMPTY">Fields cannot be empty</string>
+    <string name="COMPANY_BLANK">CompanyID cannot be blank</string>
+    <string name="USERID_BLANK">UserID cannot be blank</string>
+    <string name="PWD_BLANK">Password cannot be blank</string>
+    <string name="WELCOME_MSG">Welcome</string>
+    <string name="SALES_GROUP">Select Activity Card</string>
+    <string name="SELECT_CLIENT">Select Client</string>
+    <string name="CLIENT_SMILE">Client ID</string>
+    <string name="ACTIVITY_CARD">Activity Card</string>
+    <string name="ANSWER_CARD_SUBMIT_SUCCESS">Activity Card Submitted Successfully </string>
+    <string name="CLIENT_NAME">Client Name</string>
+    <string name="CLIENT_NUMBER">Client Number</string>
+    <string name="CREATE">Create</string>
+    <string name="SUBMIT_CARD_BTN">Submit Activity Card</string>
+    <string name="NETWOK_UNREACHABLE">Network not available</string>
+    <string name="INVALID_CREDENTIALS">Invalid Credentials</string>
+    <string name="EMPTY_MSG_LIST">No messages are available</string>
+    <string name="SEARCH_CLIENT_HINT">Enter Name, Number, City, State</string>
+    <string name="VIEW_PENDING">Pending</string>
+    <string name="VIEW_Failed">Failed</string>
+    <string name="VIEW_DILIVERD">Delivered</string>
+    <string name="VIEW_ALL">View All</string>
+    <string name="MESSAGE_HINT">Enter Message</string>
+    <string name="NET_STATUS">Network Status</string>
+    <string name="YES">Yes</string>
+    <string name="NO">No</string>
+    <string name="EXIT_MSG">Do you want to exit the application?</string>
+    <string name="SALES_PRO">Sales Pro</string>
+    <string name="RETRY_MSG">Do you want to resend the message?</string>
+    <string name="PROGRESS_MSG">Sending ...</string>
+    <string name="NETWRK_ERR_SAVED_TO_DB">NetWork not Available yet..</string>
+    <string name="CARD_ERROR">Error Occurred </string>
+    <string name="CLIENT_ADD_SUCCESS">Client Successfully Added</string>
+    <string name="DATE_TYPE_HINT">Click to select a date</string>
+    <string name="CLIENTS">Clients</string>
+    <string name="ADD_NEW_CLIENT">Add New Client</string>
+    <string name="VIEW_ALL_CLIENTS">View All Clients</string>
+    <string name="ADD_NEW">Add New</string>
+    <string name="NAME">Name</string>
+    <string name="NUMBER">Number</string>
+    <string name="SELECT">Select</string>
+    <string name="ID">ID</string>
+    <string name="NEXT">Next</string>
+    <string name="QUESTION_VIEW">Enable Full </string>
+    <string name="VIEW">View</string>
+    <string name="SEARCH_TYPE">Search Type</string>
+    <string name="SHOW_MORE">Show More</string>
+    <string name="NO_CLIENTS">No Clients Available</string>
+    <string name="UPDATE">Update</string>
+    <string name="UPDATES_AVAILABLE">New updates are available, update your application</string>
+    <string name="SEARCH_PROGRESS">Searching...</string>
+    <string name="SEARCH_TOAST"> Enter Name, Number, City, State to enable search function</string>
+    <string name="CALL">Call</string>
+    <string name="MAP">Map</string>
+    <string name="DIRECTION">Direction</string>
+    <string name="MESSAGES">Messages</string>
+    <string name="SETTINGS">Settings</string>
+    <string name="CONTACT_NUM_LIST">Contacts Phone Number List</string>
+    <string name="NO_CLIENT_NOTE_MSG">Clients Notes Not Found</string>
+    <string name="NO_CONTACT_INFO_MSG">Contact Details Not Found</string>
+    <string name="NO_CUSTOM_FIELD_MSG">No Customer Details Available</string>
+    <string name="LOG_OUT_MSG">Are you sure you want to logout from the Application</string>
+    <string name="EMAIL_SUBJECT_MSG">Enter Email Subject Here</string>
+    <string name="UPDATE_SUCESS_MSG">Sucessfully Updated</string>
+    <string name="EMAIL_CLIENT_MSG">Select Email Client</string>
+    <string name="LOG_EMAIL_SUBJECT_MSG">Trace log for</string>
+    <string name="CARD_SUMBIT_MSG">Successfully Sent</string>
+    <string name="EXIT_MSG">Are you sure you want to exit from the Application ?</string>
+    <string name="NOTE_ADD_MSG">Clients Note Sucessfully Added</string>
+    <string name="CALL_TXT">Call</string>
+    <string name="MAP_TXT">Map</string>
+    <string name="DIRECTION_TXT">Directions</string>
+    <string name="EMAIL_TXT">Email</string>
+    <string name="NUMBERS_TXT">Numbers</string>
+    <string name="CONTACT_DETAIL_TXT">Contact Details</string>
+    <string name="SALUTATION_TXT">Salutation</string>
+    <string name="FIRST_NAME_TXT">First Name</string>
+    <string name="LAST_NAME_TXT">Last Name</string>
+    <string name="TITLE_TXT">Title</string>
+    <string name="PRIMARY_TXT">Primary</string>
+    <string name="PHONE_NUMBER_TXT">Telephone Numbers</string>
+    <string name="PRIMARY_PHONE_NUMBER_TXT">Primary Telephone Numbers</string>
+    <string name="PHONE_NUMBER_1">Number 1</string>
+    <string name="PHONE_NUMBER_2">Number 2</string>
+    <string name="PHONE_NUMBER">Number</string>
+    <string name="ADDRESS_TXT">Address</string>
+    <string name="PRIMARY_ADDRESS_TXT">Primary Address</string>
+    <string name="STREET_TXT">Street</string>
+    <string name="STATE_TXT">State</string>
+    <string name="ZIP_TXT">Zip/Postal</string>
+    <string name="COUNTRY_TXT">Country</string>
+    <string name="CITY_TXT">City</string>
+    <string name="PROVINCE_TXT">Province</string>
+    <string name="CONTACT_DELETE_TXT">Delete Contact</string>
+    <string name="CONTACT_ADD">Create Contact</string>
+    <string name="RELATIONSHIP_TXT">Relationship</string>
+    <string name="ADDRESS_DELETE_TXT">Delete Address</string>
+    <string name="PHONE_DELETE_TXT">Delete Phone</string>
+    <string name="CTREATE_PHONE_TXT">Create Phone</string>
+    <string name="NUMBER_TEXT">Number</string>
+    <string name="DELETE_CONTACT_MSG">Are you sure you want to delete this Contact</string>
+     <string name="DELETE_ADDRESS_MSG">Are you sure you want to delete this Address</string>
+      <string name="DELETE_PHONE_MSG">Are you sure you want to delete this Phone</string>
+    <string-array name="CLIENT_ACTIVITY">
+        <item>Answer Activity Card</item>
+        <item>Note</item>
+        <item>Contacts</item>
+        <item>Customer Details</item>
+    </string-array>
+    <string-array name="CLIENT_ACTIVITY_IMAGE">
+        <item>activitycardicon</item>
+        <item>notesicon</item>
+        <item>contact</item>
+        <item>customerdetailsicon</item>
+    </string-array>
+    <string-array name="FILTER_TYPES">
+        <item>Client Name</item>
+        <item>Client Number</item>
+        <item>City</item>
+        <item>State</item>
+    </string-array>
+
+    <string name="NO_PHN">Sorry Phone Number Not Available</string>
+    <string name="NO_EMAIL">Sorry, Email Address Not Available</string>
+    <string name="NO_LAT_LON_FOUND">Sorry, Coordinates Not Available</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_frsclient_maintenance">FRSClientMaintenance</string>
+    <string name="title_activity_frscustom_field">FRSCustomField</string>
+    <string name="title_activity_frsclients_notes">FRSClientsNotes</string>
+    <string name="title_activity_frsclients_note_description">FRSClientsNoteDescription</string>
+    <string name="NAVIGATE_MSG">Note Updated Sucessfully Do you want to go to the previous page? </string>
+    <string name="ADD_NOTE">Add Note </string>
+    <string name="title_activity_contact_list">ContactList</string>
+    <string name="title_activity_frsmap">FRSMap</string>
+    <string name="title_activity_sudeepa">Sudeepa</string>
+    <string name="title_activity_activity_card_post_view">ActivityCardPostView</string>
+    <string name="Note_Search_hint">Enter note to search</string>
+    <string name="EMAIL_LOG_FILE_TXT">Email Log File</string>
+    <string name="LOG_OUT_TEXT">Log Out</string>
+    <string name="UPDATE_TXT">Update Database</string>
+    <string name="LOCATION_ALERT">It appears your GPS is turned off. To search using your current location, turn it on in Settings</string>
+    <string name="LOCATION_SERVICES">Location Services</string>
+    <string name="OPEN_SETTINGS">Open Settings</string>
+    <string name="NO_NETWORK_TRY_AGAIN_MSG">Network not available please try again later</string>
+    <string name="UPDATE_MSG">Updating...</string>
+    <string name="RETRIEVE_MSG">Retrieving data...</string>
+    <string name="INVALID_LOGIN">Login Invalid</string>
+    <string name="title_activity_frscontact_maintenance">FRSContactMaintenance</string>
+    <string name="title_activity_frsaddress_maintenance">FRSAddressMaintenance</string>
+    <string name="ADDRESSSES">Addresses</string>
+    <string name="EDIT_CONTACT">Save Contact</string>
+    <string name="title_activity_frsaddress_list">FRSAddressList</string>
+    <string name="EDIT_ADDRESS">Save Address</string>
+    <string name="CREATE_ADDRESS">Create Address</string>
+    <string name="EDIT_PHONE">Save Phone</string>
+    <string name="title_activity_frs__phone_list">FRS_PhoneList</string>
+    <string name="title_activity_frsphone_list">FRSPhoneList</string>
+    <string name="title_activity_frsphone_maintenance">FRSPhoneMaintenance</string>
+    <string name="ADD_CONTATC_FIRST">Complete step one to proceed</string>
+    <string name="CLIENT_PARTIALLY_CREATE_MSG">Partially created client, wait till network available, to proceed further</string>
+     <string name="CLIENT_ALREADY_EXIST">Client Number Already Exist</string>
+    
+
+</resources>

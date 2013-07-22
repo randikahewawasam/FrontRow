@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/obsTbl"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/allclientsboxbg" >
+
+    <TableRow
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp" >
+
+        <ImageView
+            android:id="@+id/statusicon"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.1"
+            android:scaleType="fitXY" />
+
+        <TableLayout
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" >
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp" >
+
+                <TextView
+                    android:id="@+id/type"
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:text="Randika"
+                    android:textColor="@color/ClientListFontColor"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/date"
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text="0772517311"
+                     android:textColor="@color/ClientListFontColor" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp" >
+
+                <TextView
+                    android:id="@+id/head"
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text="RAndika Hewawasam"
+                    android:textColor="@color/ColorPureWhite" />
+            </TableRow>
+        </TableLayout>
+    </TableRow>
+
+</TableLayout>

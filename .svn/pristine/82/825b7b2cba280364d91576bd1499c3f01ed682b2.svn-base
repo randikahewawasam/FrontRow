@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/mainbg"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="5dp" >
+
+        <TextView
+            android:id="@+id/clientViewText"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/ACTIVITY_CARD"
+            android:textColor="@color/ColorPureWhite" />
+
+        <Spinner
+            android:id="@+id/clientViewSelectCards"
+            style="@style/SpinnerStyle" />
+
+        <EditText
+            android:id="@+id/clientHInt"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/SEARCH_CLIENT_HINT"
+            android:singleLine="true" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/notification"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="@string/NO_CLIENTS"
+        android:textColor="@color/ColorPureWhite"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
+    <ListView
+        android:id="@+id/cList"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:cacheColorHint="#09476b"
+        android:divider="@null"
+        android:padding="10dp"
+        android:scrollingCache="false" >
+    </ListView>
+
+    <!--
+             <Button
+            android:id="@+id/btnGetMore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:text="Get more" />
+    </RelativeLayout>
+    -->
+
+</LinearLayout>

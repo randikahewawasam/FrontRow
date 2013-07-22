@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/TradeMnuLLGradientSpacer1"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" >
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_weight="0.3"
+        android:background="@drawable/w_b_gradient1"
+        android:height="1dp"
+        android:text=" " >
+    </TextView>
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.4"
+        android:background="@color/ColorPureWhite"
+        android:height="1dp"
+        android:text=" " >
+    </TextView>
+
+    <TextView
+        android:id="@+id/TextView03"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="20dp"
+        android:layout_weight="0.3"
+        android:background="@drawable/w_b_gradient2"
+        android:height="1dp"
+        android:text=" " >
+    </TextView>
+
+</LinearLayout>

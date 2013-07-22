@@ -1,0 +1,10 @@
+<resources>
+
+    <dimen name="tab_bar_height">60dp</dimen>
+    
+    <!-- Title Bar Height -->
+    <dimen name="Title_Height">45dp</dimen>
+
+        <!-- Client List Page -->
+    <dimen name="Clinet_List_Text_Size">18sp</dimen>
+</resources>

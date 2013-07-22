@@ -1,0 +1,243 @@
+package com.frontrow.core;
+
+import java.util.HashMap;
+
+import com.frontrow.common.SharedMethods;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class ApplicationUser implements Parcelable{
+
+	private String companyId;
+	private int userId;
+	private String password;
+	private String token;
+	private String userName;
+	private String mobileNnumber;
+	private boolean isSaved;
+	private String tempPwd;
+	private static ApplicationUser user;
+	private boolean isOnline;
+	private HashMap<String, String> allTerms;
+	private boolean isSingleView;
+	private boolean isAllClientsEnable;
+	private String appVerstion;
+	private double lat;
+	private double lon;
+	private boolean contactStyle;
+
+	public static ApplicationUser getSharedInstance(){
+
+		if(user == null){
+			user = new ApplicationUser();
+		}
+		return user;
+	}
+
+	public String getCompanyId() {
+		return companyId;
+	}
+	public void setCompanyId(String companyId) {
+		this.companyId = companyId;
+	}
+
+	public int getUserId() {
+		return userId;
+	}
+
+	public void setUserId(int userId) {
+		this.userId = userId;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public String getMobileNnumber() {
+		return mobileNnumber;
+	}
+
+	public void setMobileNnumber(String mobileNnumber) {
+		this.mobileNnumber = mobileNnumber;
+	}
+
+	public boolean isSaved() {
+		return isSaved;
+	}
+
+	public void setSaved(boolean isSaved) {
+		this.isSaved = isSaved;
+	}
+
+	public String getTempPwd() {
+		return tempPwd;
+	}
+
+	public void setTempPwd(String tempPwd) {
+		this.tempPwd = tempPwd;
+	}
+
+	public boolean isOnline() {
+		return isOnline;
+	}
+
+	public void setOnline(boolean isOnline) {
+		this.isOnline = isOnline;
+	}
+
+	@Override
+	public int describeContents() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public boolean isAllClientsEnable() {
+		return isAllClientsEnable;
+	}
+
+	public void setAllClientsEnable(boolean isAllClientsEnable) {
+		this.isAllClientsEnable = isAllClientsEnable;
+	}
+
+	public String getAppVerstion() {
+		return appVerstion;
+	}
+
+	public void setAppVerstion(String appVerstion) {
+		this.appVerstion = appVerstion;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		// TODO Auto-generated method stub
+		SharedMethods.logError("Parceble Saved"+" "+ mobileNnumber);
+		dest.writeString(companyId);
+		dest.writeInt(userId);
+		dest.writeString(password);
+		dest.writeString(token);
+		dest.writeString(userName);
+		dest.writeString(mobileNnumber);
+		dest.writeString(tempPwd);
+		dest.writeBooleanArray(new boolean[]{isSaved,isOnline,isSingleView,isAllClientsEnable});
+		//dest.writeMap(allTerms);
+		dest.writeSerializable(allTerms);
+		dest.writeString(appVerstion);
+		/* Write All terms hashMap */
+		/*	dest.writeInt(allTerms.size());
+        for (String s: allTerms.keySet()) {
+        	SharedMethods.logError("Sabved map : "+s +", "+ allTerms.get(s));
+            dest.writeString(s);
+            dest.writeString(allTerms.get(s));
+        }*/
+		//dest.writeSerializable(allTerms);
+
+	}	
+
+	public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+		public ApplicationUser createFromParcel(Parcel in) { return new ApplicationUser(in); }
+		public ApplicationUser[] newArray(int size) { return new ApplicationUser[size]; }
+	};
+
+	public ApplicationUser() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public ApplicationUser(Parcel in) {
+
+		this();
+		SharedMethods.logError("Constructor");
+		readFromParcel(in);
+	}
+
+	private void readFromParcel(Parcel in) {
+		allTerms = new HashMap<String, String>();
+		SharedMethods.logError("Retrieve Correctly Pending");
+		companyId = in.readString();
+		userId = in.readInt();
+		password = in.readString();
+		token = in.readString();
+		userName = in.readString();
+		mobileNnumber = in.readString();
+		tempPwd = in.readString();
+		boolean[] bArry = new boolean[4];
+		in.readBooleanArray(bArry);
+		isSaved = bArry[0];
+		SharedMethods.logError("Retrieve Correctly isSaved"+" "+ isSaved);
+		isOnline = bArry[1];
+		SharedMethods.logError("Retrieve Correctly isOnline"+" "+ isOnline);
+		isSingleView = bArry[2];
+		SharedMethods.logError("Retrieve Correctly isSingleView"+" "+ isSingleView);
+		isAllClientsEnable = bArry[3];
+		allTerms = (HashMap<String, String>) in.readSerializable();	
+		appVerstion = in.readString();
+		SharedMethods.logError("Retrieve Correctly");
+	}
+
+	public HashMap<String, String> getAllTerms() {
+		return allTerms;
+	}
+
+	public void setAllTerms(HashMap<String, String> allTerms) {
+		this.allTerms = allTerms;
+	}
+
+	public boolean isSingleView() {
+		return isSingleView;
+	}
+
+	public void setSingleView(boolean isSingleView) {
+		this.isSingleView = isSingleView;
+	}
+
+	public String get(String key) {
+		return allTerms.get(key);
+	}
+
+	public void put(String key, String value) {
+		allTerms.put(key, value);
+	}
+
+	public double getLat() {
+		return lat;
+	}
+
+	public void setLat(double lat) {
+		this.lat = lat;
+	}
+
+	public double getLon() {
+		return lon;
+	}
+
+	public void setLon(double lon) {
+		this.lon = lon;
+	}
+
+	public boolean isContactStyle() {
+		return contactStyle;
+	}
+
+	public void setContactStyle(boolean contactStyle) {
+		this.contactStyle = contactStyle;
+	}	
+}

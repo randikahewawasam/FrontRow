@@ -1,0 +1,239 @@
+package com.frontrow.ui;
+
+import java.util.HashMap;
+
+import android.content.Intent;
+import android.content.res.Configuration;
+import android.os.Bundle;
+import android.view.View;
+import android.view.ViewStub;
+import android.view.Window;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.frontrow.android.db.FRSTermsDB;
+import com.frontrow.android.pref.DataSerializer;
+import com.frontrow.base.BaseActivity;
+import com.frontrow.common.Constants;
+import com.frontrow.common.SharedMethods;
+import com.frontrow.core.ApplicationUser;
+import com.frontrow.core.TempFRSUser;
+import com.frontrow.datamanagers.AuthDataManager;
+import com.frontrow.interfaces.IAuthenticator;
+import com.frontrow.interfaces.IFrontResponseReceiver;
+import com.frontrow.language.LanguageManager;
+import com.row.mix.beans.User;
+import com.row.mix.response.AuthenticationResponse;
+
+public class FrontRowLogin extends BaseActivity implements IFrontResponseReceiver{
+	private Button login;
+	private EditText companyId;
+	private EditText userId;
+	private EditText password;
+
+	/* progress bar and error message*/
+	private ViewStub stubErrorMsg;
+	private View inflatedErrorMsg;
+	private ViewStub stubProgress;	
+	private View inflatedProgress;	
+	private TextView txtErrorMsg;
+
+	/* Response */
+	private Object response; 
+	private ApplicationUser appUsr;
+
+	@Override
+	protected void initializeUI() {
+		// TODO Auto-generated method stub
+		this.getUserName().setVisibility(View.INVISIBLE);
+		login = (Button) findViewById(R.id.loginBtnLogin);
+		companyId = (EditText) findViewById(R.id.cmpid);
+		userId = (EditText) findViewById(R.id.userid);
+		password = (EditText) findViewById(R.id.loginETPassword);	
+
+		/* progress bar/ default error initialization */
+		if (stubErrorMsg == null) {
+			stubErrorMsg = (ViewStub) findViewById(R.id.loginStubErrorMsg);
+			inflatedErrorMsg = stubErrorMsg.inflate();
+			txtErrorMsg = (TextView) inflatedErrorMsg.findViewById(R.id.loginTVError);
+		}
+
+		if (stubProgress == null) {
+			stubProgress = (ViewStub) findViewById(R.id.loginStubProgress);
+			inflatedProgress = stubProgress.inflate();
+			inflatedProgress.setVisibility(View.GONE);
+		}
+
+		/* Set Values */
+		setValues();
+
+		/* Button click listeners*/
+		addActionListeners();
+	}
+
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		AuthDataManager.getSharedInstance().unregisterForDineSafe(this);
+	}
+
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		AuthDataManager.getSharedInstance().registerForDineSafe(this);
+	}
+
+	@Override
+	protected void refreshUI() {
+		// TODO Auto-generated method stub		
+		login.setEnabled(true);
+		if(response instanceof AuthenticationResponse){
+			getInflatedProgress().setVisibility(View.GONE);
+			int code = ((AuthenticationResponse) response).getResponseCode();
+			if(code == Constants.NETWORK_SUCCESS){
+				User usr = ((AuthenticationResponse) response).getUsr();
+				//ApplicationUser appUsr = ApplicationUser.getSharedInstance();
+				appUsr.setCompanyId(usr.getCompanyId());
+				this.appUsr.setUserName(usr.getUserName());
+				this.appUsr.setToken(usr.getToken());
+				this.appUsr.setMobileNnumber(usr.getMobileNumber());
+				this.appUsr.setUserId(usr.getUserId());
+				this.appUsr.setAllClientsEnable(usr.isAllClientsEnable());
+				this.appUsr.setPassword(TempFRSUser.getSharedInstance().getTempPwd());
+				
+
+				FRSTermsDB terms = new FRSTermsDB(this);
+				HashMap<String, String> allTerms = terms.getAllTermsForCompanyID(appUsr.getCompanyId());
+				if(allTerms != null){
+					this.appUsr.setAllTerms(allTerms);
+				}
+				//this.setDisplayname(usr.getUserName());
+				//this.getUserName().setText(this.getDisplayname());
+				/* Saving data to preference */
+				DataSerializer.initPref(Constants.SAVE_CREDENTIALS);
+
+				/* Start Menu Activity */
+
+				String uName = ((AuthenticationResponse) response).getUsr().getUserName();
+				Intent intent =new Intent(FrontRowLogin.this,FrontRowMenu.class);
+				intent.putExtra(Constants.USER_NAME, uName);
+				//this.getUserName().setVisibility(View.Vi);
+				startActivity(intent);
+			}else if(code == Constants.NETWORK_NOT_AVAILABLE){
+				if(this.appUsr.isSaved()){
+					if(DataSerializer.isOfflineUser()){
+						String uName = this.appUsr.getUserName();
+						Intent intent =new Intent(FrontRowLogin.this,FrontRowMenu.class);
+						intent.putExtra(Constants.USER_NAME, uName);
+						//this.setDisplayname(uName);
+						//this.getUserName().setText(this.getDisplayname());
+						startActivity(intent);
+					}else{
+						txtErrorMsg.setText(LanguageManager.getString(R.string.INVALID_CREDENTIALS));
+					}
+				}else{
+					txtErrorMsg.setText(LanguageManager.getString(R.string.NETWOK_UNREACHABLE));
+				}
+			}else{
+				txtErrorMsg.setText(((AuthenticationResponse) response).getResponseMessage());
+			}
+		}
+	}
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
+		appUsr = ApplicationUser.getSharedInstance();
+		/*if((getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_SMALL){
+			setTheme(R.style.Theme_Small);
+			SharedMethods.logError("Dencity : "+ "Small");
+		}else if((getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_NORMAL){
+			setTheme(R.style.Theme_Medium);
+			SharedMethods.logError("Dencity : "+ "Medium");
+		}else if((getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_LARGE){
+			setTheme(R.style.Theme_Large);
+			SharedMethods.logError("Dencity : "+ "Large");
+		}else if((getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_XLARGE){
+			setTheme(R.style.Theme_Large);
+			SharedMethods.logError("Dencity : "+ "XLarge");
+		}*/
+		setContentView(R.layout.frontrowlogin);
+		super.onCreate(savedInstanceState);
+
+	}
+
+	private void setValues(){
+		//ApplicationUser appUsr = ApplicationUser.getSharedInstance();
+		if(this.appUsr.isSaved()){
+			companyId.setText(this.appUsr.getCompanyId());
+			password.setText(this.appUsr.getPassword());
+			userId.setText(this.appUsr.getMobileNnumber());			
+		}	
+	}
+
+
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		// TODO Auto-generated method stub
+		super.onSaveInstanceState(outState);
+		this.finish();
+	}
+
+	private void addActionListeners() {
+		final TempFRSUser frsTempUsr = TempFRSUser.getSharedInstance();
+		login.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+
+				SharedMethods.logError("USER LOGS : "+ Long.toString(System.currentTimeMillis()));
+				login.setEnabled(false);
+				String cmpId = companyId.getText().toString();
+				String usrId = userId.getText().toString();
+				String pwd = password.getText().toString();
+				if(cmpId != null && usrId != null && pwd != null){
+					if(cmpId.trim().length() == 0 || usrId.trim().length() == 0 ||  pwd.trim().length() == 0){
+						txtErrorMsg.setText(LanguageManager.getString(R.string.LOGIN_DETAILS_EMPTY));
+					}else{
+						getInflatedProgress().setVisibility(View.VISIBLE);
+						txtErrorMsg.setText("");
+					}
+				}
+				IAuthenticator authenticator = AuthDataManager.getSharedInstance();
+				frsTempUsr.setTempCmpId(cmpId);
+				frsTempUsr.setTempMobile(usrId);
+				frsTempUsr.setTempPwd(pwd);
+				//ApplicationUser.getSharedInstance().setTempPwd(pwd);				
+				authenticator.sendAuthenticationRequest(cmpId, usrId, pwd);
+			}
+		});
+	}
+
+	@Override
+	public void webResponseRecievedFromDataManager(Object response) {
+		// TODO Auto-generated method stub
+		this.response = response;
+		if(response instanceof AuthenticationResponse){			
+			refreshViewInTheUIThread();
+		}
+
+	}	
+
+
+
+
+	public View getInflatedProgress() {
+		return inflatedProgress;
+	}
+
+	public TextView getTxtErrorMsg() {
+		return txtErrorMsg;
+	}
+}

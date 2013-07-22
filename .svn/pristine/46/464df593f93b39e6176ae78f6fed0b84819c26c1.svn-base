@@ -1,0 +1,121 @@
+package com.frontrow.adapters;
+
+import java.text.SimpleDateFormat;
+import java.util.List;
+
+import android.content.Context;
+import android.text.Html;
+import android.text.Spanned;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.TextView;
+
+import com.frontrow.ui.R;
+import com.row.mix.beans.Address;
+import com.row.mix.beans.ClientsNotes;
+
+public class FrontRowContactAddressAdapter  extends ArrayAdapter<Address> {
+
+	private Context ctx;
+	private List<Address> addressList;
+	private View view;
+	private int primaryAddress;
+	//private List<String> imgList;
+
+	public FrontRowContactAddressAdapter(Context context, int resource, List<Address> objects,int primaryAdd){
+		super(context, resource, objects);
+		// TODO Auto-generated constructor stub
+		this.ctx = context;
+		this.addressList = objects;
+		this.primaryAddress=primaryAdd;
+
+	}
+
+	public List<Address> getAddressList() {
+		return addressList;
+	}
+
+	public void setAddressList(List<Address> addressList) {
+		this.addressList = addressList;
+	}
+
+	@Override
+	public View getView(int position, View convertView, ViewGroup parent) {
+		// TODO Auto-generated method stub
+		view = convertView;
+		if(view == null){
+			LayoutInflater vi = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			view = vi.inflate(R.layout.address_list_row, null);
+		}
+
+		Address cmp = addressList.get(position);
+
+
+		//Drawable dw = null;
+		if(cmp != null){
+			String row2 ;
+
+			String  street,city, postal, province, country;
+			
+			if(cmp.getStreet() != null && cmp.getStreet().length() > 0 ){
+				street = cmp.getStreet();
+			}else{
+				street = "";
+			}
+
+			if (cmp.getCity()!=null && cmp.getCity().length() > 0) {
+
+				city = cmp.getCity() + ",";
+			} else {
+				city = "";
+			}
+			if (cmp.getPostal() != null
+					&& cmp.getPostal().length() > 0) {
+				postal = cmp.getPostal() + ",";
+			} else {
+				postal = "";
+			}
+			if (cmp.getProvince()!=null && cmp.getProvince().length() > 0) {
+				province = cmp.getProvince() + ",";
+			} else {
+				province = "";
+			}
+
+			if (cmp.getCountry()!=null && cmp.getCountry().length() > 0) {
+				country = cmp.getCountry();
+			} else {
+				country = "";
+			}
+
+			/*
+			 * if(aclient.get!=""){
+			 * country=con.getPrimaryAddress().getCountry()+","; } else{
+			 * country=""; }
+			 */
+
+			row2 = street+"<br/>"+ city + postal +"<br/>"+ province+"<br/>"+country;
+			TextView cfileld = (TextView) view.findViewById(R.id.add_line1);			
+			Spanned spn = Html.fromHtml(row2);
+			cfileld.setText(spn.toString());
+			TextView primary = (TextView) view.findViewById(R.id.primary_txt);
+			if(primaryAddress != 0)
+			{
+				if(cmp.getId()== primaryAddress)
+				{
+					primary.setVisibility(view.VISIBLE);
+				}
+				else
+				{
+					primary.setVisibility(view.GONE);
+				}
+			}
+			else
+			{
+				primary.setVisibility(view.GONE);
+			}
+		}
+		return view;
+	}
+}

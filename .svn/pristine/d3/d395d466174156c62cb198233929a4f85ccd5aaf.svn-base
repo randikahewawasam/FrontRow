@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.frontrow.ui"
+    android:versionCode="5"
+    android:versionName="1.4" >
+
+    <supports-screens
+        android:anyDensity="true"
+        android:largeScreens="true"
+        android:normalScreens="true"
+        android:smallScreens="true"
+        android:xlargeScreens="true" />
+
+    <uses-sdk android:minSdkVersion="8" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <application
+        android:icon="@drawable/icon"
+        android:label="@string/app_name"
+        android:theme="@style/LargeTitleTheme" >
+        <activity
+            android:name=".FrontRowSplash"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".FrontRowLogin"
+            android:noHistory="true" >
+        </activity>
+        <activity
+            android:name=".FrontRowMenu"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".FRSAnswerActivityCard"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".FRSClientList"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".FRSNewClient"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".FRSMessages"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".FRSQuestions"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".FRSSettings"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".FRSTabMenu"
+            android:configChanges="orientation|keyboardHidden" />
+        <activity
+            android:name=".FRSTabNegotiator"
+            android:configChanges="orientation|keyboardHidden" />
+
+        <service android:name="com.frontrow.android.services.OfflineMessageService" />
+
+        <activity android:name=".FRSClientMaintenance" />
+        <activity android:name=".FRSCustomField" />
+        <activity android:name=".FRSClientsNotes" />
+        <activity android:name=".FRSClientsNoteDescription" />
+        <activity android:name=".ContactList" />
+        <activity android:name=".FRSMap" />
+
+        <provider
+            android:name="CachedFileProvider"
+            android:authorities="com.frontrow.common.provider"
+            android:exported="true" />
+
+        <uses-library android:name="com.google.android.maps" />
+
+        <activity android:name=".ActivityCardPostView" />
+    </application>
+
+</manifest>

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/mainbg" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@drawable/mainbg"
+        android:orientation="vertical"
+        android:padding="5dp" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="5dp" >
+
+            <TextView
+                android:id="@+id/selActivity"
+                style="@style/TextSalesGroup"
+                android:text="@string/SALES_GROUP" />
+
+            <Spinner
+                android:id="@+id/sGroup"
+                style="@style/SpinnerStyle" >
+            </Spinner>
+
+            <TextView
+                android:id="@+id/selClient"
+                style="@style/TextSalesGroup"
+                android:text="@string/SELECT_CLIENT" />
+
+            <Spinner
+                android:id="@+id/sClient"
+                style="@style/SpinnerStyle" />
+
+            <TextView
+                android:id="@+id/selClientId"
+                style="@style/TextSalesGroup"
+                android:text="@string/CLIENT_SMILE" />
+
+            <TextView
+                android:id="@+id/cSmile"
+                style="@style/TextSalesGroup"
+                android:enabled="false"
+                android:textColor="@color/ColorPureWhite" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="2dp" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:id="@+id/actLayout"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/activitycardheaderbg"
+                android:orientation="horizontal"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:paddingTop="5dp" >
+
+                <TextView
+                    android:id="@+id/cardLbl"
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="0.6"
+                    android:text="@string/ACTIVITY_CARD"
+                    android:textColor="@color/ColorPureWhite" />
+
+                <ImageView
+                    android:id="@+id/clps"
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|right"
+                    android:layout_weight="1"
+                    android:scaleType="fitEnd"
+                    android:src="@drawable/answeractivitydropdownbutton" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/questions"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/answeractivitycarddropdowncollapsbg"
+                android:orientation="vertical"
+                android:visibility="gone" >
+            </LinearLayout>
+        </LinearLayout>
+
+        <TableLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom" >
+
+                <Button
+                    android:id="@+id/submit"
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="1"
+                    android:background="@drawable/button"
+                    android:imeOptions="actionDone"
+                    android:text="@string/SUBMIT_CARD_BTN"
+                    android:textColor="@color/ColorPureWhite"
+                    android:visibility="gone" />
+            </TableRow>
+        </TableLayout>
+    </LinearLayout>
+
+</ScrollView>

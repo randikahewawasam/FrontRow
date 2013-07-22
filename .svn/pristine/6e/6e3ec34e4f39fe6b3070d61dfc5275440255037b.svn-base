@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/allclientsboxbg"
+    android:padding="5dp"
+    android:shrinkColumns="*" >
+
+    <TableRow
+        android:layout_width="fill_parent"
+        android:layout_height="20dp" >
+
+        <TextView
+            android:id="@+id/customfield"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="0.5"
+            android:ellipsize="none"
+            android:paddingLeft="5dp"
+            android:text="HAsitha Randika Hewawasam assa ads ds dsd "
+             android:textColor="@color/ClientListFontColor"
+            android:textStyle="bold" />
+        <TextView
+            android:id="@+id/customvalue"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="0.5"
+            android:ellipsize="none"
+            android:paddingLeft="5dp"
+            android:text="HAsitha Randika Hewawasam assa ads ds dsd "
+             android:textColor="@color/ClientListFontColor"
+            android:textStyle="bold" />
+  
+    </TableRow>
+
+</TableLayout>

@@ -1,0 +1,482 @@
+package com.frontrow.connectionservice;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
+import java.util.Date;
+import java.util.zip.GZIPInputStream;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.ParseException;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.HTTP;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
+import android.os.AsyncTask;
+import android.util.Base64;
+
+import com.frontrow.android.json.JSONObject;
+import com.frontrow.common.Constants;
+import com.frontrow.common.SharedMethods;
+import com.row.mix.beans.OfflineM;
+import com.row.mix.request.AuthenticationRequest;
+import com.row.mix.request.CardSubmitRequest;
+import com.row.mix.request.NewClientRequest;
+import com.row.mix.request.OfflineRequest;
+import com.row.mix.request.SearchRequest;
+import com.row.mix.request.TermsRequest;
+
+public abstract class FrontRowConnection extends ConnectionManagerBase implements Runnable{
+	protected String baseURL;
+	protected String finalURL;
+	private int NO_OF_RETRIES =1;
+	private final int MAX_RETRIES = 3;
+	private int DELAY_TIME = 60000;
+	private static DefaultHttpClient httpclient = null;
+	private HttpGet httpGet;
+	private int code;
+	private OfflineM offMsg ;
+	private static final String ENCODING = "ISO-8859-1";
+
+	public abstract void handleResponse(String strResponse, Object reqObj,int code, String msg,OfflineM offlineMSg);
+
+	public void setBaseURL(String baseURL) {
+		this.baseURL = baseURL;
+	}
+
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void sendHTTPRequest(String url, boolean isRetryEnable, Object reqObj) {
+		if (!isRetryEnable)
+		{
+			NO_OF_RETRIES = MAX_RETRIES;
+		}
+		sendHTTPRequest(url, reqObj);
+		NO_OF_RETRIES = 0;
+	}
+
+	public void sendHTTPRequest(String url, Object reqObj) {
+		long startTime = (new Date()).getTime();
+		long endTime = (new Date()).getTime();
+		String responseBody = null;
+		int response_code =0;
+		String msg  =null;		
+		offMsg = new OfflineM();
+		boolean continueTry = true;
+		HttpURLConnection connection = null;
+		StringBuilder sb = new StringBuilder();
+		URL page = null;
+
+		/* this stops httpUrlConnection being alive */
+		System.setProperty("http.keepAlive", "false");
+		long started;
+		if(reqObj instanceof AuthenticationRequest){
+			///baseURL = "http://mobile.solisit.net/MobileService.svc/getalldata";
+			//	baseURL = "http://beta3.frslogin.com/SalesProServiceTest/MobileService.svc/getalldata";
+
+			//baseURL = "http://beta3.frslogin.com/SalesProMobileServicev1.4/MobileService.svc/api/v1/getalldata";
+			baseURL = "http://beta3.frslogin.com/SalesProMobileServiceTestv1.5/MobileService.svc/api/v1/getalldata";
+			
+
+			//baseURL = "http://beta3.frslogin.com/SalesProMobileServiceTestv1.4/MobileService.svc/api/v1/getalldata";
+			String pwd =((AuthenticationRequest) reqObj).getPassword();
+			String cmpid = ((AuthenticationRequest) reqObj).getCompanyId();
+			String uName = ((AuthenticationRequest) reqObj).getUserName();
+			String auth = android.util.Base64.encodeToString((cmpid+Constants.VAL_CONNECTOR+uName+ ":"+ pwd).getBytes(),android.util.Base64.NO_WRAP);
+			SharedMethods.logError("AUTHG : "+ baseURL);
+			String para = ((AuthenticationRequest) reqObj).buildMIXString();
+			baseURL = baseURL+para;
+			try {
+				page = new URL(baseURL);
+				connection = (HttpURLConnection) page.openConnection();
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+
+			}
+
+			connection.setRequestProperty(Constants.AUTHORIZATION, Constants.BASIC +
+					auth);
+			connection.addRequestProperty("Content-Encoding", "gzip");			
+		}else if(reqObj instanceof CardSubmitRequest){
+			baseURL= baseURL + Constants.SUBMIT_TYPE;
+			SharedMethods.logError("BASE URL : "+ baseURL);
+			com.frontrow.android.json.JSONObject reviewObj =  ((CardSubmitRequest) reqObj).buildJSONObj();
+			String s = reviewObj.toString();
+			SharedMethods.logError("DDDDDDD : "+s); 
+			/* Saving data to Offline Message Object */			
+			offMsg.setMessage(s);
+			offMsg.setDateMillies(java.lang.System.currentTimeMillis());
+			offMsg.setType(Constants.MESSAGE);
+			offMsg.setSubmitType(Constants.SUBMIT_TYPE);
+			offMsg.setClientName(((CardSubmitRequest) reqObj).getClientName());
+
+			/* End of message saving*/
+
+			SharedMethods.logError("Submit offline: "+ s);
+			StringEntity se = null;
+			try {
+				se = new StringEntity(s,HTTP.UTF_8);
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}	
+
+			try {
+				page = new URL(baseURL);
+				connection = (HttpURLConnection) page.openConnection();
+				connection.setRequestProperty("Accept", "application/json");
+				connection.setRequestProperty("Content-type", "application/json");
+				connection.setRequestProperty(Constants.AUTHORIZATION, Constants.BASIC +
+						((CardSubmitRequest) reqObj).getToken());
+				connection.addRequestProperty("Content-Encoding", "gzip");
+
+				connection.setDoOutput(true);
+				connection.setRequestMethod("POST");
+				PrintWriter out = new PrintWriter(connection.getOutputStream());
+				out.print(s);
+				out.close();
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				code = Constants.NETWORK_NOT_AVAILABLE;
+				offMsg.setStatus(Constants.PENDING);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				code = Constants.NETWORK_NOT_AVAILABLE;
+				offMsg.setStatus(Constants.PENDING);
+			}
+		}else if(reqObj instanceof NewClientRequest){
+			baseURL = baseURL + Constants.CLIENT_TYPE;
+			SharedMethods.logError("BASE URL : "+ baseURL);
+			JSONObject clientObj = ((NewClientRequest) reqObj).buildJSONObj();
+			String obj = clientObj.toString();
+			SharedMethods.logError("New Client : "+ obj);
+			StringEntity se = null;
+			try {
+				se = new StringEntity(obj,HTTP.UTF_8);
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			/*Save offline CLient */			
+			offMsg.setMessage(obj);
+			offMsg.setDateMillies(java.lang.System.currentTimeMillis());
+			offMsg.setType(Constants.NEW_CLIENT);
+			offMsg.setSubmitType(Constants.CLIENT_TYPE);
+			offMsg.setClientName(((OfflineRequest) reqObj).getClientName());
+
+
+			try {
+				page = new URL(baseURL);
+				connection = (HttpURLConnection) page.openConnection();
+				connection.setRequestProperty("Accept", "application/json");
+				connection.setRequestProperty("Content-type", "application/json");
+				connection.setRequestProperty(Constants.AUTHORIZATION, Constants.BASIC +
+						((NewClientRequest) reqObj).getToken());
+
+				SharedMethods.logError("AUTH ADD: "+ ((NewClientRequest) reqObj).getToken());
+				connection.addRequestProperty("Content-Encoding", "gzip");
+
+				connection.setDoOutput(true);
+				connection.setRequestMethod("POST");
+				PrintWriter out = new PrintWriter(connection.getOutputStream());
+				out.print(obj);
+				out.close();
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				code = Constants.NETWORK_NOT_AVAILABLE;
+				offMsg.setStatus(Constants.PENDING);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				code = Constants.NETWORK_NOT_AVAILABLE;
+				offMsg.setStatus(Constants.PENDING);
+			}			
+		}else if(reqObj instanceof OfflineRequest){		
+			String subType = ((OfflineRequest) reqObj).getSubmitType();			
+			baseURL= baseURL + subType;
+			SharedMethods.logError("BASE URL : "+ baseURL);
+			String saved_msg = ((OfflineRequest) reqObj).buildMIXString();			
+			SharedMethods.logError("OFFLINE : "+saved_msg);
+
+			/* Saving data to Offline Message Object */
+
+			offMsg.setMessage(saved_msg);
+			offMsg.setDateMillies(java.lang.System.currentTimeMillis());
+			offMsg.setType(((OfflineRequest) reqObj).getType());
+			offMsg.setSubmitType(subType);
+			offMsg.setClientName(((OfflineRequest) reqObj).getClientName());
+
+			/* End of message saving*/
+			StringEntity se = null;
+			try {
+				se = new StringEntity(saved_msg,HTTP.UTF_8);
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}			
+
+
+			try {
+				page = new URL(baseURL);
+				connection = (HttpURLConnection) page.openConnection();
+
+				connection.setRequestProperty("Accept", "application/json");
+				connection.setRequestProperty("Content-type", "application/json");
+				connection.setRequestProperty(Constants.AUTHORIZATION, Constants.BASIC +
+						((OfflineRequest) reqObj).getToken());
+				connection.addRequestProperty("Content-Encoding", "gzip");
+
+				connection.setDoOutput(true);
+				connection.setRequestMethod("POST");
+				PrintWriter out = new PrintWriter(connection.getOutputStream());
+				out.print(saved_msg);
+				SharedMethods.logError(" xxxx "+saved_msg);
+				out.close();
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				SharedMethods.logError("ERRROR : "+ e.getMessage());
+				code = Constants.NETWORK_NOT_AVAILABLE;
+				offMsg.setStatus(Constants.PENDING);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				SharedMethods.logError("ERRROR : "+ e.getMessage());
+				code = Constants.NETWORK_NOT_AVAILABLE;
+				offMsg.setStatus(Constants.PENDING);
+			}
+		}else if(reqObj instanceof TermsRequest){
+			baseURL = baseURL + Constants.GET_TERMS;
+			SharedMethods.logError("BASE URL : "+ baseURL);
+			String para = ((TermsRequest) reqObj).buildMIXString();
+			baseURL = baseURL+para;
+			try {
+				page = new URL(baseURL);
+				connection = (HttpURLConnection) page.openConnection();
+				connection.setRequestProperty("Accept", "application/json");
+				connection.setRequestProperty("Content-type", "application/json");
+				connection.setRequestProperty(Constants.AUTHORIZATION, Constants.BASIC +
+						((TermsRequest) reqObj).getToken());
+
+				SharedMethods.logError("AUTH ADD: "+ ((TermsRequest) reqObj).getToken());
+				connection.addRequestProperty("Content-Encoding", "gzip");
+				connection.setDoOutput(true);
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				code = Constants.NETWORK_NOT_AVAILABLE;
+				offMsg.setStatus(Constants.PENDING);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				code = Constants.NETWORK_NOT_AVAILABLE;
+				offMsg.setStatus(Constants.PENDING);
+			}
+		}else if(reqObj instanceof SearchRequest){
+			baseURL= baseURL + Constants.SEARCH_TERM;
+			String para = ((SearchRequest) reqObj).buildMIXString();
+			baseURL = baseURL+para;
+			SharedMethods.logError("Search :"+ baseURL);
+			try {
+				page = new URL(baseURL);
+				connection = (HttpURLConnection) page.openConnection();
+				connection.setRequestProperty("Accept", "application/json");
+				connection.setRequestProperty("Content-type", "application/json");
+				connection.setRequestProperty(Constants.AUTHORIZATION, Constants.BASIC +
+						((SearchRequest) reqObj).getToken());
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				code = Constants.NETWORK_NOT_AVAILABLE;
+				offMsg.setStatus(Constants.PENDING);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				code = Constants.NETWORK_NOT_AVAILABLE;
+				offMsg.setStatus(Constants.PENDING);
+			}
+		}
+		String res = null;		
+		try {		
+			started = System.currentTimeMillis();
+			connection.connect();
+			code = connection.getResponseCode();
+
+			msg = connection.getResponseMessage();
+			SharedMethods.logError("Response code :"+Integer.toString(code) +"MSG : "+ msg);
+
+			/*String str;
+			StringBuilder buff = new StringBuilder();
+			BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+			while ((str = in.readLine()) != null) {
+				buff.append(str);
+			}
+
+			res = buff.toString();*/
+
+			byte[] responseGzip = readFullResponse(connection);
+			if(responseGzip != null){
+				String str = new String(responseGzip);
+				SharedMethods.logError("byte array:"+ str);
+				res = str;
+			}	
+			long ended = System.currentTimeMillis() - started;
+			SharedMethods.logError("Request Started : "+ Long.toString(started)+"Ended : "+ System.currentTimeMillis());
+			SharedMethods.logError("Response : "+ res);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			code = Constants.NETWORK_NOT_AVAILABLE;
+			offMsg.setStatus(Constants.PENDING);
+		}finally{
+			if (connection != null) {
+				connection.disconnect();
+			}
+		}
+		//SharedMethods.logError("Response code :"+Integer.toString(code) +"MSG : "+ msg);
+		handleResponse(res, reqObj, code, msg,offMsg);
+	}
+
+	public static byte[] readFullResponse(URLConnection urlConnection) {
+		ByteArrayOutputStream bOut = null;
+		try {
+
+			//urlConnection.setUseCaches(true);
+			//            urlConnection.setRequestProperty("Accept-Encoding", "gzip");
+			String contentEncoding = urlConnection.getContentEncoding();
+
+			byte[] temp = new byte[1000];
+			if (contentEncoding != null){
+				contentEncoding = contentEncoding.trim();
+			}
+			System.out.println("VAS Menu Encoding: " + contentEncoding);
+			if (contentEncoding != null) {
+				if (contentEncoding.equalsIgnoreCase("gzip")) {
+					bOut = new ByteArrayOutputStream();
+					GZIPInputStream gzip = new GZIPInputStream(urlConnection.getInputStream());
+					while (true) {
+						int i = gzip.read(temp);
+						if (i >= 0) {
+							bOut.write(temp, 0, i);
+						} else {
+							break;
+						}
+					}
+					return bOut.toByteArray();
+				} else {
+					InputStream gzip = urlConnection.getInputStream();
+					bOut = new ByteArrayOutputStream();
+					while (true) {
+						int i = gzip.read(temp);
+						if (i >= 0) {
+							bOut.write(temp, 0, i);
+						} else {
+							break;
+						}
+					}
+					return bOut.toByteArray();
+				}
+			} else {
+				InputStream gzip = urlConnection.getInputStream();
+				bOut = new ByteArrayOutputStream();
+				while (true) {
+					int i = gzip.read(temp);
+					if (i >= 0) {
+						bOut.write(temp, 0, i);
+					} else {
+						break;
+					}
+				}
+				return bOut.toByteArray();
+			}
+		} catch (Exception e) {
+			System.out.println("Exception in reading vas menu");
+			e.printStackTrace();
+		}finally{
+
+			if(bOut != null){
+				try {
+					bOut.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		return null;
+	}
+
+	protected class SendDataInBackground extends AsyncTask<Object, Object, String>{
+
+		@Override
+		protected String doInBackground(Object... params) {
+			// TODO Auto-generated method stub
+			sendHTTPRequest(params[0].toString(), params[1]);
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			// TODO Auto-generated method stub
+			super.onPostExecute(result);
+		}
+
+		@Override
+		protected void onPreExecute() {
+			// TODO Auto-generated method stub
+			super.onPreExecute();
+		}
+
+		@Override
+		protected void onCancelled() {
+			// TODO Auto-generated method stub
+			super.onCancelled();
+		}
+	}
+
+
+
+	private String getRequest(String url) {
+		StringBuilder buff = new StringBuilder();
+		HttpURLConnection connection = null;
+
+		try {
+			URL page = new URL(url);
+			connection = (HttpURLConnection) page.openConnection();
+			connection.connect();
+			String str;
+			BufferedReader in = new BufferedReader(new InputStreamReader(page.openStream(),"UTF-8"));
+			while ((str = in.readLine()) != null) {
+				buff.append(str);
+			}
+
+			if (connection != null) {
+				connection.disconnect();
+			}
+		}catch (Exception e) {
+			// TODO: handle exception
+			SharedMethods.logError("Se Error "+e.getMessage());
+		}
+
+		return buff.toString();
+	}
+
+}

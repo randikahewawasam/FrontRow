@@ -1,0 +1,462 @@
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+<LinearLayout 
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/mainbg"
+    android:orientation="vertical" >
+
+    <TableLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/answeractivitycarddropdowncollapsbg"
+        android:padding="8dp" >
+
+        <TableRow>
+
+            <TextView
+                android:paddingLeft="8dip"
+                android:id="@+id/contactdetailtextid"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/CONTACT_DETAIL_TXT"
+                android:textColor="@color/ListSelectorColor"
+                android:textStyle="bold" />
+        </TableRow>
+        <View
+        android:layout_width="fill_parent"
+        android:layout_height="10dp" />
+
+        <TableRow>
+
+            <TextView
+                android:paddingLeft="8dip"
+                android:id="@+id/salutationtxtid"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                  android:layout_gravity="center_vertical"
+                android:text="@string/SALUTATION_TXT"
+                android:textColor="@color/ListSelectorColor" />
+
+            <EditText
+                android:editable="false"
+                android:id="@+id/salutationid"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                  android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:background="@drawable/contact_textbox_bg" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                
+                android:paddingLeft="8dip"
+                android:id="@+id/firstnametxtid"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                  android:layout_gravity="center_vertical"
+                android:text="@string/FIRST_NAME_TXT"
+                android:textColor="@color/ListSelectorColor" />
+
+            <EditText
+                android:editable="false"
+                android:id="@+id/firstnameid"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                  android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:background="@drawable/contact_textbox_bg" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:paddingLeft="8dip"
+                android:id="@+id/lastnametxtid"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                  android:layout_gravity="center_vertical"
+                android:text="@string/LAST_NAME_TXT"
+                android:textColor="@color/ListSelectorColor" />
+
+            <EditText
+                android:editable="false"
+                android:id="@+id/lastnameid"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                  android:layout_gravity="center_vertical"
+                android:background="@drawable/contact_textbox_bg" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:paddingLeft="8dip"
+                android:id="@+id/emailtxtid"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/EMAIL_TXT"
+                  android:layout_gravity="center_vertical"
+                android:textColor="@color/ListSelectorColor" />
+
+            <EditText
+                android:editable="false"
+                android:id="@+id/emailid"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                  android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:background="@drawable/contact_textbox_bg" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:paddingLeft="8dip"
+                android:id="@+id/titletxtid"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/TITLE_TXT"
+                android:layout_gravity="center_vertical"
+                android:textColor="@color/ListSelectorColor" />
+
+            <EditText
+                android:editable="false"
+                android:paddingLeft="8dip"
+                android:id="@+id/titleid"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/contact_textbox_bg" />
+        </TableRow>
+        
+         <TableRow>
+
+            <TextView
+                android:paddingLeft="8dip"
+                android:id="@+id/con_rel_txt_id"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/RELATIONSHIP_TXT"
+                android:textColor="@color/ListSelectorColor" />
+            
+             <Spinner
+                android:editable="false"
+                android:layout_weight="1"
+                android:id="@+id/contactreltypes"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/btn_dropdown_normal" />
+
+  
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:paddingLeft="8dip"
+                android:id="@+id/primary_txt_id"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/PRIMARY_TXT"
+                android:textColor="@color/ListSelectorColor" />
+
+            <CheckBox
+                android:editable="false"
+                android:id="@+id/primary_chk_boxid"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:button="@drawable/frs_custom_checked_box"
+                android:gravity="center_horizontal|center_vertical" />
+        </TableRow>
+    </TableLayout>
+
+    <TableLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/answeractivitycarddropdowncollapsbg"
+        android:padding="8dp" >
+
+        <TableRow>
+
+            <TextView
+                android:paddingLeft="8dip"
+                android:id="@+id/phonedetailtextid"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/PHONE_NUMBER_TXT"
+                android:layout_gravity="center_vertical"
+                android:textColor="@color/ListSelectorColor"
+                android:textStyle="bold" />
+        </TableRow>
+        <View
+        android:layout_width="fill_parent"
+        android:layout_height="10dp" />
+
+        <TableRow android:id="@+id/number1row" >
+
+            <TextView
+                android:paddingLeft="8dip"
+                android:id="@+id/number1textid"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:text="@string/PHONE_NUMBER_1"
+                android:layout_gravity="center_vertical"
+                android:textColor="@color/ListSelectorColor" />
+
+            <EditText
+                android:editable="false"
+                android:id="@+id/number1id"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/contact_textbox_bg" />
+        </TableRow>
+        
+        <TableRow  >
+
+            <TextView
+                android:paddingLeft="8dip"
+                android:id="@+id/number2textid"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:text="@string/PHONE_NUMBER_2"
+                android:layout_gravity="center_vertical"
+                android:textColor="@color/ListSelectorColor" />
+
+            <EditText
+                android:editable="false"
+                android:id="@+id/number2id"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/contact_textbox_bg" />
+        </TableRow>
+        
+                <TableRow>
+
+        <TextView
+                android:paddingLeft="8dip"
+                android:id="@+id/phn_rel_txt_id"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/RELATIONSHIP_TXT"
+                android:textColor="@color/ListSelectorColor" />
+            
+             <Spinner
+                android:editable="false"
+                android:layout_weight="1"
+                android:id="@+id/phnreltypes"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/contact_drop_down" />
+
+  
+        </TableRow>
+    </TableLayout>
+    
+        <TableLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/answeractivitycarddropdowncollapsbg"
+        android:padding="8dp" >
+
+        <TableRow>
+
+            <TextView
+                android:paddingLeft="8dip"
+                android:id="@+id/addressdetailtextid"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/ADDRESS_TXT"
+                android:layout_gravity="center_vertical"
+                android:textColor="@color/ListSelectorColor"
+                android:textStyle="bold" />
+        </TableRow>
+        <View
+        android:layout_width="fill_parent"
+        android:layout_height="10dp" />
+
+        <TableRow  >
+
+            <TextView
+                android:paddingLeft="8dip"
+                android:id="@+id/streettextid"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:text="@string/STREET_TXT"
+                android:layout_gravity="center_vertical"
+                android:textColor="@color/ListSelectorColor" />
+
+            <EditText
+                android:editable="false"
+                android:id="@+id/streetid"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/contact_textbox_bg" />
+        </TableRow>
+        
+        <TableRow android:layout_height="match_parent" >
+
+            <TextView
+                android:paddingLeft="8dip"
+                android:id="@+id/citytextid"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:text="@string/CITY_TXT"
+                android:layout_gravity="center_vertical"
+                android:textColor="@color/ListSelectorColor" />
+
+            <EditText
+                android:editable="false"
+                android:id="@+id/cityid"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/contact_textbox_bg" />
+        </TableRow>
+                
+        <TableRow  >
+
+            <TextView
+                android:paddingLeft="8dip"
+                android:id="@+id/provincetextid"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:text="@string/PROVINCE_TXT"
+                android:layout_gravity="center_vertical"
+                android:textColor="@color/ListSelectorColor" />
+
+            <EditText
+                android:editable="false"
+                android:id="@+id/provinceid"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/contact_textbox_bg" />
+        </TableRow>
+        
+        <TableRow  >
+
+            <TextView
+                android:paddingLeft="8dip"
+                android:id="@+id/postaltextid"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:text="@string/ZIP_TXT"
+                android:layout_gravity="center_vertical"
+                android:textColor="@color/ListSelectorColor" />
+
+            <EditText
+                android:editable="false"
+                android:id="@+id/postalid"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/contact_textbox_bg" />
+        </TableRow>
+        
+        <TableRow  >
+
+            <TextView
+                android:paddingLeft="8dip"
+                android:id="@+id/countrytextid"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:text="@string/COUNTRY_TXT"
+                android:layout_gravity="center_vertical"
+                android:textColor="@color/ListSelectorColor" />
+
+            <EditText
+                android:editable="false"
+                android:id="@+id/countryid"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/contact_textbox_bg" />
+        </TableRow>
+        
+        <TableRow  >
+
+            <TextView
+                android:paddingLeft="8dip"
+                android:id="@+id/addreltextid"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:text="@string/RELATIONSHIP_TXT"
+                android:layout_gravity="center_vertical"
+                android:textColor="@color/ListSelectorColor" />
+
+          <Spinner
+                android:editable="false"
+                android:layout_weight="1"
+                android:id="@+id/addreltypes"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/contact_drop_down" />
+        </TableRow>
+        
+    </TableLayout>
+    
+    <TableLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/answeractivitycarddropdowncollapsbg"
+        android:padding="8dp" >
+
+        <TableRow>
+
+       
+        </TableRow>
+
+
+    </TableLayout>
+
+      <TableLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:padding="8dp" >
+
+        <TableRow>
+           <Button
+                android:id="@+id/condeletebtn"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/login_button"
+                android:text="@string/CONTACT_DELETE_TXT"
+                android:layout_gravity="bottom"
+                android:textColor="@color/ColorPureWhite"
+                android:textStyle="bold" />
+       
+        </TableRow>
+
+
+    </TableLayout>
+</LinearLayout>
+</ScrollView>

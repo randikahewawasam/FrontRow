@@ -1,0 +1,377 @@
+package com.frontrow.ui;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import com.frontrow.adapters.FrontRowClientsNoteAdapter;
+import com.frontrow.adapters.FrontRowCustomFileldsAdapter;
+import com.frontrow.base.BaseActivity;
+import com.frontrow.common.Constants;
+import com.frontrow.common.SharedMethods;
+import com.frontrow.datamanagers.ClientsNoteDataManager;
+import com.frontrow.datamanagers.CustomFieldDataManager;
+import com.frontrow.datamanagers.FRSSearchDataManager;
+import com.frontrow.interfaces.FRSAddNoteListener;
+import com.google.gson.Gson;
+import com.memobile.connection.AsyncHttpClient;
+import com.memobile.connection.ResponseHandler;
+import com.row.mix.beans.Client;
+import com.row.mix.beans.ClientsNotes;
+import com.row.mix.beans.CustomField;
+import com.row.mix.response.AddNewClientsNoteResponse;
+import com.row.mix.response.ClientsNotesResponse;
+
+import android.os.Bundle;
+import android.app.Activity;
+import android.content.Intent;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.Menu;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.AdapterView.OnItemClickListener;
+
+public class FRSClientsNotes extends BaseActivity implements FRSAddNoteListener {
+	private ListView clientsnotesList;
+	private EditText searchbox;
+	private int clientId;
+	private Object response;
+	private String fsearchtext;
+	private Boolean firstlist;
+	private ClientsNotes tempNote;
+	private FrontRowClientsNoteAdapter adapter;
+	private String clientname;
+	private Button cleaeText;
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+
+		setContentView(R.layout.activity_frsclients_notes);
+		super.onCreate(savedInstanceState);
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.activity_frsclients_notes, menu);
+		return true;
+	}
+
+	@Override
+	protected void initializeUI() {
+		
+		Bundle bundle = getIntent().getExtras();
+		if (bundle != null) {
+			clientId = bundle.getInt(Constants.CLIENT_ID);
+			clientname = bundle.getString(Constants.CLIENT_NAME);
+			titlename.setText(clientname);
+		}
+
+		clientsnotesList = (ListView) findViewById(R.id.clintsnotelist);
+		searchbox = (EditText) findViewById(R.id.searchtext);
+		List<ClientsNotes> clients_notes_list = ClientsNoteDataManager
+				.getSharedInstance().getClientsNote();
+		adapter = new FrontRowClientsNoteAdapter(this,
+				R.layout.clientsnoteslistrow, clients_notes_list);
+		if (clients_notes_list != null && clients_notes_list.size() != 0) {
+			clientsnotesList.setAdapter(adapter);
+		} else {
+			Bundle bundle2 = new Bundle();
+			bundle2.putString(Constants.ERROR_D,
+					getResources().getString(R.string.NO_CLIENT_NOTE_MSG));
+			bundle2.putString(Constants.TYPE, Constants.GENARAL_ERROR_TYPE);
+			getParent().showDialog(Constants.ERROR_DIALOG, bundle2);
+
+		}
+		cleaeText = (Button) findViewById(R.id.clear_txt);
+		
+		/*InputMethodManager imm = (InputMethodManager)getSystemService(this.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(cleaeText, InputMethodManager.SHOW_IMPLICIT);*/
+		addListenerToSearchBox();
+
+		firstlist = true;
+		addActionlisteners();
+
+	}
+
+	@Override
+	protected void refreshUI() {
+		if (response instanceof ClientsNotesResponse) {
+			// getInflatedProgress().setVisibility(View.GONE);
+			int code = ((ClientsNotesResponse) response).getResponseCode();
+			if (code == Constants.NETWORK_SUCCESS) {
+
+				List<ClientsNotes> clients_notes_list = ClientsNoteDataManager
+						.getSharedInstance().getClientsNote();
+				adapter = new FrontRowClientsNoteAdapter(this,
+						R.layout.clientsnoteslistrow, clients_notes_list);
+				clientsnotesList.setAdapter(adapter);
+
+			}
+
+		}
+
+		if (response instanceof AddNewClientsNoteResponse) {
+			// getInflatedProgress().setVisibility(View.GONE);
+			getParent().removeDialog(Constants.SHOW_DIALOG);
+			int code = ((AddNewClientsNoteResponse) response).getResponseCode();
+			if (code == Constants.NETWORK_SUCCESS) {
+
+				ArrayList<ClientsNotes> clients_notes_list = ClientsNoteDataManager
+						.getSharedInstance().getClientsNote();
+				clients_notes_list.add(tempNote);
+				ClientsNoteDataManager.getSharedInstance()
+				.setClientNoteByArrayList(clients_notes_list);
+				if (adapter != null) {
+
+					adapter.setClientsNoteList(clients_notes_list);
+					adapter.notifyDataSetChanged();
+					clientsnotesList.setAdapter(adapter);
+
+				} else {
+					adapter = new FrontRowClientsNoteAdapter(this,
+							R.layout.clientsnoteslistrow, clients_notes_list);
+					clientsnotesList.setAdapter(adapter);
+
+				}
+				String currentDateTimeString = DateFormat.getDateTimeInstance()
+						.format(new Date());
+				SharedMethods.saveFromFile("sucessfully Added New Note - "
+						+ currentDateTimeString, false, this);
+				
+				Bundle bundle2 = new Bundle();
+				bundle2.putString(Constants.ERROR_D,
+						getResources().getString(R.string.NOTE_ADD_MSG));
+				bundle2.putString(Constants.TYPE, Constants.GENARAL_ERROR_TYPE);
+				getParent().showDialog(Constants.ERROR_DIALOG, bundle2);
+
+			}
+			getParent().removeDialog(Constants.ADD_NOTE_DIALOG);
+		}
+
+	}
+
+	protected void addListenerToSearchBox() {
+
+		searchbox.addTextChangedListener(new TextWatcher() {
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {
+				// TODO Auto-generated method stub
+				/*searchbox.setBackgroundColor(getResources().getColor(
+						R.color.ColorPureWhite));*/
+				String searchtext = searchbox.getText().toString().trim();
+				try {
+
+					fsearchtext = URLEncoder.encode(searchtext, "utf-8")
+							.replace("+", "%20");
+				} catch (UnsupportedEncodingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if (searchtext != null) {
+					AsyncHttpClient httpClient = new AsyncHttpClient(
+							"http://beta3.frslogin.com/SalesProMobileServiceTestv1.5/MobileService.svc/api/v1/notes/"
+									+ fsearchtext + "/" + clientId);
+					httpClient.setBasicAuthToken(appUsr.getToken());
+					httpClient.get(FRSClientsNotes.this, null, null,
+							new ResponseHandler() {
+						@Override
+						public void onSuccess(String successMsg) {
+							// TODO Auto-generated method stub
+							super.onSuccess(successMsg);
+							ClientsNotesResponse authRes = new ClientsNotesResponse(
+									successMsg, 200, "Success");
+							refreshView(200, "", authRes);
+						}
+
+						@Override
+						public void onFailed(String errorMsg,
+								int errorCode) {
+							// TODO Auto-generated method stub
+							super.onFailed(errorMsg, errorCode);
+						}
+
+						@Override
+						public void onFailure(Throwable error,
+								String content) {
+							// TODO Auto-generated method stub
+							super.onFailure(error, content);
+							ClientsNotesResponse authRes = new ClientsNotesResponse(
+									content,
+									400,
+									getResources()
+									.getString(
+											R.string.NETWOK_UNREACHABLE));
+							refreshView(
+									400,
+									getResources()
+									.getString(
+											R.string.NETWOK_UNREACHABLE),
+											authRes);
+						}
+					});
+
+				}
+
+			}
+
+			private void refreshView(int code, String msg,
+					ClientsNotesResponse authRes) {
+				ClientsNoteDataManager.getSharedInstance().setClientsNote(
+						authRes);
+				response = authRes;
+				refreshViewInTheUIThread();
+			}
+
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+				// TODO Auto-generated method stub
+				/*searchbox.setBackgroundDrawable(getResources().getDrawable(
+						R.drawable.search_box));*/
+			}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+				// TODO Auto-generated method stub
+				if(s.length() == 0){
+					cleaeText.setVisibility(View.GONE);
+				}else{
+					cleaeText.setVisibility(View.VISIBLE);
+				}
+			}
+		});
+
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		// TODO Auto-generated method stub
+		// outState.putp
+		super.onSaveInstanceState(outState);
+
+	}
+
+	private void addActionlisteners() {
+		clientsnotesList.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View arg1,
+					int position, long arg3) {
+				// TODO Auto-generated method stub
+				Bundle bundle = new Bundle();
+				// parent.getChildAt(position).setBackgroundColor(getResources().getColor(R.color.ListSelectorColor));
+				ClientsNotes note = (ClientsNotes) clientsnotesList
+						.getItemAtPosition(position);
+				bundle.putInt(Constants.NOTE_ID, note.getId());
+				bundle.putSerializable(Constants.NOTE_TEXT, note);
+				bundle.putString(Constants.CLIENT_NAME, clientname);
+
+				Intent intent;
+
+				intent = new Intent(FRSClientsNotes.this,
+						FRSClientsNoteDescription.class);
+
+				intent.putExtras(bundle);
+				com.frontrow.ui.TabManager parentActivity = (TabManager) getParent();
+				parentActivity.startChild("ClientsNoteDescription_Activity",
+						intent);
+
+			}
+		});
+		cleaeText.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				searchbox.getText().clear();
+			}
+		});
+
+	}
+
+	public void saveNote(String notetxt) {
+
+		getParent().showDialog(Constants.SHOW_DIALOG);
+		int cid = clientId;
+
+		tempNote = new ClientsNotes();
+		tempNote.setDatetimestamp(new Date());
+		tempNote.setLastchanged(new Date());
+		// tempNote.setId(newnote.getId());
+		tempNote.setNotetext(notetxt);
+		tempNote.setClientId(clientId);
+		tempNote.setUserId(appUsr.getUserId());
+		tempNote.setCompanyCode(appUsr.getCompanyId());
+		Gson gson = new Gson();
+		String jstring = gson.toJson(tempNote);
+		// String notstring=parameters();
+		AsyncHttpClient httpClient = new AsyncHttpClient(
+				"http://beta3.frslogin.com/SalesProMobileServiceTestv1.5/MobileService.svc/api/v1/notes/note");
+		httpClient.setBasicAuthToken(appUsr.getToken());
+		// httpClient.setMethod("PUT");
+		httpClient.post(FRSClientsNotes.this, null, null,
+				new ResponseHandler() {
+			@Override
+			public void onSuccess(String successMsg) {
+				// TODO Auto-generated method stub
+				super.onSuccess(successMsg);
+				AddNewClientsNoteResponse authRes = new AddNewClientsNoteResponse(
+						successMsg, 200, "Success");
+				refreshView(200, "", authRes);
+			}
+
+			@Override
+			public void onFailed(String errorMsg, int errorCode) {
+				// TODO Auto-generated method stub
+				super.onFailed(errorMsg, errorCode);
+			}
+
+			@Override
+			public void onFailure(Throwable error, String content) {
+				// TODO Auto-generated method stub
+				super.onFailure(error, content);
+				AddNewClientsNoteResponse authRes = new AddNewClientsNoteResponse(
+						content, 400, getResources().getString(
+								R.string.NETWOK_UNREACHABLE));
+
+				refreshView(
+						400,
+						getResources().getString(
+								R.string.NETWOK_UNREACHABLE), authRes);
+			}
+		}, jstring);
+	}
+
+	private void refreshView(int code, String msg,
+			AddNewClientsNoteResponse authRes) {
+		// ClientsNoteDataManager.getSharedInstance().setClientsNote((authRes));
+		tempNote.setId(authRes.getNoteId());
+		response = authRes;
+		refreshViewInTheUIThread();
+	}
+
+	@Override
+	public void addNote(View v) {
+		// TODO Auto-generated method stub
+		this.getParent().showDialog(Constants.ADD_NOTE_DIALOG);
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		setAddNoteListener(this);
+		titlename.setText(clientname);
+	}
+
+}

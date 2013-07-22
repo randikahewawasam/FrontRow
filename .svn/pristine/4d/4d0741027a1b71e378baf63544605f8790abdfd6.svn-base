@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@drawable/list_item_bg_op"
+        android:padding="6dip" >
+
+        <LinearLayout
+            android:layout_width="0dip"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:paddingLeft="4dip"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/contactnametext"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:singleLine="true"
+                 android:textColor="@color/ClientListFontColor"
+                android:text="My Application"
+                android:textSize="18dp" />
+
+            <TextView
+                android:id="@+id/contacttitletext"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                 android:textColor="@color/ClientListFontColor"
+                android:text="title"
+                android:textSize="12dp" />
+
+            <TextView
+                android:id="@+id/contactemailtext"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                 android:textColor="@color/ClientListFontColor"
+                android:text="email"
+                android:textSize="12dp" />
+
+            <TextView
+                android:id="@+id/contactaddresstext"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                 android:textColor="@color/ClientListFontColor"
+                android:singleLine="true"
+                android:text="address"
+                android:textSize="12dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/call_bg"
+                android:orientation="horizontal" >
+
+                <ImageButton
+                    android:id="@+id/callbtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginRight="6dip"
+                    android:background="@null"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/call_button" />
+
+                <TextView
+                    android:id="@+id/contacttpnumber"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                     android:textColor="@color/ClientListFontColor"
+                    android:text="phone"
+                   
+                    android:singleLine="true"
+                    android:textSize="12dp" />
+            </LinearLayout>
+           <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dip"
+                android:layout_gravity="right"
+                android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/contactprimarytext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:background="@drawable/primarybg"
+                android:padding="3dip"
+                android:text="primary"
+                android:textColor="@color/ClientListFontColor"
+                android:textSize="12dp" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <TableLayout
+        android:id="@+id/tableLayout1"
+        android:layout_width="match_parent"
+        android:background="@drawable/list_item_bg_bottom"
+        android:layout_height="wrap_content" >
+
+        <TableRow
+            android:id="@+id/tableRow1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="4dip" 
+             >
+        
+            <!--
+             <TextView
+            android:id="@+id/view1"
+            android:layout_width="0px"
+              android:layout_weight="0.4"
+            android:layout_height="wrap_content"
+            ></TextView>
+            -->
+
+            <Button
+                android:id="@+id/conemailbtn"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1"
+                android:background="@null"
+                android:drawableTop="@drawable/email"
+                android:text="Email"
+                 android:textColor="@color/ClientListFontColor"/>
+
+            <Button
+                android:id="@+id/connumbersbtn"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1"
+                android:background="@null"
+                android:drawableTop="@drawable/numbersicon"
+                android:text="Numbers"
+                 android:textColor="@color/ClientListFontColor" />
+
+            <Button
+                android:id="@+id/conmapbtn"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1"
+                android:background="@null"
+                android:drawableTop="@drawable/mapicon"
+                android:text="Map"
+                android:textColor="@color/ClientListFontColor" />
+
+            <Button
+                android:id="@+id/condirectionbtn"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1"
+                android:background="@null"
+                android:drawableTop="@drawable/directionicon"
+                android:text="Directions"
+                 android:textColor="@color/ClientListFontColor" />
+        </TableRow>
+    </TableLayout>
+
+</LinearLayout>

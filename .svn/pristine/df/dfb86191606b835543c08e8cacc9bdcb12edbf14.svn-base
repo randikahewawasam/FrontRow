@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/allclientsboxbg"
+    android:padding="6dip" >
+
+    <TableRow>
+
+        <TextView
+            android:id="@+id/add_line1"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="0.5"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="4"
+            android:singleLine="false"
+            android:textColor="@color/ClientListFontColor"
+            android:textSize="@dimen/Client_No"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/primary_txt"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="0.2"
+            android:background="@drawable/primary_bg"
+            android:gravity="center_horizontal|center_vertical"
+            android:text="@string/PRIMARY_TXT"
+            android:textColor="@color/ColorPureWhite"
+            android:textSize="@dimen/Client_No"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="0.1"
+            android:src="@drawable/arrow" />
+    </TableRow>
+
+</TableLayout>

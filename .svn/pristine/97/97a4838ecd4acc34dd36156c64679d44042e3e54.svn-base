@@ -1,0 +1,4 @@
+<resources>
+
+   <dimen name="tab_bar_height">60dp</dimen>
+</resources>

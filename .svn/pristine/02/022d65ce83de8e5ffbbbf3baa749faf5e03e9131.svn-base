@@ -1,0 +1,787 @@
+package com.frontrow.ui;
+
+import java.util.ArrayList;
+import com.frontrow.base.BaseActivity;
+import com.frontrow.common.Constants;
+import com.frontrow.common.Constants.ContactType;
+import com.frontrow.common.SharedMethods;
+import com.frontrow.datamanagers.AuthDataManager;
+import com.frontrow.datamanagers.CompositeDatamanager;
+import com.frontrow.datamanagers.ContactsDataManager;
+import com.frontrow.interfaces.FRSAddNewContactListener;
+import com.google.gson.Gson;
+import com.memobile.connection.AsyncHttpClient;
+import com.memobile.connection.ResponseHandler;
+import com.row.mix.beans.Address;
+import com.row.mix.beans.CompositeContact;
+import com.row.mix.beans.Contact;
+import com.row.mix.beans.ContactRelationship;
+import com.row.mix.request.NewContact;
+import com.row.mix.response.CompositeContactResponse;
+import com.row.mix.response.ContactsResponse;
+
+import android.os.Bundle;
+import android.provider.ContactsContract.CommonDataKinds.Phone;
+import android.app.Activity;
+import android.content.Intent;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
+
+public class FRSContactMaintenance extends BaseActivity implements OnItemSelectedListener, FRSAddNewContactListener {
+
+	private Spinner contactrelationshipTypeSpinner;
+	private Spinner addressrelationshipTypeSpinner;
+	private Spinner phonerelationshipTypeSpinner;
+	private ArrayList<RelationshipTypeSpinner> ctypeList;
+	private ArrayList<RelationshipTypeSpinner> atypeList;
+	private ArrayList<RelationshipTypeSpinner> ptypeList;
+	private TextView addressText;
+	private TextView phoneText;
+	//private TableRow phonerow;
+	private boolean isNewRecord;
+	private EditText salutation;
+	private EditText firstname;
+	private EditText lastname;
+	private CheckBox primary;
+	private EditText email;
+	private EditText title;
+	private EditText number1;
+	private EditText number2;
+	private EditText street;
+	private EditText city;
+	private EditText province;
+	private EditText postal;
+	private EditText country;
+	private ArrayList<ContactRelationship> contactRelationshipTypeList;
+	private ArrayList<ContactRelationship> addressRelationshipTypeList;
+	private ArrayList<ContactRelationship> phoneRelationshipTypeList;
+	private Integer contactId;
+	private int clientId;
+	private Button contactDeleteBtn;
+	private Button createContact;
+	private Object response;
+	private TableLayout footerBtnRow;
+
+	private int contactRelationshipId;
+	private int addressRelationshipId;
+	private int numberRelationshipId;
+	private Button numbersBtn;
+	private Button addressBtn;
+	private Contact contact;
+	private CompositeContact compoContact;
+
+	private TableRow phoneSpinnerRow;
+	private TableRow addressSpinnerRow;
+	private TableRow phonerow;
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+
+		//setContentView(R.layout.activity_frscontact_maintenance);
+		if(getIntent().getExtras() != null){
+			contactId = getIntent().getExtras().getInt(Constants.CONTACT_ID);
+			clientId = getIntent().getExtras().getInt(Constants.CLIENT_ID);
+			contact = (Contact) getIntent().getExtras().getSerializable(Constants.CONATCT);
+			compoContact = (CompositeContact) getIntent().getExtras().getSerializable(Constants.COMPOSITE_CONTACT);
+		}    
+		View newContactMaintanceView = LayoutInflater.from(this.getParent()).inflate(R.layout.activity_frscontact_maintenance, null);
+		setContentView(newContactMaintanceView);
+		super.onCreate(savedInstanceState);
+	}
+
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		setAddContactListener(this);
+	}
+
+	@Override
+	protected void initializeUI() {
+		phoneSpinnerRow = (TableRow) findViewById(R.id.phnSpinner);		
+		addressSpinnerRow = (TableRow) findViewById(R.id.addressSpinner);
+		footerBtnRow = (TableLayout) findViewById(R.id.footerBtnRow);
+		salutation = (EditText)findViewById(R.id.salutationid);
+		firstname = (EditText)findViewById(R.id.firstnameid);
+		lastname = (EditText)findViewById(R.id.lastnameid);
+		email = (EditText)findViewById(R.id.emailid);
+		title = (EditText)findViewById(R.id.titleid);
+		primary = (CheckBox)findViewById(R.id.primary_chk_boxid);
+
+		number1 =(EditText) findViewById(R.id.number1id);
+		number2 =(EditText) findViewById(R.id.number2id);
+
+		street =(EditText) findViewById(R.id.streetid);
+		city =(EditText) findViewById(R.id.cityid);
+		province = (EditText) findViewById(R.id.provinceid);
+		postal = (EditText) findViewById(R.id.postalid);
+		country = (EditText) findViewById(R.id.countryid);
+
+		numbersBtn = (Button) findViewById(R.id.numbersBtn);
+		addressBtn = (Button) findViewById(R.id.addressBtn);
+
+		ctypeList =new ArrayList<RelationshipTypeSpinner>();
+		atypeList =new ArrayList<RelationshipTypeSpinner>();
+		ptypeList =new ArrayList<RelationshipTypeSpinner>();
+		contactrelationshipTypeSpinner =(Spinner) findViewById(R.id.contactreltypes);
+		addressrelationshipTypeSpinner = (Spinner) findViewById(R.id.addreltypes);
+		phonerelationshipTypeSpinner = (Spinner) findViewById(R.id.phnreltypes);
+		contactDeleteBtn = (Button) findViewById(R.id.condeletebtn);
+		createContact = (Button) findViewById(R.id.conaddbtn);
+		Bundle bundle = getIntent().getExtras();
+		if (bundle != null) {
+			isNewRecord=bundle.getBoolean(Constants.NEW_CONTACT_RECORD);
+			//.setText(clientName);
+		}
+
+		contactRelationshipTypeList=AuthDataManager.getSharedInstance().getClientContactList();
+		addressRelationshipTypeList=AuthDataManager.getSharedInstance().getContactAddressList();
+		phoneRelationshipTypeList = AuthDataManager.getSharedInstance().getContactPhoneList();
+
+		for(ContactRelationship type : this.addressRelationshipTypeList){
+			atypeList.add(new RelationshipTypeSpinner(type.getRelationshipText(), type.getId()));
+		}
+
+		for(ContactRelationship type : this.contactRelationshipTypeList){
+			ctypeList.add(new RelationshipTypeSpinner(type.getRelationshipText(), type.getId()));
+		}
+
+		for(ContactRelationship type : this.phoneRelationshipTypeList){
+			ptypeList.add(new RelationshipTypeSpinner(type.getRelationshipText(), type.getId()));
+		}
+
+
+		ArrayAdapter<RelationshipTypeSpinner> cTypeAdapter = new ArrayAdapter<RelationshipTypeSpinner>(this, R.layout.spinnertext, ctypeList);
+		cTypeAdapter.setDropDownViewResource(R.layout.spinnerdropdown);
+		contactrelationshipTypeSpinner.setAdapter(cTypeAdapter);
+
+		contactrelationshipTypeSpinner.setOnItemSelectedListener(this);
+
+		ArrayAdapter<RelationshipTypeSpinner> aTypeAdapter = new ArrayAdapter<RelationshipTypeSpinner>(this, R.layout.spinnertext, atypeList);
+		aTypeAdapter.setDropDownViewResource(R.layout.spinnerdropdown);
+		addressrelationshipTypeSpinner.setAdapter(aTypeAdapter);
+
+		addressrelationshipTypeSpinner.setOnItemSelectedListener(this);
+
+		ArrayAdapter<RelationshipTypeSpinner> pTypeAdapter = new ArrayAdapter<RelationshipTypeSpinner>(this, R.layout.spinnertext, ptypeList);
+		pTypeAdapter.setDropDownViewResource(R.layout.spinnerdropdown);
+		phonerelationshipTypeSpinner.setAdapter(pTypeAdapter);		   
+		phonerelationshipTypeSpinner.setOnItemSelectedListener(this);
+
+		// TODO Auto-generated method stub
+
+
+		/* 
+		 * If true Composite Contact,
+		 * else Advance contact 
+		 **/
+		boolean contactstyle = appUsr.isContactStyle();
+
+		addressText = (TextView) findViewById(R.id.addressdetailtextid);
+		phoneText =(TextView) findViewById(R.id.phonedetailtextid);
+		phonerow = (TableRow) findViewById(R.id.number1row);
+
+		if(Constants.contactType == ContactType.Add_Contact){
+			enableComponents();
+		}else{
+			disableComponets();
+			setData();
+		}
+
+		if(contactstyle){
+			phonerow.setVisibility(View.VISIBLE);
+			phoneText.setText(getResources().getString(R.string.PHONE_NUMBER_TXT));
+			addressText.setText(getResources().getString(R.string.ADDRESS_TXT));
+			addressrelationshipTypeSpinner.setVisibility(View.VISIBLE);
+			phonerelationshipTypeSpinner.setVisibility(View.VISIBLE);
+			footerBtnRow.setVisibility(View.GONE);		
+			phoneSpinnerRow.setVisibility(View.GONE);
+			addressSpinnerRow.setVisibility(View.GONE);
+		}else{
+			addressrelationshipTypeSpinner.setVisibility(View.VISIBLE);
+			phonerelationshipTypeSpinner.setVisibility(View.VISIBLE);
+			phonerow.setVisibility(View.GONE);
+			phoneText.setText(getResources().getString(R.string.PRIMARY_PHONE_NUMBER_TXT));
+			addressText.setText(getResources().getString(R.string.PRIMARY_ADDRESS_TXT));	
+			footerBtnRow.setVisibility(View.VISIBLE);
+			phoneSpinnerRow.setVisibility(View.VISIBLE);
+			addressSpinnerRow.setVisibility(View.VISIBLE);
+		}
+		addActionListeners();
+	}
+
+	private void disableComponets() {
+		createContact.setVisibility(View.GONE);
+		contactDeleteBtn.setVisibility(View.VISIBLE);
+		salutation.setEnabled(false);
+		firstname.setEnabled(false);
+		lastname.setEnabled(false);
+		email.setEnabled(false);
+		title.setEnabled(false);
+		primary.setEnabled(false);
+
+		number1.setEnabled(false);
+		number2.setEnabled(false);
+
+		street.setEnabled(false);
+		city.setEnabled(false);
+		province.setEnabled(false);
+		postal.setEnabled(false);
+		postal.setEnabled(false);
+		country.setEnabled(false);
+		numbersBtn.setEnabled(false);
+		addressBtn.setEnabled(false);
+		contactrelationshipTypeSpinner.setEnabled(false);
+		addressrelationshipTypeSpinner.setEnabled(false);
+		phonerelationshipTypeSpinner.setEnabled(false);
+	}
+
+	private void enableComponents() {
+		createContact.setVisibility(View.VISIBLE);
+		contactDeleteBtn.setVisibility(View.GONE);
+		salutation.setEnabled(true);
+		firstname.setEnabled(true);
+		lastname.setEnabled(true);
+		email.setEnabled(true);
+		title.setEnabled(true);
+		primary.setEnabled(true);
+
+		number1.setEnabled(true);
+		number2.setEnabled(true);
+
+		street.setEnabled(true);
+		city.setEnabled(true);
+		province.setEnabled(true);
+		postal.setEnabled(true);
+		postal.setEnabled(true);
+		country.setEnabled(true);
+		numbersBtn.setEnabled(true);
+		addressBtn.setEnabled(true);
+
+		contactrelationshipTypeSpinner.setEnabled(true);
+		addressrelationshipTypeSpinner.setEnabled(true);
+		phonerelationshipTypeSpinner.setEnabled(true);
+	}
+
+	private void addActionListeners() {
+		contactDeleteBtn.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				getParent().showDialog(Constants.SHOW_DIALOG);
+				AsyncHttpClient httpClient = new AsyncHttpClient(
+						Constants.BASE_URL+Constants.CONTACT_DELETE+contactId+"/"+clientId);
+				httpClient.setBasicAuthToken(appUsr.getToken());
+				httpClient.delete(FRSContactMaintenance.this, null, null,
+						new ResponseHandler() {
+
+					@Override
+					public void onSuccess(String successMsg) {
+						// TODO Auto-generated method stub
+						super.onSuccess(successMsg);
+						SharedMethods.logError("Delete Contact "+successMsg);
+						if(appUsr.isContactStyle()){
+							CompositeContactResponse compositeResponse = new CompositeContactResponse(successMsg, 200, "");
+							response = compositeResponse;
+						}else{
+							ContactsResponse contactResponse = new ContactsResponse(successMsg, 200, "");
+							response = contactResponse;
+						}						
+						refreshViewInTheUIThread();
+					}
+
+					@Override
+					public void onFailure(int statusCode, String content) {
+						// TODO Auto-generated method stub
+						super.onFailure(statusCode, content);
+						SharedMethods.logError("Delete Contact error "+content);
+						if(appUsr.isContactStyle()){
+							CompositeContactResponse compositeResponse = new CompositeContactResponse(content,statusCode, getResources().getString(R.string.NO_NETWORK_TRY_AGAIN_MSG));
+							response = compositeResponse;
+						}else{
+							ContactsResponse contactResponse = new ContactsResponse(content, statusCode, getResources().getString(R.string.NO_NETWORK_TRY_AGAIN_MSG));
+							response = contactResponse;
+						}						
+						refreshViewInTheUIThread();
+					}
+				},null);
+			}
+		});
+
+		createContact.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				if(Constants.contactType == ContactType.Add_Contact){
+					getParent().showDialog(Constants.SHOW_DIALOG);
+					NewContact newContact = addEditContact();
+					Gson gson = new Gson();
+					String str = gson.toJson(newContact);
+					AsyncHttpClient httpClient = new AsyncHttpClient(Constants.BASE_URL+Constants.CONATCT_ADD);				
+					httpClient.setBasicAuthToken(appUsr.getToken());
+					httpClient.post(FRSContactMaintenance.this, null, null, new ResponseHandler(){
+
+						@Override
+						public void onSuccess(String successMsg) {
+							// TODO Auto-generated method stub
+							super.onSuccess(successMsg);
+							SharedMethods.logError("Create Contact "+successMsg);
+							if(appUsr.isContactStyle()){
+								CompositeContactResponse compositeResponse = new CompositeContactResponse(successMsg, 200, "");
+								response = compositeResponse;
+							}else{
+								ContactsResponse contactResponse = new ContactsResponse(successMsg, 200, "");
+								response = contactResponse;
+							}							
+							refreshViewInTheUIThread();
+						}
+
+						@Override
+						public void onFailure(int statusCode, String content) {
+							// TODO Auto-generated method stub
+							super.onFailure(statusCode, content);
+							if(appUsr.isContactStyle()){
+								CompositeContactResponse compositeResponse = new CompositeContactResponse(content, statusCode, getResources().getString(R.string.NO_NETWORK_TRY_AGAIN_MSG));
+								response = compositeResponse;
+							}else{
+								ContactsResponse contactResponse = new ContactsResponse(content, statusCode, getResources().getString(R.string.NO_NETWORK_TRY_AGAIN_MSG));
+								response = contactResponse;
+							}
+							SharedMethods.logError("Create Contact Error "+content);
+
+							refreshViewInTheUIThread();
+						}
+
+					}, str);
+				}else if(Constants.contactType == ContactType.Edit_Contact){
+					getParent().showDialog(Constants.SHOW_DIALOG);
+					NewContact newContact = addEditContact();
+					Gson gson = new Gson();
+					String str = gson.toJson(newContact);
+					AsyncHttpClient httpClient = new AsyncHttpClient(Constants.BASE_URL+Constants.CONATCT_ADD);				
+					httpClient.setBasicAuthToken(appUsr.getToken());
+					httpClient.put(FRSContactMaintenance.this, null, null, new ResponseHandler(){
+
+						@Override
+						public void onSuccess(String successMsg) {
+							// TODO Auto-generated method stub
+							super.onSuccess(successMsg);
+							getParent().removeDialog(Constants.SHOW_DIALOG);
+							if(appUsr.isContactStyle()){
+								CompositeContactResponse compositeResponse = new CompositeContactResponse(successMsg, 200, "");
+								response = compositeResponse;
+							}else{
+								ContactsResponse contactsResponse = new ContactsResponse(successMsg, 200, "");
+								response = contactsResponse;
+							}							
+							refreshViewInTheUIThread();
+							SharedMethods.logError("Edit Contatc "+successMsg);
+						}
+
+						@Override
+						public void onFailure(int statusCode, String content) {
+							// TODO Auto-generated method stub
+							super.onFailure(statusCode, content);
+							SharedMethods.logError("Edit Contatc Error "+content);
+							getParent().removeDialog(Constants.SHOW_DIALOG);
+							if(appUsr.isContactStyle()){
+								CompositeContactResponse compositeResponse = new CompositeContactResponse(content, statusCode, getResources().getString(R.string.NO_NETWORK_TRY_AGAIN_MSG));
+								response = compositeResponse;
+							}else{
+								ContactsResponse contactsResponse = new ContactsResponse(content, statusCode, getResources().getString(R.string.NO_NETWORK_TRY_AGAIN_MSG));
+								response = contactsResponse;
+							}							
+							refreshViewInTheUIThread();
+						}
+					}, str);
+				}
+			}
+		});
+
+		numbersBtn.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				if(Constants.contactType == ContactType.Add_Contact){
+					if(!appUsr.isContactStyle()){
+						if(contactId == 0){
+							validateButtons();
+						}
+					}
+				}else{
+					Bundle bundle = new Bundle();
+					//Constants.contactType = ContactType.Add_Contact;
+					//bundle.putBoolean(Constants.NEW_CONTACT_RECORD, true);
+					bundle.putInt(Constants.CONTACT_ID, contactId);
+					bundle.putInt(Constants.CLIENT_ID, clientId);
+					Intent intent;
+					intent = new Intent(FRSContactMaintenance.this,FRSPhoneList.class);
+					intent.putExtras(bundle);
+					com.frontrow.ui.TabManager parentActivity = (TabManager) getParent();
+					parentActivity.startChild("PhoneList_Activity",
+							intent);
+				}
+			}
+		});
+
+		addressBtn.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				if(Constants.contactType == ContactType.Add_Contact){
+					if(!appUsr.isContactStyle()){
+						if(contactId == 0){
+							validateButtons();
+						}
+					}
+				}else{
+					Bundle bundle = new Bundle();
+					//Constants.contactType = ContactType.Add_Contact;
+					//bundle.putBoolean(Constants.NEW_CONTACT_RECORD, true);
+					bundle.putInt(Constants.CONTACT_ID, contactId);
+					bundle.putInt(Constants.CLIENT_ID, clientId);
+					Intent intent;
+					intent = new Intent(FRSContactMaintenance.this,FRSAddressList.class);
+					intent.putExtras(bundle);
+					com.frontrow.ui.TabManager parentActivity = (TabManager) getParent();
+					parentActivity.startChild("AddressList_Activity",
+							intent);
+				}
+			}
+		});
+
+	}
+
+	private void validateButtons(){
+
+		Bundle b = new Bundle();
+		b.putString(Constants.TYPE, Constants.GENARAL_ERROR_TYPE);
+		b.putString(Constants.ERROR_D, getResources().getString(R.string.ADD_CONTATC_FIRST));
+		getParent().showDialog(Constants.ERROR_DIALOG, b);
+
+	}
+
+	private NewContact addEditContact(){
+		NewContact newContact = new NewContact();
+		newContact.setClientId(clientId);
+		newContact.setTitle(title.getText().toString());
+		newContact.setSalutation(salutation.getText().toString());
+		newContact.setFirstName(firstname.getText().toString());
+		newContact.setLastName(lastname.getText().toString());
+		newContact.setEmail(email.getText().toString());
+		newContact.setIsPrimary(primary.isChecked());
+		newContact.setRelationshipID(contactRelationshipId);
+		newContact.setCompanyCode(appUsr.getCompanyId());		
+		newContact.setIsComposite(appUsr.isContactStyle());
+		newContact.setStreet(street.getText().toString());
+		newContact.setCity(city.getText().toString());
+		newContact.setPostal(postal.getText().toString());
+		newContact.setProvince(province.getText().toString());
+		newContact.setCountry(country.getText().toString());
+		newContact.setAddressRelationshipID(addressRelationshipId);
+		newContact.setPhoneRelationshipID(numberRelationshipId);
+
+		if(Constants.contactType == ContactType.Add_Contact){
+			if(appUsr.isContactStyle()){
+				newContact.setBusinessNumber(number1.getText().toString());
+				newContact.setMobileNumber(number2.getText().toString());
+			}else{		
+				newContact.setBusinessNumber(null);
+				newContact.setMobileNumber(null);
+				newContact.setPhoneNumber(number2.getText().toString());
+			}
+			newContact.setAddressId(null);
+			newContact.setPhoneId(null);
+			newContact.setContactId(null);
+			newContact.setBusinessPhoneId(null);
+			newContact.setMobilePhoneId(null);
+
+		}else if(Constants.contactType == ContactType.Edit_Contact){
+			if(!appUsr.isContactStyle()){
+				newContact.setAddressId(contact.getPrimaryAddress().getId());
+				newContact.setPhoneId(contact.getPrimaryPhone().getPhoneID());
+				newContact.setBusinessNumber(null);
+				newContact.setMobileNumber(null);
+				newContact.setPhoneNumber(number2.getText().toString());
+				newContact.setBusinessPhoneId(null);
+				newContact.setMobilePhoneId(null);
+			}else{
+				newContact.setAddressId(compoContact.getAddress().getId());
+				newContact.setPhoneId(null);
+				newContact.setBusinessNumber(number1.getText().toString());
+				newContact.setMobileNumber(number2.getText().toString());
+				newContact.setBusinessPhoneId(compoContact.getBusinessPhone().getPhoneID());
+				newContact.setMobilePhoneId(compoContact.getMobilePhone().getPhoneID());
+			}
+			newContact.setContactId(contactId);
+		}		
+		return newContact;
+	}
+
+	@Override
+	protected void refreshUI() {
+		// TODO Auto-generated method stub
+		getParent().removeDialog(Constants.SHOW_DIALOG);
+
+		if(response instanceof ContactsResponse){
+			ContactsResponse cRes = (ContactsResponse) response;
+			if(cRes.getResponseCode() == Constants.NETWORK_SUCCESS){
+				ContactsDataManager.getSharedInstance().setContactlist((ContactsResponse) response);
+				if(Constants.contactType == ContactType.Add_Contact || Constants.contactType == ContactType.Delete_Contact){
+					if(((ContactsResponse) response).getContactslist() != null && ((ContactsResponse) response).getContactslist().size() > 0){
+						finish();
+					}else{
+						com.frontrow.ui.TabManager parentActivity = (TabManager) getParent();
+						parentActivity.loadInitialActivity();
+					}
+				}else{
+					ArrayList<Contact> contactList = ((ContactsResponse) response).getContactslist();
+					for(int i=0;i< contactList.size();i++){
+						Contact c = contactList.get(i);
+						if(c.getId() == contactId){
+							finish();
+							Constants.contactType = ContactType.Delete_Contact;						
+							Bundle bundle = new Bundle();
+							Intent intent;
+							intent = new Intent(FRSContactMaintenance.this,FRSContactMaintenance.class);
+							bundle.putInt(Constants.CONTACT_ID, c.getId());
+							bundle.putInt(Constants.CLIENT_ID, clientId);
+							bundle.putSerializable(Constants.CONATCT, c);
+							intent.putExtras(bundle);
+							com.frontrow.ui.TabManager parentActivity = (TabManager) getParent();
+							parentActivity.startChild("ContactMaintance_Activity",
+									intent);
+							return;
+						}
+					}
+				}
+			}else{
+				Bundle b = new Bundle();
+				b.putString(Constants.TYPE, Constants.GENARAL_ERROR_TYPE);
+				b.putString(Constants.ERROR_D, ((ContactsResponse) response).getResponseMessage());
+				getParent().showDialog(Constants.ERROR_DIALOG, b);
+			}
+
+		}else if(response instanceof CompositeContactResponse){
+			CompositeContactResponse compositeResponse = (CompositeContactResponse) response;
+			if(compositeResponse.getResponseCode() == Constants.NETWORK_SUCCESS){
+				CompositeDatamanager.getSharedInstance().setCompositeContactsList(compositeResponse.getCompositeContactslist());
+				if(Constants.contactType == ContactType.Add_Contact || Constants.contactType == ContactType.Delete_Contact){
+					if(compositeResponse.getCompositeContactslist() != null && compositeResponse.getCompositeContactslist().size() > 0){
+						finish();
+					}else{
+						com.frontrow.ui.TabManager parentActivity = (TabManager) getParent();
+						parentActivity.loadInitialActivity();
+					}					
+				}else{
+					ArrayList<CompositeContact> contactList = compositeResponse.getCompositeContactslist();
+					for(int i=0;i< contactList.size();i++){
+						CompositeContact c = contactList.get(i);
+						if(c.getContact().getId() == contactId){
+							finish();
+							Constants.contactType = ContactType.Delete_Contact;						
+							Bundle bundle = new Bundle();
+							Intent intent;
+							intent = new Intent(FRSContactMaintenance.this,FRSContactMaintenance.class);
+							bundle.putInt(Constants.CONTACT_ID, c.getContact().getId());
+							bundle.putInt(Constants.CLIENT_ID, clientId);
+							bundle.putSerializable(Constants.COMPOSITE_CONTACT, c);
+							intent.putExtras(bundle);
+							com.frontrow.ui.TabManager parentActivity = (TabManager) getParent();
+							parentActivity.startChild("ContactMaintance_Activity",
+									intent);
+							return;
+						}
+					}
+				}
+			}else{
+				Bundle b = new Bundle();
+				b.putString(Constants.TYPE, Constants.GENARAL_ERROR_TYPE);
+				b.putString(Constants.ERROR_D,compositeResponse.getResponseMessage());
+				getParent().showDialog(Constants.ERROR_DIALOG, b);
+			}
+		}
+	}
+
+	@Override
+	public void onItemSelected(AdapterView<?> arg0, View arg1, int position,
+			long arg3) {
+		// TODO Auto-generated method stub
+		if(arg0 == contactrelationshipTypeSpinner){
+			RelationshipTypeSpinner cs = ctypeList.get(position);
+			contactRelationshipId = cs.getRelationshipId();
+		}else if(arg0 == addressrelationshipTypeSpinner){
+			RelationshipTypeSpinner cs = ctypeList.get(position);
+			addressRelationshipId = cs.getRelationshipId();
+		}else if(arg0 == phonerelationshipTypeSpinner){
+			RelationshipTypeSpinner cs = ctypeList.get(position);
+			numberRelationshipId = cs.getRelationshipId();
+		}
+	}
+
+	@Override
+	public void onNothingSelected(AdapterView<?> arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+
+	private void setData() {
+		ArrayList<CompositeContact> compositeContactList= null;
+		ArrayList<Contact> contactlist = null;
+		ArrayList<ContactRelationship> contactRelationshipList = null;
+		ArrayList<ContactRelationship> phoneRelationshipList = null;
+		ArrayList<ContactRelationship> addressRelationshipList = null;
+		if(appUsr.isContactStyle()){
+			compositeContactList = CompositeDatamanager.getSharedInstance().getCompositeContactsList();
+		}else{
+			contactlist = ContactsDataManager.getSharedInstance().getContactslist();			
+			phoneRelationshipList = AuthDataManager.getSharedInstance().getContactPhoneList();
+			addressRelationshipList = AuthDataManager.getSharedInstance().getContactAddressList();
+		}
+		contactRelationshipList =	AuthDataManager.getSharedInstance().getClientContactList();
+
+		Contact contact = null;
+		CompositeContact compositeContact = null;
+		int phoneRelationShipId;
+		//if(contactId != 0){
+		if(contactlist != null && contactlist.size() > 0){
+			for(int i=0;i<contactlist.size();i++){
+				contact = contactlist.get(i);
+				if(contact.getId() == contactId){
+					break;
+				}
+			}
+
+			if(contact != null){
+
+			}
+		}else{
+			if(compositeContactList != null && compositeContactList.size() >0){
+				for(int i=0;i<compositeContactList.size();i++){
+					compositeContact = compositeContactList.get(i);
+					if(compositeContact.getContact().getId() == contactId){
+						break;
+					}
+				}
+			}
+		}
+		//}
+
+		salutation.setText((contact == null)?compositeContact.getContact().getSalutation() : contact.getSalutation());
+		firstname.setText((contact == null)?compositeContact.getContact().getFirstName():contact.getFirstName());
+		lastname.setText((contact == null)?compositeContact.getContact().getLastName():contact.getLastName());
+		title.setText((contact == null)?compositeContact.getContact().getTitle():contact.getTitle());
+		email.setText((contact == null)?compositeContact.getContact().getEmail():contact.getEmail());
+		primary.setChecked((contact == null)?compositeContact.getIsprimary():contact.isPrimary());
+		number2.setText((contact == null)?compositeContact.getMobilePhone().getPhoneNumber():contact.getPrimaryPhone().getPhoneNumber());
+		ArrayList<com.row.mix.beans.Phone> phnList = (contact == null)?compositeContact.getContact().getPhoneList():contact.getPhoneList();
+		ArrayList<Address> addressList =(contact == null)?compositeContact.getContact().getAddressList():contact.getAddressList();
+		int contactRelationshipId = (contact == null)?compositeContact.getContact().getRelationshipId():contact.getRelationshipId();					
+
+		/* set Contact Relationship */
+		int cRelatPosition = 0;
+		int phnRelationshipPosition = 0;
+		int addressRelationshipId = 0;
+
+		for(int i=0;i<contactRelationshipList.size();i++){
+			ContactRelationship cRelat = contactRelationshipList.get(i);
+			int relationshipId = (contact == null)?compositeContact.getContact().getRelationshipId():contact.getRelationshipId();
+			if(cRelat.getId() == relationshipId){
+				cRelatPosition = i;
+				break;
+			}
+		}
+
+		if(!appUsr.isContactStyle()){
+			contactrelationshipTypeSpinner.setSelection(cRelatPosition);
+
+			/*set phone relationship */
+			for(com.row.mix.beans.Phone tempPhn:phnList){
+				if(tempPhn.getPhoneID() == contact.getPrimaryPhone().getPhoneID()){
+					for(int i=0;i<phoneRelationshipList.size();i++){
+						ContactRelationship cRelat = phoneRelationshipList.get(i);
+						if(cRelat.getId() == tempPhn.getPhnRelationshipId()){
+							phoneRelationShipId = i;
+							break;
+						}
+					}							
+				}
+			}
+
+
+			phonerelationshipTypeSpinner.setSelection(phnRelationshipPosition);
+
+			/*set address relationship */
+			for(Address tempAdd:addressList){
+				if(tempAdd.getId() == contact.getPrimaryAddress().getId()){
+					for(int i=0;i<addressRelationshipList.size();i++){
+						ContactRelationship cRelat = addressRelationshipList.get(i);
+						if(cRelat.getId() == tempAdd.getAddressRelationshipId()){
+							addressRelationshipId = i;
+							break;
+						}
+					}							
+				}
+			}
+			addressrelationshipTypeSpinner.setSelection(addressRelationshipId);
+		}else{
+			number1.setText(compositeContact.getBusinessPhone().getPhoneNumber());
+		}
+		/* Set primary Address Values */
+		street.setText((contact == null)?compositeContact.getAddress().getStreet():contact.getPrimaryAddress().getStreet());
+		city.setText((contact == null)?compositeContact.getAddress().getCity():contact.getPrimaryAddress().getCity());
+		province.setText((contact == null)?compositeContact.getAddress().getProvince():contact.getPrimaryAddress().getProvince());
+		postal.setText((contact == null)?compositeContact.getAddress().getPostal():contact.getPrimaryAddress().getPostal());
+		country.setText((contact == null)?compositeContact.getAddress().getCountry():contact.getPrimaryAddress().getCountry());
+	}
+
+
+	@Override
+	public void addContact(View v) {
+		// TODO Auto-generated method stub
+		if(v == editContact){
+			Constants.contactType = ContactType.Edit_Contact;
+			enableComponents();
+			createContact.setText(getResources().getString(R.string.EDIT_CONTACT));
+		}
+	}
+}
+class RelationshipTypeSpinner{
+	String relationshipName ="";
+	int relationshipId;
+
+	public RelationshipTypeSpinner(String relationshipName,int relationshipId) {
+		// TODO Auto-generated constructor stub
+		this.relationshipName = relationshipName;
+		this.relationshipId = relationshipId;
+	}
+	public String getRelationshipName() {
+		return relationshipName;
+	}
+
+	public int getRelationshipId() {
+		return relationshipId;
+	}
+
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return relationshipName;
+	}
+}

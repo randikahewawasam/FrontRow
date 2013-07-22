@@ -1,0 +1,442 @@
+package com.frontrow.ui;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.frontrow.base.BaseActivity;
+import com.frontrow.common.Constants;
+import com.frontrow.common.Constants.AddressType;
+import com.frontrow.common.Constants.ContactType;
+import com.frontrow.common.SharedMethods;
+import com.frontrow.datamanagers.AuthDataManager;
+import com.frontrow.datamanagers.ContactsDataManager;
+import com.frontrow.interfaces.FRSAddNewAddressListener;
+import com.google.gson.Gson;
+import com.memobile.connection.AsyncHttpClient;
+import com.memobile.connection.ResponseHandler;
+import com.row.mix.beans.Address;
+import com.row.mix.beans.Contact;
+import com.row.mix.beans.ContactRelationship;
+import com.row.mix.request.NewAddress;
+import com.row.mix.request.NewContact;
+import com.row.mix.response.AddNewAddressRespone;
+import com.row.mix.response.ContactsResponse;
+
+import android.os.Bundle;
+import android.app.Activity;
+import android.content.Intent;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.AdapterView.OnItemSelectedListener;
+
+public class FRSAddressMaintenance   extends BaseActivity implements OnItemSelectedListener, FRSAddNewAddressListener {
+	
+	private Spinner addressrelationshipTypeSpinner;
+	private ArrayList<RelationshipTypeSpinner> atypeList;
+	private ArrayList<ContactRelationship> addressRelationshipTypeList;
+	private EditText street;
+	private EditText city;
+	private EditText province;
+	private EditText postal;
+	private Address address;
+	private EditText country;
+	private CheckBox primary;
+	private Button deletebtn;
+	private Button addbtn;
+	private int addressRelationshipId;
+	private Object response;
+	private int contactId;
+	private Contact contact;
+	NewAddress newAddress;
+    private int clientId;
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+    	setContentView(R.layout.activity_frsaddress_maintenance);
+        View newAddressMaintanceView = LayoutInflater.from(this.getParent()).inflate(R.layout.activity_frsaddress_maintenance, null);
+        setContentView(newAddressMaintanceView);
+        
+        if(getIntent().getExtras() != null){
+        	//address = getIntent().getExtras().getInt(Constants.CONTACT_ID);
+			//clientId = getIntent().getExtras().getInt(Constants.CLIENT_ID);
+        	contactId = getIntent().getExtras().getInt(Constants.CONTACT_ID);
+        	clientId =getIntent().getExtras().getInt(Constants.CLIENT_ID);
+        	if(Constants.addressType == AddressType.Delete_Address){
+			address = (Address) getIntent().getExtras().getSerializable(Constants.ADDRESS_TXT);
+			
+        	}
+		} 
+        super.onCreate(savedInstanceState);
+    
+	
+     
+        
+    }
+
+   /* @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_frsaddress_maintenance, menu);
+        return true;
+    }*/
+
+	@Override
+	protected void initializeUI() {
+		// TODO Auto-generated method stub
+		
+		street = (EditText)findViewById(R.id.addmain_streetid);
+		city =(EditText)findViewById(R.id.addmain_cityid);
+		province =(EditText)findViewById(R.id.addmain_provinceid); 
+		postal =(EditText)findViewById(R.id.addmain_postalid);
+		country =(EditText)findViewById(R.id.addmain_countryid);
+		atypeList =new ArrayList<RelationshipTypeSpinner>();
+		addressrelationshipTypeSpinner =(Spinner) findViewById(R.id.addmain_reltypes);
+		primary = (CheckBox) findViewById(R.id.add_primary_chk_boxid);
+        addressRelationshipTypeList=AuthDataManager.getSharedInstance().getContactAddressList();
+        deletebtn = (Button)findViewById(R.id.adddeletebtn); 
+        addbtn =(Button)findViewById(R.id.add_addbtn); 
+        
+
+    	for(ContactRelationship type : this.addressRelationshipTypeList){
+    			atypeList.add(new RelationshipTypeSpinner(type.getRelationshipText(), type.getId()));
+    		}
+
+
+    	ArrayAdapter<RelationshipTypeSpinner> aTypeAdapter = new ArrayAdapter<RelationshipTypeSpinner>(this, R.layout.spinnertext, atypeList);
+    		aTypeAdapter.setDropDownViewResource(R.layout.spinnerdropdown);
+    		addressrelationshipTypeSpinner.setAdapter(aTypeAdapter);
+    		addressrelationshipTypeSpinner.setOnItemSelectedListener(this);
+    		if(Constants.addressType == AddressType.Add_Address){
+    			enableComponents();
+    		}
+    		else
+    		{
+    			disableComponets();
+    			setData();
+    		}
+    		
+    		addbtn.setOnClickListener(new OnClickListener() {
+
+    			@Override
+    			public void onClick(View v) {
+    				// TODO Auto-generated method stub
+    				if(Constants.addressType == AddressType.Add_Address){
+      					getParent().showDialog(Constants.SHOW_DIALOG);
+      					NewAddress newAddress = addEditContact();
+    					Gson gson = new Gson();
+    					String str = gson.toJson(newAddress);
+    					AsyncHttpClient httpClient = new AsyncHttpClient(Constants.BASE_URL+Constants.ADDRESS_ADD);				
+    					httpClient.setBasicAuthToken(appUsr.getToken());
+    					httpClient.post(FRSAddressMaintenance.this, null, null, new ResponseHandler(){
+
+    						@Override
+    						public void onSuccess(String successMsg) {
+    							// TODO Auto-generated method stub
+    							super.onSuccess(successMsg);
+    							//SharedMethods.logError("Create Contact "+successMsg);
+    							AddNewAddressRespone contactResponse = new AddNewAddressRespone(successMsg, 200, "");
+    							response = contactResponse;
+    							refreshViewInTheUIThread();
+    						}
+
+    						@Override
+    						public void onFailure(int statusCode, String content) {
+    							// TODO Auto-generated method stub
+    							super.onFailure(statusCode, content);
+    							//SharedMethods.logError("Create Contact Error "+content);
+    							AddNewAddressRespone contactResponse = new AddNewAddressRespone(content, statusCode, getResources().getString(R.string.NO_NETWORK_TRY_AGAIN_MSG));
+    							response = contactResponse;
+    							refreshViewInTheUIThread();
+    						}
+
+    					}, str);
+    				}
+    				else if(Constants.addressType == AddressType.Edit_Address){
+    					getParent().showDialog(Constants.SHOW_DIALOG);
+      					NewAddress newAddress = addEditContact();
+    					Gson gson = new Gson();
+    					String str = gson.toJson(newAddress);
+    					AsyncHttpClient httpClient = new AsyncHttpClient(Constants.BASE_URL+Constants.ADDRESS_ADD);				
+    					httpClient.setBasicAuthToken(appUsr.getToken());
+    					httpClient.put(FRSAddressMaintenance.this, null, null, new ResponseHandler(){
+
+    						@Override
+    						public void onSuccess(String successMsg) {
+    							// TODO Auto-generated method stub
+    							super.onSuccess(successMsg);
+    							//SharedMethods.logError("Create Contact "+successMsg);
+    							AddNewAddressRespone contactResponse = new AddNewAddressRespone(successMsg, 200, "");
+    							response = contactResponse;
+    							refreshViewInTheUIThread();
+    						}
+
+    						@Override
+    						public void onFailure(int statusCode, String content) {
+    							// TODO Auto-generated method stub
+    							super.onFailure(statusCode, content);
+    							//SharedMethods.logError("Create Contact Error "+content);
+    							AddNewAddressRespone contactResponse = new AddNewAddressRespone(content, statusCode, getResources().getString(R.string.NO_NETWORK_TRY_AGAIN_MSG));
+    							response = contactResponse;
+    							refreshViewInTheUIThread();
+    						}
+
+    					}, str);
+    					
+    				}
+    				
+    			}
+    		});
+    		deletebtn.setOnClickListener(new OnClickListener() {
+
+    			@Override
+    			public void onClick(View v) {
+    				// TODO Auto-generated method stub
+    /*				getParent().showDialog(Constants.SHOW_DIALOG);
+    				NewAddress newAddress = addEditContact();
+    				AsyncHttpClient httpClient = new AsyncHttpClient(
+    						Constants.BASE_URL+Constants.ADDRESS_ADD+"/"+address.getId());
+    				httpClient.setBasicAuthToken(appUsr.getToken());
+    				httpClient.delete(FRSAddressMaintenance.this, null, null,
+    						new ResponseHandler() {
+
+    					@Override
+    					public void onSuccess(String successMsg) {
+    						// TODO Auto-generated method stub
+    						super.onSuccess(successMsg);
+    						SharedMethods.logError("Delete Contact "+successMsg);
+    						AddNewAddressRespone contactResponse = new AddNewAddressRespone(successMsg, 200, "");
+    						response = contactResponse;
+    						refreshViewInTheUIThread();
+    					}
+
+    					@Override
+    					public void onFailure(int statusCode, String content) {
+    						// TODO Auto-generated method stub
+    						super.onFailure(statusCode, content);
+    						SharedMethods.logError("Delete Contact error "+content);
+    						AddNewAddressRespone contactResponse = new AddNewAddressRespone(content, statusCode, getResources().getString(R.string.NO_NETWORK_TRY_AGAIN_MSG));
+    						response = contactResponse;
+    						refreshViewInTheUIThread();
+    					}
+    				},null);*/
+    				
+    				Bundle bundle = new Bundle();
+    				bundle.putString(Constants.ERROR_D,
+    						getResources().getString(R.string.DELETE_ADDRESS_MSG));
+    				bundle.putString(Constants.TYPE, Constants.DELETE_ADDRESS_TYPE);
+    				// getParent().removeDialog(Constants.ERROR_DIALOG);
+    				getParent().showDialog(Constants.ERROR_DIALOG, bundle);
+    			}
+    		});
+		
+	}
+	
+	public void deleteAddress(){
+		
+		getParent().showDialog(Constants.SHOW_DIALOG);
+		NewAddress newAddress = addEditContact();
+		AsyncHttpClient httpClient = new AsyncHttpClient(
+				Constants.BASE_URL+Constants.ADDRESS_ADD+"/"+address.getId());
+		httpClient.setBasicAuthToken(appUsr.getToken());
+		httpClient.delete(FRSAddressMaintenance.this, null, null,
+				new ResponseHandler() {
+
+			@Override
+			public void onSuccess(String successMsg) {
+				// TODO Auto-generated method stub
+				super.onSuccess(successMsg);
+				SharedMethods.logError("Delete Contact "+successMsg);
+				AddNewAddressRespone contactResponse = new AddNewAddressRespone(successMsg, 200, "");
+				response = contactResponse;
+				refreshViewInTheUIThread();
+			}
+
+			@Override
+			public void onFailure(int statusCode, String content) {
+				// TODO Auto-generated method stub
+				super.onFailure(statusCode, content);
+				SharedMethods.logError("Delete Contact error "+content);
+				AddNewAddressRespone contactResponse = new AddNewAddressRespone(content, statusCode, getResources().getString(R.string.NO_NETWORK_TRY_AGAIN_MSG));
+				response = contactResponse;
+				refreshViewInTheUIThread();
+			}
+		},null);
+		
+	}
+	
+	private NewAddress addEditContact(){
+		 newAddress = new NewAddress();
+		newAddress.setStreet(street.getText().toString());
+		newAddress.setCity(city.getText().toString());
+		newAddress.setPostal(postal.getText().toString());
+		newAddress.setProvince(province.getText().toString());
+		newAddress.setCountry(country.getText().toString());
+		newAddress.setRelationshipID(addressRelationshipId);
+		newAddress.setIsPrimary(primary.isChecked());
+		newAddress.setContactId(contactId);
+		newAddress.setCompanyCode(appUsr.getCompanyId());	
+		if(Constants.addressType == AddressType.Edit_Address || Constants.addressType == AddressType.Delete_Address){
+			newAddress.setId(address.getId());
+		}
+		return newAddress;
+	}
+	
+	
+	private void disableComponets() {
+
+        deletebtn.setVisibility(View.VISIBLE);
+        addbtn.setVisibility(View.GONE);
+		street.setEnabled(false);
+		city.setEnabled(false);
+		province.setEnabled(false);
+		postal.setEnabled(false);
+		postal.setEnabled(false);
+		country.setEnabled(false);
+		addressrelationshipTypeSpinner.setEnabled(false);
+		primary.setEnabled(false);
+	}
+
+	private void enableComponents() {
+	
+		deletebtn.setVisibility(View.GONE);
+	    addbtn.setVisibility(View.VISIBLE);
+		street.setEnabled(true);
+		city.setEnabled(true);
+		province.setEnabled(true);
+		postal.setEnabled(true);
+		postal.setEnabled(true);
+		country.setEnabled(true);	
+		addressrelationshipTypeSpinner.setEnabled(true);
+		primary.setEnabled(true);
+		
+	}
+	
+	private void setData(){
+		int addressRelationshipId = 0;
+		
+	
+				for(int i=0;i<addressRelationshipTypeList.size();i++){
+					ContactRelationship cRelat = addressRelationshipTypeList.get(i);
+					if(cRelat.getId() == address.getAddressRelationshipId()){
+						addressRelationshipId = i;
+						break;
+					}
+				}							
+		
+		addressrelationshipTypeSpinner.setSelection(addressRelationshipId);
+		/* Set primary Address Values */
+		street.setText(address.getStreet());
+		city.setText(address.getCity());
+		province.setText(address.getProvince());
+		postal.setText(address.getPostal());
+		country.setText(address.getCountry());
+		primary.setChecked(address.getIsPrimary());
+	}
+
+	@Override
+	protected void refreshUI() {
+		// TODO Auto-generated method stub
+		
+		getParent().removeDialog(Constants.SHOW_DIALOG);
+
+		if(response instanceof AddNewAddressRespone){
+			AddNewAddressRespone cRes = (AddNewAddressRespone) response;
+			if(cRes.getResponseCode() == Constants.NETWORK_SUCCESS){
+				List<Contact> contact_list = ContactsDataManager.getSharedInstance().getContactslist();
+				//titlename.setText(clientName);
+				for (Contact con : contact_list){					
+					if(con.getId() == contactId) 
+					{
+						contact = con;
+						break;
+					}					
+				}
+				if(Constants.addressType == AddressType.Add_Address ){
+				 contact.addItemToAddressList(cRes.getAddress(),newAddress.getIsPrimary());
+				/*	Bundle bundle = new Bundle();
+					Constants.contactType = ContactType.Add_Contact;
+					//bundle.putBoolean(Constants.NEW_CONTACT_RECORD, true);
+					bundle.putInt(Constants.CONTACT_ID, contactId);
+					if(newAddress.getIsPrimary()){
+						bundle.putInt("PRIMARY_ADDRESS_ID",cRes.getAddress().getId());
+					}
+					Intent intent;
+					intent = new Intent(FRSAddressMaintenance.this,FRSAddressList.class);
+					intent.putExtras(bundle);
+					com.frontrow.ui.TabManager parentActivity = (TabManager) getParent();
+					parentActivity.startChild("AddressList_Activity",
+							intent);*/
+				 finish();
+				}
+				else if(Constants.addressType == AddressType.Edit_Address){
+					 contact.modifyItemInAddressList(cRes.getAddress(),newAddress.getIsPrimary());
+				/*	Bundle bundle = new Bundle();
+					Constants.contactType = ContactType.Add_Contact;
+					//bundle.putBoolean(Constants.NEW_CONTACT_RECORD, true);
+					bundle.putInt(Constants.CONTACT_ID, contactId);
+					if(newAddress.getIsPrimary()){
+						bundle.putInt("PRIMARY_ADDRESS_ID",cRes.getAddress().getId());
+					}
+					Intent intent;
+					intent = new Intent(FRSAddressMaintenance.this,FRSAddressList.class);
+					intent.putExtras(bundle);
+					com.frontrow.ui.TabManager parentActivity = (TabManager) getParent();
+					parentActivity.startChild("AddressList_Activity",
+							intent);*/
+					 finish();
+				}
+				else if (Constants.addressType == AddressType.Delete_Address){
+					 contact.removeItemInAddressList(address,address.getIsPrimary());
+					 finish();
+				}
+			}else{
+				Bundle b = new Bundle();
+				b.putString(Constants.TYPE, Constants.GENARAL_ERROR_TYPE);
+				b.putString(Constants.ERROR_D, ((AddNewAddressRespone) response).getResponseMessage());
+				getParent().showDialog(Constants.ERROR_DIALOG, b);
+			}
+
+		}
+	}
+
+	@Override
+	public void onItemSelected(AdapterView<?> arg0, View arg1, int position,
+			long arg3) {
+		// TODO Auto-generated method stub
+		if(arg0 == addressrelationshipTypeSpinner){
+			RelationshipTypeSpinner cs = atypeList.get(position);
+			addressRelationshipId = cs.getRelationshipId();
+		}
+	}
+
+	@Override
+	public void onNothingSelected(AdapterView<?> arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addAddress(View v) {
+		// TODO Auto-generated method stub
+		if(v == editAddress){
+			Constants.addressType = AddressType.Edit_Address;
+			enableComponents();
+			addbtn.setText(getResources().getString(R.string.EDIT_ADDRESS));
+		}
+	}
+	@Override
+	public void onResume() {
+	
+		super.onResume();
+		setAddAddressListener(this);
+	}
+	
+}
+
+

@@ -1,0 +1,15 @@
+<resources>
+
+    <dimen name="tab_bar_height">60dp</dimen>
+
+    <!-- Title Bar Height -->
+    <dimen name="Title_Height">45dp</dimen>
+    <dimen name="Tab_Bar_Text_Height">20sp</dimen>
+
+    <!-- Client List Page -->
+    <dimen name="Clinet_List_Text_Size">18sp</dimen>
+    
+     <!-- Answer Activity Card Full View -->
+    <dimen name="Question_Text_Size">16sp</dimen>
+
+</resources>

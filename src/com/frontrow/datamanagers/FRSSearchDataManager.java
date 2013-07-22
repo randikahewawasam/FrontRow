@@ -1,0 +1,37 @@
+package com.frontrow.datamanagers;
+
+import com.frontrow.base.DataManagerBase;
+import com.frontrow.common.SharedMethods;
+import com.frontrow.core.ApplicationUser;
+import com.row.mix.request.SearchRequest;
+
+public class FRSSearchDataManager extends DataManagerBase{
+
+	public static FRSSearchDataManager instance;
+
+	public static FRSSearchDataManager getSharedInstance(){
+		if(instance == null){
+			instance = new FRSSearchDataManager();
+		}
+		return instance;
+	}
+
+	public void searchClientDetails(String searchTerm){
+		SearchRequest searchRequest = new SearchRequest();
+		ApplicationUser usr = ApplicationUser.getSharedInstance();
+		searchRequest.setUserName(usr.getUserName());
+		searchRequest.setCompanyId(usr.getCompanyId());
+		searchRequest.setToken(usr.getToken());
+		searchRequest.setMobileNumber(usr.getMobileNnumber());
+		SharedMethods.logError("Search term 2:"+ searchTerm);
+		searchRequest.setSearchTerm(searchTerm);
+		sendDataRequest(searchRequest);
+	}
+	
+	@Override
+	public void priceResponseRecievedFromWeb(Object response) {
+		// TODO Auto-generated method stub
+		super.priceResponseRecievedFromWeb(response);
+	}
+
+}

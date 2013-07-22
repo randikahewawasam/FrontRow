@@ -1,0 +1,201 @@
+package com.frontrow.android.db;
+
+import com.frontrow.common.SharedMethods;
+import com.row.mix.beans.User;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.DatabaseUtils.InsertHelper;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
+import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.provider.Contacts.Intents.Insert;
+import android.webkit.WebChromeClient.CustomViewCallback;
+
+public class UserDB extends FrontRowDBHelper{
+
+	public static final String USER_NAME = "UserName";
+	public static final String USER_ID = "UserId";
+	public static final String MOBILE_NO = "MobileNo";
+	public static final String USER_DEF_CARD_TYPE = "UserDefCard";
+	public static final String CARD_SOURCE = "CardSource";
+	public static final String LANGUAGE_ID = "LanguageId";
+	public static final String ROCLIENT = "RoClient";
+	public static final String CARDOVERRIDE = "CardoverRide";
+	public static final String USER_DEF_CARD_ID = "DefCardId";
+	public static final String PRIMARY_KEY = "_id";
+	public static final String COMPANY_CODE = "CompanyCode";
+	public static final String ALL_CLIENTS = "AllClients";
+
+	private Context ctx;
+
+
+	public final static String TABLE = "User";
+
+	public static UserDB instance;
+
+	/*	public static UserDB getSharedInstance(){
+		if(instance == null){
+			SharedMethods.logError("User instance NUll");
+			instance = new UserDB();
+		}else{
+			SharedMethods.logError("User instance NOT NUll");
+		}
+		return instance;
+	}*/
+
+
+	public UserDB(Context ctx) {		
+		//super(context);
+		// TODO Auto-generated constructor stub
+		//	open();
+		super();
+		this.ctx = ctx;
+		SharedMethods.logError("USER DB Constructor");
+	}
+
+	public long addUserDetails(User user){
+		System.out.println("USer StartUp : "+ System.currentTimeMillis());
+		long count =-2;
+		SQLiteDatabase db= this.getWritableDatabase();
+		try{
+			db.beginTransaction();
+			SQLiteStatement statement = db.compileStatement(this.USER_QUERY);
+
+			//boolean b = isUserAvailable(user.getUserId());
+			statement.bindLong(1, user.getUserId());
+			statement.bindString(2, user.getUserName());
+			statement.bindString(3, user.getCompanyId());
+			statement.bindString(4, user.getMobileNumber());
+			statement.bindString(5, user.getUserCardType());
+			statement.bindLong(6, user.getDefaultCardId());
+			statement.bindLong(7, user.getLanguageId());
+			statement.bindLong(8, user.getCardSource());
+			byte overr = (byte) ((user.isCardOverRide())?1:0);
+			statement.bindLong(9, overr);
+			byte roC = (byte) ((user.isRoClient())?1:0);	
+			statement.bindLong(10, roC);
+			byte allClients = (byte) ((user.isAllClientsEnable())?1:0);
+			statement.bindLong(11, allClients);
+			db.delete(TABLE, null, null);
+			statement.execute();
+			statement.clearBindings();
+			db.setTransactionSuccessful();
+
+		}catch (Exception e) {
+			// TODO: handle exception
+			SharedMethods.logError("Exc "+e.getMessage());
+		}
+		finally{
+			db.endTransaction();
+			db.close();
+		}
+		System.out.println("User End : "+ System.currentTimeMillis());
+		return count;
+	}	
+
+	private boolean isUserAvailable(int usrId) {	
+		//SQLiteDatabase db= this.getWritableDatabase();
+		Cursor usrCursor = this.getWritableDatabase().query(TABLE, null, USER_ID + "="+ usrId, null, null, null, null);
+
+		if(usrCursor!= null){
+			if(usrCursor.moveToNext()){
+				/*db.close();
+				usrCursor.close();*/
+				return true;
+			}
+		}
+		//db.close();
+		usrCursor.close();
+		return false;
+
+	}
+
+	public int getUserCardType(String mobileNo){
+		int defcardId =-1;
+		SQLiteDatabase db= this.getWritableDatabase();
+		Cursor cursor = db.query(TABLE, null, MOBILE_NO+"=?", new String[]{mobileNo}, null, null, null);
+		if(cursor != null){
+			if(cursor.moveToNext()){
+				defcardId = cursor.getInt(cursor.getColumnIndex(USER_DEF_CARD_ID));
+			}
+		}
+		db.close();
+		cursor.close();
+		return defcardId;
+	}
+
+	public User getUser(int usrId){
+		SharedMethods.logError("SQLITE USER_ID : "+ usrId);
+		User usr = new User();
+		if(this == null){
+			SharedMethods.logError("USER DB NULL: ");
+		}else{
+			SharedMethods.logError("USER DB NOT NULL: ");
+		}
+		SQLiteDatabase db = null;
+		try{
+			db= this.getWritableDatabase();
+		}catch (Exception e) {
+			// TODO: handle exception
+			SharedMethods.logError("e.getMessage :"+ e.getMessage());
+		}
+
+		if(db == null){
+			SharedMethods.logError("SQL DB NUll");
+		}else{
+			SharedMethods.logError("SQL DB not NUll");
+		}
+
+		Cursor cursor = db.query(TABLE, null, USER_ID+"=?", new String[]{Integer.toString(usrId)}, null, null, null);
+		if(cursor != null){
+			if(cursor.moveToNext()){
+				usr.setUserName(cursor.getString(cursor.getColumnIndex(USER_NAME)));
+				usr.setUserId(usrId);
+				int cSource = cursor.getInt(cursor.getColumnIndex(CARD_SOURCE));
+				usr.setCardSource(cSource);
+				/*if(cSource == 1){
+					usr.setCaudSource(true);
+				}else{
+					usr.setCaudSource(false);
+				}*/
+				byte override = (byte) cursor.getInt(cursor.getColumnIndex(CARDOVERRIDE));
+				//usr.setCardOverRide(true);
+				if(override == 1){
+					usr.setCardOverRide(true);
+				}else{
+					usr.setCardOverRide(false);
+				}
+				byte row = (byte) cursor.getInt(cursor.getColumnIndex(ROCLIENT));
+				if(row == 1){
+					usr.setRoClient(true);
+				}else{
+					usr.setRoClient(false);
+				}
+
+				byte allClients = (byte) cursor.getInt(cursor.getColumnIndex(ALL_CLIENTS));
+				if(allClients == 1){
+					usr.setAllClientsEnable(true);
+				}else{
+					usr.setAllClientsEnable(false);
+				}
+				usr.setDefaultCardId(cursor.getInt(cursor.getColumnIndex(USER_DEF_CARD_ID)));
+				usr.setMobileNumber(cursor.getString(cursor.getColumnIndex(MOBILE_NO)));				
+			}
+		}
+		db.close();
+		cursor.close();
+		return usr;
+
+	}
+
+
+	/*	@Override
+	public void open() {
+		// TODO Auto-generated method stub
+		super.open();
+		SharedMethods.logError("USER DB Open");
+	}*/
+
+}

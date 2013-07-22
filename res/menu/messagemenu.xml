@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/del"
+        android:icon="@drawable/deliver"
+        android:title="@string/VIEW_DILIVERD"/>
+
+    <item
+        android:id="@+id/pen"
+        android:icon="@drawable/pen"
+        android:title="@string/VIEW_PENDING"/>
+
+    <item
+        android:id="@+id/failed"
+        android:icon="@drawable/fail"
+        android:title="@string/VIEW_Failed"/>
+
+    <item
+        android:id="@+id/all"
+        android:icon="@drawable/vall"
+        android:title="@string/VIEW_ALL"/>
+
+</menu>

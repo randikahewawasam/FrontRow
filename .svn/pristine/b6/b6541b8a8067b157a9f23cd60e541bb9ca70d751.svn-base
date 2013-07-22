@@ -1,0 +1,204 @@
+package com.frontrow.ui;
+
+import java.util.LinkedList;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.frontrow.adapters.FrontRowMessageAdapter;
+import com.frontrow.android.db.MessagesDB;
+import com.frontrow.base.BaseActivity;
+import com.frontrow.common.Constants;
+import com.frontrow.common.SharedMethods;
+import com.frontrow.core.ApplicationUser;
+import com.frontrow.datamanagers.FRSOfflineMessageDataManager;
+import com.frontrow.interfaces.IFrontResponseReceiver;
+import com.frontrow.language.LanguageManager;
+import com.row.mix.beans.OfflineM;
+import com.row.mix.response.OfflineResponse;
+
+public class FRSMessages extends BaseActivity implements IFrontResponseReceiver{
+	private LinkedList<OfflineM> mList;
+	private FrontRowMessageAdapter msgAdapter;
+	private ListView msgList;
+	private TextView notification;
+	private OfflineResponse res;
+	private ApplicationUser appUsr;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub	
+		//requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
+		setContentView(R.layout.frsmessagelist);		
+		super.onCreate(savedInstanceState);
+	}
+
+	@Override
+	protected void initializeUI() {
+		// TODO Auto-generated method stub
+		titlename.setText("Message Queue");
+		appUsr = ApplicationUser.getSharedInstance();
+		notification = (TextView) findViewById(R.id.notification);
+		msgList = (ListView) findViewById(R.id.msgList);
+		addListeners();
+	}
+
+	@Override
+	protected void refreshUI() {
+		// TODO Auto-generated method stub
+		removeDialog(Constants.SHOW_DIALOG);
+		if(res.getResponseCode() == Constants.NETWORK_SUCCESS){
+			Toast toast = Toast.makeText(this.getParent(), getResources().getString(R.string.ANSWER_CARD_SUBMIT_SUCCESS), 5000);
+			toast.show();
+		}else if(res.getResponseCode() == Constants.NETWORK_NOT_AVAILABLE){
+			Toast toast = Toast.makeText(this.getParent(), getResources().getString(R.string.NETWRK_ERR_SAVED_TO_DB), 5000);
+			toast.show();
+		}else if(res.getResponseCode() == Constants.NETWORK_PARSE_ERROR){
+			Toast toast = Toast.makeText(this.getParent(), getResources().getString(R.string.CARD_ERROR), 5000);
+			toast.show();
+		}
+		this.mList = new MessagesDB(this).getAllMessages(this.appUsr.getUserId());
+		msgAdapter = new FrontRowMessageAdapter(this, R.layout.frsmessagelist, mList);
+		msgList.setAdapter(msgAdapter);
+		msgAdapter.notifyDataSetChanged();
+	}
+
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		FRSOfflineMessageDataManager.getSharedInstance().registerForDineSafe(this);
+		MessagesDB db =new MessagesDB(this);
+		//db.open();
+		this.mList = new MessagesDB(this).getAllMessages(appUsr.getUserId());
+		
+
+		if(mList != null && !mList.isEmpty()){
+			msgAdapter = new FrontRowMessageAdapter(this, R.layout.frsmessagelist, mList);
+			msgList.setAdapter(msgAdapter);
+			msgAdapter.notifyDataSetChanged();
+		}else{
+			notification.setText(getResources().getString(R.string.EMPTY_MSG_LIST));
+		}		
+		
+	}
+
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		FRSOfflineMessageDataManager.getSharedInstance().unregisterForDineSafe(this);
+	}
+
+	private void addListeners() {
+		msgList.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int position,
+					long arg3) {
+				// TODO Auto-generated method stub
+				OfflineM off =(OfflineM) msgList.getItemAtPosition(position);
+				if(off.getStatus() == Constants.PENDING || off.getStatus() == Constants.FAILED){
+					confirmationAlert(off);
+				}
+			}
+		});
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		// TODO Auto-generated method stub
+		super.onSaveInstanceState(outState);
+		//this.finish();
+	}
+
+	private void confirmationAlert(final OfflineM msg) {
+		new AlertDialog.Builder(this).setTitle(LanguageManager.getString(R.string.SALES_PRO)).setMessage(LanguageManager.getString(R.string.RETRY_MSG)).setCancelable(false).setNeutralButton(
+				LanguageManager.getString(R.string.YES),
+				new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						showDialog(Constants.SHOW_DIALOG);
+						//new MessagesDB(this);
+						new MessagesDB(getApplicationContext()).deleteList(appUsr.getUserId(), msg.getId());
+						FRSOfflineMessageDataManager.getSharedInstance().sendOfflineMessages(msg);						
+					}
+				}).setNegativeButton(LanguageManager.getString(R.string.NO),new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog,int which) {
+
+					}
+				}).show();
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// TODO Auto-generated method stub
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.messagemenu, menu);	
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// TODO Auto-generated method stub
+		switch (item.getItemId()) {
+		case R.id.del:			
+			this.mList = new MessagesDB(this).getAllMessagesForUser(appUsr.getUserId(), Constants.SUCCESS);
+			msgAdapter = new FrontRowMessageAdapter(this, R.layout.frsmessagelist, mList);
+			msgList.setAdapter(msgAdapter);
+			msgAdapter.notifyDataSetChanged();
+			break;
+		case R.id.pen:	
+
+			this.mList = new MessagesDB(this).getAllMessagesForUser(appUsr.getUserId(), Constants.PENDING);
+			msgAdapter = new FrontRowMessageAdapter(this, R.layout.frsmessagelist, mList);
+			msgList.setAdapter(msgAdapter);
+			msgAdapter.notifyDataSetChanged();
+			break;
+		case R.id.all:			
+			this.mList = new MessagesDB(this).getAllMessages(appUsr.getUserId());			
+			msgAdapter = new FrontRowMessageAdapter(this, R.layout.frsmessagelist, mList);
+			msgList.setAdapter(msgAdapter);
+			msgAdapter.notifyDataSetChanged();
+			break;
+		case R.id.failed:
+			this.mList = new MessagesDB(this).getAllMessagesForUser(appUsr.getUserId(), Constants.FAILED);		
+			msgAdapter = new FrontRowMessageAdapter(this, R.layout.frsmessagelist, mList);
+			msgList.setAdapter(msgAdapter);
+			msgAdapter.notifyDataSetChanged();
+		default:
+			break;
+		}
+		return true;
+	}
+
+	public LinkedList<OfflineM> getmList() {
+		return mList;
+	}
+
+	public void setmList(LinkedList<OfflineM> mList) {
+		this.mList = mList;
+	}
+
+	@Override
+	public void webResponseRecievedFromDataManager(Object response) {
+		// TODO Auto-generated method stub
+		this.res = (OfflineResponse) response;
+		if(response instanceof OfflineResponse){
+			refreshViewInTheUIThread();
+		}
+	}
+
+}

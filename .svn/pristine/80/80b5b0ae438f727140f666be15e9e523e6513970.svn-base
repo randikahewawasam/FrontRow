@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="?title"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="horizontal" >
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="0px"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_weight="0.1"
+        android:src="@drawable/headerlogo" />
+
+    <TextView
+        android:id="@+id/uname"
+        android:layout_width="0px"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="0.3"
+        android:gravity="center_vertical|left"
+        android:singleLine="true"
+        android:textColor="@color/ColorPureWhite"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="0px"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="0.3"
+        android:gravity="center_vertical|right"
+        android:singleLine="true"
+        android:text="@string/NET_STATUS"
+        android:textColor="@color/ColorPureWhite"
+        android:textStyle="bold" />
+
+    <ImageView
+        android:id="@+id/onlinestatus"
+        android:layout_width="0px"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="0.1"
+        android:scaleType="fitCenter" />
+
+</LinearLayout>

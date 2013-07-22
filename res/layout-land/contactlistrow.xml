@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:padding="5dp" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/contact_view_bg"
+        android:orientation="vertical" >
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" >
+
+            <LinearLayout
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:orientation="vertical"
+                android:padding="5dp" >
+
+                <TextView
+                    android:id="@+id/contactnametext"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:textColor="@color/ClientListFontColor"
+                    android:textSize="@dimen/Clinet_List_Text_Size"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/contacttitletext"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/ClientListFontColor"
+                    android:textSize="@dimen/Client_No" />
+
+                <TextView
+                    android:id="@+id/contactemailtext"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/ClientListFontColor"
+                    android:textSize="@dimen/Client_No" />
+
+                <TextView
+                    android:id="@+id/contactaddresstext"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:textColor="@color/ClientListFontColor"
+                    android:textSize="@dimen/Client_No" />
+
+                <TextView
+                    android:id="@+id/contactphn"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:textColor="@color/ClientListFontColor"
+                    android:textSize="@dimen/Client_No" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/contactprimarytext"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="0.2"
+                android:background="@drawable/primary_bg"
+                android:gravity="center_horizontal|center_vertical"
+                android:text="@string/PRIMARY_TXT"
+                android:textSize="@dimen/Client_No"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="0.1"
+                android:background="@null"
+                android:scaleType="fitCenter"
+                android:src="@drawable/arrowcontact" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" >
+
+            <Button
+                android:id="@+id/conmapbtn"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:background="@null"
+                android:drawableTop="@drawable/contactview_map_icon"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:text="@string/MAP_TXT"
+                android:textColor="@color/ColorPureWhite"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/conemailbtn"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:background="@null"
+                android:drawableTop="@drawable/contactview_maill_icon"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:text="@string/EMAIL_TXT"
+                android:textColor="@color/ColorPureWhite"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/connumbersbtn"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:background="@null"
+                android:drawableTop="@drawable/contactview_call_icon"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:text="@string/NUMBERS_TXT"
+                android:textColor="@color/ColorPureWhite"
+                android:textStyle="bold" />
+        </TableRow>
+    </LinearLayout>
+
+</TableLayout>

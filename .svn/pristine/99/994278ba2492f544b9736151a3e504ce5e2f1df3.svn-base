@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="?title"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_vertical"
+    android:orientation="horizontal" >
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerInParent="true"
+        android:scaleType="fitCenter"
+        android:src="@drawable/headerlogo"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/titlename"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerInParent="true"
+        android:gravity="center_horizontal"
+        android:scaleType="fitCenter"
+        android:text="TITLE"
+        android:textSize="@dimen/Tab_Bar_Text_Height"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
+    <ImageButton
+        android:id="@+id/addnotebtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerHorizontal="true"
+        android:background="@null"
+        android:contentDescription="@string/app_name"
+        android:paddingRight="5dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/plus"
+        android:visibility="gone" />
+      <ImageButton
+        android:id="@+id/addcontactbtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerHorizontal="true"
+        android:background="@null"
+        android:contentDescription="@string/app_name"
+        android:paddingRight="5dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/plus"
+        android:visibility="gone" />
+
+</RelativeLayout>

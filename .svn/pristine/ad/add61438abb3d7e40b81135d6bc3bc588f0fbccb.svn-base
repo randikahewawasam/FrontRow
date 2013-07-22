@@ -1,0 +1,151 @@
+package com.frontrow.ui;
+
+import java.util.ArrayList;
+
+import android.content.Intent;
+import android.content.res.Configuration;
+import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.View;
+import android.view.Window;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.EditText;
+import android.widget.ListView;
+import com.frontrow.adapters.FrontRowClientAdapter;
+import com.frontrow.android.db.ClientDB;
+import com.frontrow.base.BaseActivity;
+import com.frontrow.common.Constants;
+import com.frontrow.common.SharedMethods;
+import com.frontrow.core.ApplicationUser;
+import com.frontrow.datamanagers.AuthDataManager;
+import com.frontrow.interfaces.IFrontResponseReceiver;
+import com.row.mix.beans.Client;
+
+public class FRSClientList extends BaseActivity implements IFrontResponseReceiver{
+	private ArrayList<Client> clientList;
+	private FrontRowClientAdapter cAdapter;
+	private ListView clientRsltList;
+	private EditText clientHint;
+	private ApplicationUser appUsr;
+
+	@Override
+	protected void initializeUI() {
+		// TODO Auto-generated method stub
+		appUsr = ApplicationUser.getSharedInstance();
+		clientRsltList = (ListView) findViewById(R.id.cList);
+		clientHint = (EditText) findViewById(R.id.clientHInt);
+		clientHint.addTextChangedListener(filterTextWatcher);
+
+		/* Retrieving data from Current Instance */
+
+		//clientList = AuthDataManager.getSharedInstance().getClientList();
+		ClientDB clientDB =new ClientDB(this);
+		//clientDB.open();
+		clientList = clientDB.getAllClinets(appUsr.getUserId());
+		if(clientList != null){
+			cAdapter = new FrontRowClientAdapter(this, R.layout.clientdesclistrow, clientList);
+			clientRsltList.setAdapter(cAdapter);
+			clientRsltList.setTextFilterEnabled(true);
+		}	
+
+		addActionlisteners();
+	}
+
+	@Override
+	protected void refreshUI() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		clientHint.addTextChangedListener(filterTextWatcher);
+	}
+
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		clientHint.removeTextChangedListener(filterTextWatcher);
+	}
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
+		/*if((getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_SMALL){
+			setTheme(R.style.Theme_Small);
+			SharedMethods.logError("Dencity : "+ "Small");
+		}else if((getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_NORMAL){
+			setTheme(R.style.Theme_Medium);
+			SharedMethods.logError("Dencity : "+ "Medium");
+		}else if((getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_LARGE){
+			setTheme(R.style.Theme_Large);
+			SharedMethods.logError("Dencity : "+ "Large");
+		}else if((getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_XLARGE){
+			setTheme(R.style.Theme_Large);
+			SharedMethods.logError("Dencity : "+ "XLarge");
+		}*/
+		setContentView(R.layout.clientlist);
+		super.onCreate(savedInstanceState);
+	}
+
+	@Override
+	public void webResponseRecievedFromDataManager(Object response) {
+		// TODO Auto-generated method stub
+
+	}
+
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		// TODO Auto-generated method stub
+		super.onSaveInstanceState(outState);
+		this.finish();
+	}
+	
+	
+	private void addActionlisteners() {
+		clientRsltList.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View arg1, int position,
+					long arg3) {
+				// TODO Auto-generated method stub
+				Bundle bundle = new Bundle();
+				//parent.getChildAt(position).setBackgroundColor(getResources().getColor(R.color.ListSelectorColor));
+				Client client = (Client) clientRsltList.getItemAtPosition(position);
+				bundle.putString(Constants.CLIENT_NUMBER, client.getClientNumber());
+				bundle.putString(Constants.CARD_TYPE, client.getCardtype());
+				Intent intent = new Intent(FRSClientList.this, FRSAnswerActivityCard.class);
+				intent.putExtras(bundle);
+				startActivity(intent);
+			}
+		});
+	}
+
+	private TextWatcher filterTextWatcher = new TextWatcher() {
+
+		public void afterTextChanged(Editable s) {
+
+		}
+
+		public void beforeTextChanged(CharSequence s, int start, int count,
+				int after) {
+		}
+
+		public void onTextChanged(CharSequence s, int start, int before,
+				int count) {
+			SharedMethods.logError("SSSSSSSSSSSSS " + s + Integer.toString(count));
+			cAdapter.getFilter().filter(s); //Filter from my adapter
+			cAdapter.notifyDataSetChanged();
+		}
+	};
+
+
+}

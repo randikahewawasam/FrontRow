@@ -1,0 +1,263 @@
+ <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/mainbg"
+        android:orientation="vertical" >
+
+     <TableLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/answeractivitycarddropdowncollapsbg"
+            android:padding="8dp" >
+            
+          <View
+                android:layout_width="fill_parent"
+                android:layout_height="10dp" />
+
+            <TableRow>
+
+                <TextView
+                    android:id="@+id/addmain_streettextid"
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="0.4"
+                    android:paddingLeft="8dip"
+                    android:text="@string/STREET_TXT"
+                    android:textColor="@color/ListSelectorColor" />
+
+                <EditText
+                    android:id="@+id/addmain_streetid"
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:background="@drawable/frs_edit_text"
+                    android:minHeight="@dimen/Login_Page_EditText_Min_Height"
+                    android:paddingLeft="5dp"
+                    android:imeOptions="actionNext"
+                    android:nextFocusDown="@+id/addmain_cityid"
+                    android:singleLine="true"
+                    android:textSize="@dimen/Login_Page_EditText_Font_Size" />
+            </TableRow>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="2dp" />
+
+            <TableRow android:layout_height="match_parent" >
+
+                <TextView
+                    android:id="@+id/addmain_citytextid"
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="0.4"
+                    android:paddingLeft="8dip"
+                    android:text="@string/CITY_TXT"
+                    android:textColor="@color/ListSelectorColor" />
+
+                <EditText
+                    android:id="@+id/addmain_cityid"
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:nextFocusUp="@+id/addmain_streetid"
+                    android:imeOptions="actionNext"
+                    android:nextFocusDown="@+id/addmain_provinceid"
+                    android:background="@drawable/frs_edit_text"
+                    android:minHeight="@dimen/Login_Page_EditText_Min_Height"
+                    android:paddingLeft="5dp"
+                    android:singleLine="true"
+                    android:textSize="@dimen/Login_Page_EditText_Font_Size" />
+            </TableRow>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="2dp" />
+
+            <TableRow>
+
+                <TextView
+                    android:id="@+id/addmain_provincetextid"
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="0.4"
+                    android:paddingLeft="8dip"
+                    android:text="@string/PROVINCE_TXT"
+                    android:textColor="@color/ListSelectorColor" />
+
+                <EditText
+                    android:id="@+id/addmain_provinceid"
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:maxLength="4"
+                    android:nextFocusUp="@+id/addmain_cityid"
+                    android:imeOptions="actionNext"
+                    android:nextFocusDown="@+id/addmain_postalid"
+                    android:background="@drawable/frs_edit_text"
+                    android:minHeight="@dimen/Login_Page_EditText_Min_Height"
+                    android:paddingLeft="5dp"
+                    android:singleLine="true"
+                    android:textSize="@dimen/Login_Page_EditText_Font_Size" />
+            </TableRow>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="2dp" />
+
+            <TableRow>
+
+                <TextView
+                    android:id="@+id/addmain_postaltextid"
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="0.4"
+                    android:paddingLeft="8dip"
+                    android:text="@string/ZIP_TXT"
+                    android:textColor="@color/ListSelectorColor" />
+
+                <EditText
+                    android:id="@+id/addmain_postalid"
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:nextFocusUp="@+id/addmain_provinceid"
+                    android:imeOptions="actionNext"
+                    android:nextFocusDown="@+id/addmain_countryid"
+                    android:background="@drawable/frs_edit_text"
+                    android:minHeight="@dimen/Login_Page_EditText_Min_Height"
+                    android:paddingLeft="5dp"
+                    android:singleLine="true"
+                    android:textSize="@dimen/Login_Page_EditText_Font_Size" />
+            </TableRow>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="2dp" />
+
+            <TableRow>
+
+                <TextView
+                    android:id="@+id/addmain_countrytextid"
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="0.4"
+                    android:paddingLeft="8dip"
+                    android:text="@string/COUNTRY_TXT"
+                    android:textColor="@color/ListSelectorColor" />
+
+                <EditText
+                    android:id="@+id/addmain_countryid"
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:nextFocusUp="@+id/addmain_postalid"
+                    android:imeOptions="actionNext"
+                    android:nextFocusDown="@+id/add_primary_chk_boxid"
+                    android:background="@drawable/frs_edit_text"
+                    android:minHeight="@dimen/Login_Page_EditText_Min_Height"
+                    android:paddingLeft="5dp"
+                    android:singleLine="true"
+                    android:textSize="@dimen/Login_Page_EditText_Font_Size" />
+            </TableRow>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="2dp" />
+
+            <TableRow>
+
+                <TextView
+                    android:id="@+id/addmain_reltextid"
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="0.4"
+                    android:paddingLeft="8dip"
+                    android:text="@string/RELATIONSHIP_TXT"
+                    android:textColor="@color/ListSelectorColor" />
+
+                <Spinner
+                    android:id="@+id/addmain_reltypes"
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/contact_drop_down"
+                    android:editable="false" />
+            </TableRow>
+            
+               <TableRow>
+
+                <TextView
+                    android:id="@+id/add_primary_txt_id"
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="0.4"
+                    android:paddingLeft="8dip"
+                    android:text="@string/PRIMARY_TXT"
+                    android:textColor="@color/ListSelectorColor" />
+
+                <CheckBox
+                    android:id="@+id/add_primary_chk_boxid"
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:button="@drawable/frs_custom_checked_box"
+                    android:nextFocusUp="@+id/addmain_countryid"
+                    android:imeOptions="actionDone"
+                    android:editable="false"
+                    android:gravity="center_horizontal|center_vertical" />
+            </TableRow>
+            
+      </TableLayout>
+             <TableLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:padding="8dp" >
+
+            <TableRow>
+
+                <Button
+                    android:id="@+id/adddeletebtn"
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="1"
+                    android:background="@drawable/delete_button"
+                    android:text="@string/ADDRESS_DELETE_TXT"
+                    android:textColor="@color/ColorPureWhite"
+                    android:textStyle="bold" />
+            </TableRow>
+
+               <TableRow>
+
+                <Button
+                    android:id="@+id/add_addbtn"
+                    android:layout_width="0px"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="1"
+                    android:background="@drawable/login_button"
+                    android:text="@string/CREATE_ADDRESS"
+                    android:textColor="@color/ColorPureWhite"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+            </TableRow>
+        </TableLayout>    
+
+
+</LinearLayout>

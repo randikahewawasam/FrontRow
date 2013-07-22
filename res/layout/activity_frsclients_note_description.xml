@@ -1,0 +1,32 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/mainbg"
+    android:orientation="vertical" >
+    
+    <View  android:layout_width="fill_parent"
+        android:layout_height="5dip">
+        
+    </View>
+
+    <EditText
+        android:id="@+id/notedesc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="10"
+        android:minLines="3"
+        android:paddingTop="2dip"
+        android:singleLine="false" >
+    </EditText>
+
+    <Button
+        android:id="@+id/btnnoteedit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/login_button"
+        android:text="Edit"
+        android:textColor="@color/ColorPureWhite"
+        android:textStyle="bold" />
+
+</LinearLayout>

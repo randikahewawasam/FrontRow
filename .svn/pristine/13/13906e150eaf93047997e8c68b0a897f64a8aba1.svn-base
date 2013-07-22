@@ -1,0 +1,49 @@
+package com.frontrow.ui;
+
+import java.util.List;
+
+import com.frontrow.adapters.FrontRowContactAdapter;
+import com.frontrow.adapters.FrontRowCustomFileldsAdapter;
+import com.frontrow.base.BaseActivity;
+import com.frontrow.datamanagers.ContactsDataManager;
+import com.frontrow.datamanagers.CustomFieldDataManager;
+import com.row.mix.beans.Contact;
+import com.row.mix.beans.CustomField;
+
+import android.os.Bundle;
+import android.app.Activity;
+import android.view.Menu;
+import android.widget.ListView;
+
+public class ContactList extends BaseActivity {
+	private ListView contactList;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+    	setContentView(R.layout.activity_contact_list);
+        super.onCreate(savedInstanceState);
+        
+    }
+
+  /*  @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_contact_list, menu);
+        return true;
+    }*/
+
+	@Override
+	protected void initializeUI() {
+		// TODO Auto-generated method stub
+		contactList =(ListView) findViewById(R.id.contactlist);
+		 List<Contact> contact_list = ContactsDataManager.getSharedInstance().getContactslist();
+		 FrontRowContactAdapter adapter = new FrontRowContactAdapter(this,
+  			 R.layout.contactlistrow, contact_list);
+		 contactList.setAdapter(adapter);
+	}
+
+	@Override
+	protected void refreshUI() {
+		// TODO Auto-generated method stub
+		
+	}
+}

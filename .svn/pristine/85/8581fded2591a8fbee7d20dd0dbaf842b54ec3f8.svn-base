@@ -1,0 +1,650 @@
+package com.frontrow.base;
+
+import com.frontrow.android.db.FrontRowDBHelper;
+import com.frontrow.android.services.OfflineMessageService;
+import com.frontrow.common.Constants;
+import com.frontrow.common.Constants.AddressType;
+import com.frontrow.common.Constants.ContactType;
+import com.frontrow.common.Constants.PhoneType;
+import com.frontrow.common.SharedMethods;
+import com.frontrow.core.ApplicationUser;
+import com.frontrow.interfaces.FRSAddNewAddressListener;
+import com.frontrow.interfaces.FRSAddNewClientListener;
+import com.frontrow.interfaces.FRSAddNewContactListener;
+import com.frontrow.interfaces.FRSAddNewPhoneListener;
+import com.frontrow.interfaces.FRSAddNoteListener;
+import com.frontrow.ui.ContactList;
+import com.frontrow.ui.FRSAddressList;
+import com.frontrow.ui.FRSAddressMaintenance;
+import com.frontrow.ui.FRSClientList;
+import com.frontrow.ui.FRSClientMaintenance;
+import com.frontrow.ui.FRSClientsNotes;
+import com.frontrow.ui.FRSContactMaintenance;
+import com.frontrow.ui.FRSNewClient;
+import com.frontrow.ui.FRSPhoneList;
+import com.frontrow.ui.FRSPhoneMaintenance;
+import com.frontrow.ui.FRSTabMenu;
+import com.frontrow.ui.R;
+import com.frontrow.ui.TabManager;
+import android.app.Activity;
+import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Configuration;
+import android.location.Address;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
+import android.os.Handler;
+import android.provider.Settings;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.Window;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public abstract class BaseActivity extends Activity implements LocationListener{
+
+	protected Handler uiUpdateHandler;
+	private Thread refreshThread = null;
+	private boolean isVisible = false;
+	protected byte connectionMode;
+	public static Context currentContext;
+	protected TextView userName;
+	private String displayname;
+	private ImageView networkStatus;
+	private ImageView logo;
+	protected abstract void initializeUI();
+	protected abstract void refreshUI();
+	private Intent intent;
+	private ProgressDialog dialog;
+	protected ApplicationUser appUsr,tempUsr;
+	private ImageButton addnote;
+	protected TextView titlename;
+	private FRSAddNoteListener addNoteListener;
+
+	private FRSAddNewContactListener addContactListener;
+	private LocationListener locationListener;
+	protected LocationManager locationManager;
+	protected String provider;
+	private FRSAddNewClientListener addClientListener;
+	private boolean isClientNote;
+	protected boolean isLocationSettingsFired = false;
+	private ImageButton addcontact;
+	protected ImageButton editContact;
+	protected ImageButton editAddress;
+	protected ImageButton addPhone;
+	protected ImageButton editPhone;
+
+	private FRSAddNewAddressListener addAddressListener;
+	private FRSAddNewPhoneListener addPhoneListener;
+	private ImageButton addAddress;
+
+	public FRSAddNewContactListener getAddContactListener() {
+		return addContactListener;
+	}
+	public void setAddContactListener(FRSAddNewContactListener addContactListener) {
+		this.addContactListener = addContactListener;
+	}
+	public FRSAddNoteListener getAddNoteListener() {
+		return addNoteListener;
+	}
+	public FRSAddNewClientListener getAddClientListener() {
+		return addClientListener;
+	}
+	public void setAddClientListener(FRSAddNewClientListener addClientListener) {
+		this.addClientListener = addClientListener;
+	}
+	public void setAddNoteListener(FRSAddNoteListener addNoteListener) {
+		this.addNoteListener = addNoteListener;
+	}
+
+	public FRSAddNewAddressListener getAddAddressListener() {
+		return addAddressListener;
+	}
+	public void setAddAddressListener(FRSAddNewAddressListener addAddressListener) {
+		this.addAddressListener = addAddressListener;
+	}
+
+
+	public FRSAddNewPhoneListener getAddPhoneListener() {
+		return addPhoneListener;
+	}
+	public void setAddPhoneListener(FRSAddNewPhoneListener addPhoneListener) {
+		this.addPhoneListener = addPhoneListener;
+	}
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		/* Getting the Screen dencity of the device*/	
+		super.onCreate(savedInstanceState);	
+
+		try{
+			FRSTabMenu.myTabLayoutDemo.getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE,R.layout.frscustomtitle);
+		}catch (Exception e) {
+			// TODO: handle exception
+			SharedMethods.logError("Error 1"+e.getMessage());
+			try{
+				getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.frscustomtitle);
+			}catch (Exception e1) {
+				// TODO: handle exception
+				SharedMethods.logError("Error 2"+e.getMessage());
+			}
+		}
+
+
+
+
+		DisplayMetrics metrics = new DisplayMetrics();
+		getWindowManager().getDefaultDisplay().getMetrics(metrics);
+		SharedMethods.logError("Appp : "+ metrics.densityDpi);
+
+		appUsr = ApplicationUser.getSharedInstance();
+
+		/* Restore values */
+		if(savedInstanceState !=null){
+
+			if(FrontRowDBHelper.getContext() == null){
+				FrontRowDBHelper.setContext(this);
+			}
+
+			this.appUsr =	savedInstanceState.getParcelable(Constants.PARCEBLE_KEY);
+			SharedMethods.logError("Loadeed : "+ this.appUsr.getCompanyId());
+			tempUsr = ApplicationUser.getSharedInstance();
+			if(FrontRowDBHelper.getContext() == null){
+				FrontRowDBHelper.setContext(this);
+			}
+			setrestoreValues();
+		}
+
+		addnote = (ImageButton) findViewById(R.id.addnotebtn);
+		titlename =(TextView) findViewById(R.id.titlename);
+		logo =(ImageView) findViewById(R.id.logo);
+		addcontact = (ImageButton) findViewById(R.id.addcontactbtn);	
+		editContact = (ImageButton) findViewById(R.id.editcontactbtn);
+		addAddress = (ImageButton) findViewById(R.id.add_add_btn);
+		editAddress =(ImageButton) findViewById(R.id.editaddressbtn);
+		addPhone =(ImageButton) findViewById(R.id.add_phn_btn);
+		editPhone=(ImageButton) findViewById(R.id.editphnbtn);
+
+		if(addnote == null){
+			addnote = (ImageButton)  FRSTabMenu.myTabLayoutDemo.findViewById(R.id.addnotebtn);
+		}
+		if(addcontact == null)
+		{
+			addcontact = (ImageButton)  FRSTabMenu.myTabLayoutDemo.findViewById(R.id.addcontactbtn);
+		}
+		if( titlename ==null){
+			titlename = (TextView)  FRSTabMenu.myTabLayoutDemo.findViewById(R.id.titlename);
+		}
+		if (logo == null){
+			logo = (ImageView)  FRSTabMenu.myTabLayoutDemo.findViewById(R.id.logo);
+		}
+		if(addAddress == null)
+		{
+			addAddress =(ImageButton)  FRSTabMenu.myTabLayoutDemo.findViewById(R.id.add_add_btn);
+		}
+		if(editContact == null){
+
+			editContact = (ImageButton) FRSTabMenu.myTabLayoutDemo.findViewById(R.id.editcontactbtn);
+		}
+
+		if(editAddress == null){
+
+			editAddress = (ImageButton) FRSTabMenu.myTabLayoutDemo.findViewById(R.id.editaddressbtn);
+		}
+		if(addPhone == null)
+		{
+			addPhone =(ImageButton)  FRSTabMenu.myTabLayoutDemo.findViewById(R.id.add_phn_btn);
+		}
+
+		if(editPhone == null)
+		{
+			editPhone =(ImageButton)  FRSTabMenu.myTabLayoutDemo.findViewById(R.id.editphnbtn);
+		}
+
+		uiUpdateHandler = new Handler();
+		intent = new Intent(this, OfflineMessageService.class);
+		initializeUI();	
+
+	}
+
+	protected void refreshViewInTheUIThread() {
+		uiUpdateHandler.post(new Runnable() {
+			@Override
+			public void run() {						
+				refreshUI();				
+			}
+		});
+	}
+
+
+
+	protected void onDestroy() {
+		//SharedMethods.logError("onDestroy **** " +mmn this);		
+		super.onDestroy();
+		//killAllObjectsAndExit();
+
+	}
+
+	/*protected void killAllObjectsAndExit() {
+		System.runFinalizersOnExit(true);
+		System.exit(0);
+	}*/
+
+	@Override
+	protected void onResume() {
+		isVisible = true;		
+		super.onResume();
+		com.frontrow.ui.TabManager parentActivity = (TabManager) getParent();
+		if(appUsr.getUserId() == 0 && parentActivity != null){			
+			parentActivity.restartFRS();
+		}
+		/* Starts the service */
+		if (addnote != null){
+			if(this.getClass() == FRSClientsNotes.class){
+				addnote.setVisibility(View.VISIBLE);
+				isClientNote=true;
+			}
+			else if(this.getClass() == FRSClientList.class){
+				addnote.setVisibility(View.VISIBLE);
+			}
+			else{
+				addnote.setVisibility(View.GONE);
+				isClientNote=false;
+			}
+		}
+		if (addcontact != null)
+		{
+			if(this.getClass() ==ContactList.class){
+				addcontact.setVisibility(View.VISIBLE);
+			}
+			else{
+				addcontact.setVisibility(View.GONE);
+			}
+		}
+
+		if (addAddress != null)
+		{
+			if (this.getClass() == FRSAddressList.class)
+			{
+				addAddress.setVisibility(View.VISIBLE);
+			}
+			else
+			{
+				addAddress.setVisibility(View.GONE)	;
+			}
+
+
+		}
+		if (addPhone != null)
+		{
+			if (this.getClass() == FRSPhoneList.class)
+			{
+				addPhone.setVisibility(View.VISIBLE);
+			}
+			else
+			{
+				addPhone.setVisibility(View.GONE);
+			}
+
+
+		}
+
+		if(editContact != null){
+			if(this.getClass() == FRSContactMaintenance.class){
+				if(Constants.contactType == ContactType.Delete_Contact || Constants.contactType == ContactType.Edit_Contact){
+					editContact.setVisibility(View.VISIBLE);
+				}else{
+					editContact.setVisibility(View.GONE);
+				}				
+			}else{
+				editContact.setVisibility(View.GONE);
+			}
+		}
+
+		if(editAddress != null){
+			if(this.getClass() == FRSAddressMaintenance.class){
+				if(Constants.addressType == AddressType.Delete_Address){
+					editAddress.setVisibility(View.VISIBLE);
+				}else{
+					editAddress.setVisibility(View.GONE);
+				}				
+			}else{
+				editAddress.setVisibility(View.GONE);
+			}
+		}
+
+		if(editPhone != null){
+			if(this.getClass() == FRSPhoneMaintenance.class){
+				if(Constants.phoneType == PhoneType.Delete_Phone){
+					editPhone.setVisibility(View.VISIBLE);
+				}else{
+					editPhone.setVisibility(View.GONE);
+				}				
+			}else{
+				editPhone.setVisibility(View.GONE);
+			}
+		}
+
+		if (titlename != null){
+			SharedMethods.logError("Current class "+ this.getClass());
+			if(this.getClass() != FRSClientMaintenance.class){
+				titlename.setVisibility(View.VISIBLE);
+			}else{
+				titlename.setVisibility(View.GONE);
+			}
+		}
+		if (logo !=null){
+			if(this.getClass() == FRSClientMaintenance.class){
+				logo.setVisibility(View.VISIBLE);
+			}else{
+				logo.setVisibility(View.GONE);
+			}
+		}
+		addActionListeners();
+		//startService(intent);
+		//registerReceiver(broadcastReceiver, new IntentFilter(OfflineMessageService.BROADCAST_ACTION));
+	}
+
+	@Override
+	protected void onPause() {
+		killThread();
+		super.onPause();
+		//stopService(intent); 
+		//unregisterReceiver(broadcastReceiver);
+	}
+
+	@Override
+	protected void onStop() {
+		killThread();		
+		super.onStop();
+	}
+
+	private void killThread() {
+		isVisible = false;
+	}
+	public void setUserName(TextView userName) {
+		this.userName = userName;
+	}
+	public String getDisplayname() {
+		return displayname;
+	}
+	public void setDisplayname(String displayname) {
+		this.displayname = displayname;
+	}
+	public TextView getUserName() {
+		return userName;
+	}
+	public ImageView getNetworkStatus() {
+		return networkStatus;
+	}
+	public void setNetworkStatus(ImageView networkStatus) {
+		this.networkStatus = networkStatus;
+	}
+
+	@Override
+	public void onLowMemory() {
+		// TODO Auto-generated method stub
+		super.onLowMemory();
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		// TODO Auto-generated method stub
+		super.onSaveInstanceState(outState);
+		SharedMethods.logError("Application FRS stored befored killed");
+		outState.putParcelable(Constants.PARCEBLE_KEY, this.appUsr);
+	}
+
+
+	private void setrestoreValues(){
+		tempUsr.setCompanyId(this.appUsr.getCompanyId());
+		tempUsr.setMobileNnumber(this.appUsr.getMobileNnumber());
+		tempUsr.setOnline(this.appUsr.isOnline());
+		tempUsr.setSaved(this.appUsr.isSaved());
+		tempUsr.setSingleView(this.appUsr.isSingleView());
+		tempUsr.setPassword(this.appUsr.getPassword());
+		tempUsr.setTempPwd(this.appUsr.getTempPwd());
+		tempUsr.setToken(this.appUsr.getToken());
+		tempUsr.setUserId(this.appUsr.getUserId());
+		tempUsr.setUserName(this.appUsr.getUserName());
+		tempUsr.setAllTerms(this.appUsr.getAllTerms());
+		tempUsr.setAppVerstion(this.appUsr.getAppVerstion());
+		SharedMethods.logError("Saved USer "+ appUsr.getMobileNnumber());
+	}
+
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onRestoreInstanceState(savedInstanceState);
+		SharedMethods.logError("Application Restored onRestoreInstanceState");
+		if(savedInstanceState !=null)
+			this.appUsr = savedInstanceState.getParcelable(Constants.PARCEBLE_KEY);
+	}
+
+	private void addActionListeners(){
+
+
+		if(addnote != null){
+			addnote.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					if(isClientNote){	
+						addNoteListener.addNote(v);
+					}
+					else{
+
+						addClientListener.addClient(v);
+					}
+					//showDialog(Constants.ADD_NOTE_DIALOG);
+				}
+			});
+
+		}
+
+		if(addcontact != null){
+			addcontact.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+
+
+					addContactListener.addContact(v);
+
+					//showDialog(Constants.ADD_NOTE_DIALOG);
+				}
+			});
+
+		}
+
+
+		if(editContact != null){
+			editContact.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					addContactListener.addContact(v);
+				}
+			});
+		}
+
+		if(editAddress != null){
+			editAddress.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					addAddressListener.addAddress(v);
+				}
+			});
+		}
+
+		if(editPhone != null){
+			editPhone.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					addPhoneListener.addPhone(v);
+				}
+			});
+		}
+		if (addAddress != null)
+		{
+			addAddress.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+
+
+					addAddressListener.addAddress(v);
+
+					//showDialog(Constants.ADD_NOTE_DIALOG);
+				}
+			});
+
+
+		}
+
+		if (addPhone != null)
+		{
+			addPhone.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+
+
+					addPhoneListener.addPhone(v);
+
+					//showDialog(Constants.ADD_NOTE_DIALOG);
+				}
+			});
+
+
+		}
+
+	}
+	protected void openlocationsettings() {
+		isLocationSettingsFired = true;
+		Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+		startActivity(intent);
+	}
+
+	protected void init() {
+		Location gpsLocation = null;
+		Location networkLocation = null;
+		locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
+		boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+		boolean isNetWorkEnable = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+		if (!isGPSEnabled && !isNetWorkEnable) {		  
+			getParent().showDialog(Constants.LOCATION_SETTINGS_DIALOG);
+		}
+
+
+		/*		if (!enabled) {
+			Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+			startActivity(intent);
+		}*/
+		locationListener = new LocationListener() {
+			public void onLocationChanged(Location location) {
+				// Called when a new location is found by the network location provider.
+
+				locationReceived(location);
+				//locationManager.removeUpdates(locationListener);
+			}
+
+			public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+			public void onProviderEnabled(String provider) {}
+
+			public void onProviderDisabled(String provider) {}
+		};
+
+
+
+		// Check if enabled and if not send user to the GSP settings
+		// Better solution would be to display a dialog and suggesting to 
+		// go to the settings
+		/*if (!enabled) {
+			Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+			startActivity(intent);
+		}*/
+		/*Criteria criteria = highFineCriteria();
+		provider = locationManager.getBestProvider(criteria, false);
+		Location location = locationManager.getLastKnownLocation(provider);
+		// Initialize the location fields
+		if (location != null) {
+
+			System.out.println("Provider " + provider + " has been selected.");
+			onLocationChanged(location);
+
+		}*/
+		if(isGPSEnabled && isNetWorkEnable){
+			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+		}
+		else if(!isNetWorkEnable && isGPSEnabled ){
+			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);  
+
+		}
+		else {
+			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);    			  
+		}
+
+	}
+	public void locationReceived(Location location){
+		double lat = location.getLatitude();
+		double lng = location.getLongitude();
+		appUsr.setLat(lat);
+		appUsr.setLon(lng);
+
+		//toast.show();
+		SharedMethods.logError("Lat : "+Double.toString(lat)+"Lon : "+ Double.toString(lng));
+	}
+	@Override
+	public void onLocationChanged(Location location) {
+		// TODO Auto-generated method stub
+		double lat = location.getLatitude();
+		double lng = location.getLongitude();
+		Toast toast = Toast.makeText(this, Double.toString(lat) + ", "+ Double.toString(lng), 5000);
+
+		toast.show();
+		SharedMethods.logError("Lat : "+Double.toString(lat)+"Lon : "+ Double.toString(lng));
+
+	}
+
+	@Override
+	public void onProviderDisabled(String provider) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onProviderEnabled(String provider) {
+		// TODO Auto-generated method stub
+
+	}
+	@Override
+	public void onStatusChanged(String provider, int status, Bundle extras) {
+		// TODO Auto-generated method stub
+
+	}
+}

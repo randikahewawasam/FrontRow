@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/allclientsboxbg"
+    android:orientation="vertical" >
+
+    <TableLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+       android:background="@drawable/allclientsboxbg"  >
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="0.8"
+                android:gravity="center_vertical|center_horizontal"
+                android:text="@string/LOCATION_SERVICES"
+                android:textColor="@color/Default_Text_Color"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <ImageButton
+                android:id="@+id/dismiss"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="0.2"
+                android:background="@null"
+                android:scaleType="fitCenter"
+                android:src="@drawable/cross" />
+        </TableRow>
+    </TableLayout>
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="15dp" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="5dp" >
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/LOCATION_ALERT"
+            android:textColor="@color/Default_Text_Color"
+            android:textStyle="bold" />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="10dp" />
+
+        <Button
+            android:id="@+id/location_settings"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/login_button"
+            android:text="@string/OPEN_SETTINGS"
+            android:textColor="@color/ColorPureWhite"
+            android:textStyle="bold" />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="10dp" />
+
+        <!-- <Button
+            android:id="@+id/enter_location"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/buttonbg"
+            android:text="@string/ENTER_LOCATION"
+            android:textColor="@color/ColorPlain"
+            android:textStyle="bold" />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="10dp" /> -->
+    </LinearLayout>
+
+</LinearLayout>

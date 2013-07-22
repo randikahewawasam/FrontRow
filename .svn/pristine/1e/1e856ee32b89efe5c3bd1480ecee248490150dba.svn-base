@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/mainbg"
+    android:orientation="vertical" >
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="fitCenter"
+        android:src="@drawable/settings_logo" />
+
+    <TableLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal" >
+
+        <TableRow>
+
+            <TextView
+                android:layout_column="0"
+                android:layout_weight="0.4" />
+
+            <Button
+                android:id="@+id/emaillogbtn"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/login_button"
+                android:text="Email Log File"
+                android:textColor="@color/ColorPureWhite" />
+
+            <TextView
+                android:layout_column="3"
+                android:layout_weight="0.4" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_column="0"
+                android:layout_weight="0.4" />
+
+            <Button
+                android:id="@+id/updatebtn"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/login_button"
+                android:text="Update"
+                android:textColor="@color/ColorPureWhite" />
+
+            <TextView
+                android:layout_column="3"
+                android:layout_weight="0.4" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_column="0"
+                android:layout_weight="0.4" />
+
+            <Button
+                android:id="@+id/logout"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/login_button"
+                android:text="LogOut"
+                android:textColor="@color/ColorPureWhite" />
+
+            <TextView
+                android:layout_column="3"
+                android:layout_weight="0.4" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_column="0"
+                android:layout_weight="0.2" />
+
+            <TextView
+                android:id="@+id/questionLblId"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.8"
+                android:text="@string/QUESTION_VIEW"
+                android:textColor="@color/ClientListFontColor" />
+
+            <CheckBox
+                android:id="@+id/dspView"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.2" />
+
+            <TextView
+                android:layout_column="3"
+                android:layout_weight="0.2" />
+        </TableRow>
+    </TableLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal" >
+
+        <View
+            android:layout_width="0px"
+            android:layout_height="fill_parent"
+            android:layout_weight="0.2" />
+
+        <TextView
+            android:id="@+id/versiontext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:scaleType="fitCenter"
+            android:text="Sudeepa"
+            android:textColor="@color/ClientListFontColor" />
+
+        <View
+            android:layout_width="0px"
+            android:layout_height="fill_parent"
+            android:layout_weight="0.2" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" android:layout_height="wrap_content"
+	android:layout_gravity="center_horizontal">
+	<TableRow>
+		<TextView android:layout_column="0" android:layout_weight="1" />
+		<ProgressBar android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:id="@+id/loginProgressbar"
+			android:layout_centerInParent="true" />
+		<TextView android:layout_column="3" android:layout_weight="1" />
+	</TableRow>
+</TableLayout>

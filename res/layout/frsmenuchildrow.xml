@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/answeractivitycarddropdowncollapsbg"
+        android:orientation="vertical"
+        android:paddingLeft="50dp" >
+
+        <TextView
+            android:id="@+id/frschildrow"
+            style="?childRow"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical"
+            android:paddingLeft="50dp"
+            android:textColor="@color/ColorPureWhite"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!--
+    <LinearLayout
+        android:id="@+id/TradeMnuLLGradientSpacer1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_weight="0.3"
+            android:background="@drawable/w_b_gradient1"
+            android:height="1dp"
+            android:text=" " >
+        </TextView>
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.4"
+            android:background="@color/ColorPureWhite"
+            android:height="1dp"
+            android:text=" " >
+        </TextView>
+
+        <TextView
+            android:id="@+id/TextView03"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="20dp"
+            android:layout_weight="0.3"
+            android:background="@drawable/w_b_gradient2"
+            android:height="1dp"
+            android:text=" " >
+        </TextView>
+    </LinearLayout>
+    -->
+
+</LinearLayout>

@@ -1,0 +1,324 @@
+package com.frontrow.ui;
+
+import java.util.List;
+
+import com.frontrow.adapters.FrontRowContactAdapter;
+import com.frontrow.adapters.FrontRowCustomFileldsAdapter;
+import com.frontrow.base.BaseActivity;
+import com.frontrow.common.Constants;
+import com.frontrow.common.Constants.ContactType;
+import com.frontrow.common.SharedMethods;
+import com.frontrow.datamanagers.ContactsDataManager;
+import com.frontrow.datamanagers.CustomFieldDataManager;
+import com.frontrow.interfaces.FRSAddNewContactListener;
+import com.frontrow.interfaces.FRSContactListBtnListener;
+import com.row.mix.beans.ClientsNotes;
+import com.row.mix.beans.Contact;
+import com.row.mix.beans.CustomField;
+import com.row.mix.beans.Location;
+
+import android.net.Uri;
+import android.os.Bundle;
+import android.app.Activity;
+import android.content.Intent;
+import android.view.Menu;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.AdapterView.OnItemClickListener;
+
+public class ContactList extends BaseActivity implements
+FRSContactListBtnListener,FRSAddNewContactListener  {
+	private ListView contactList;
+	FrontRowContactAdapter adapter;
+	private String clientName;
+	private int clientId;
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		setContentView(R.layout.activity_contact_list);
+		
+		super.onCreate(savedInstanceState);
+
+	}
+
+	/*
+	 * @Override public boolean onCreateOptionsMenu(Menu menu) {
+	 * getMenuInflater().inflate(R.menu.activity_contact_list, menu); return
+	 * true; }
+	 */
+
+	@Override
+	protected void initializeUI() {
+		// TODO Auto-generated method stub
+
+		Bundle bundle = getIntent().getExtras();
+		if (bundle != null) {
+			clientName=bundle.getString(Constants.CLIENT_NAME);
+			clientId = bundle.getInt(Constants.CLIENT_ID);
+			titlename.setText(clientName);
+		}
+		contactList = (ListView) findViewById(R.id.contactlist);
+		List<Contact> contact_list = ContactsDataManager.getSharedInstance()
+				.getContactslist();
+		adapter = new FrontRowContactAdapter(this, R.layout.contactlistrow,
+				contact_list);
+		contactList.setAdapter(adapter);
+		/*	if (contact_list != null && contact_list.size() != 0) {
+
+		}*/
+		/* else {
+			Bundle bundle2 = new Bundle();
+			bundle2.putString(Constants.ERROR_D,
+					getResources().getString(R.string.NO_CONTACT_INFO_MSG));
+			bundle2.putString(Constants.TYPE, Constants.GENARAL_ERROR_TYPE);
+			getParent().showDialog(Constants.ERROR_DIALOG, bundle2);
+
+		}*/
+
+		contactList.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View arg1,
+					int position, long arg3) {
+				// TODO Auto-generated method stub
+				Constants.contactType = ContactType.Edit_Contact;
+				
+				Bundle bundle = new Bundle();
+				Contact contact = (Contact) contactList
+						.getItemAtPosition(position);
+				Intent intent;
+				intent = new Intent(ContactList.this,FRSContactMaintenance.class);
+				bundle.putInt(Constants.CONTACT_ID, contact.getId());
+				bundle.putInt(Constants.CLIENT_ID, clientId);
+				intent.putExtras(bundle);
+				com.frontrow.ui.TabManager parentActivity = (TabManager) getParent();
+				parentActivity.startChild("ContactMaintance_Activity",
+						intent);
+			}
+		});
+		//addActionlisteners();
+	}
+
+	@Override
+	protected void refreshUI() {
+		// TODO Auto-generated method stub
+		titlename.setText(clientName);
+
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		titlename.setText(clientName);
+		adapter.setContactListBtnListener(this);
+		setAddContactListener(this);
+	}
+
+	@Override
+	public void doBtnWorks(View v, int type, Contact con) {
+		if (type == Constants.CALL_BTN) {
+			SharedMethods.callPhone(getParent(), con.getPrimaryPhone()
+					.getPhoneNumber());
+
+		} else if (type == Constants.NUMBERS_BTN) {
+
+			Bundle bundle = new Bundle();
+
+			bundle.putSerializable(Constants.CONTACT, con);
+
+			getParent().showDialog(Constants.SHOW_CONTACTS_PHONE, bundle);
+		}
+
+		else if (type == Constants.MAP_BTN) {
+			String street, city, postal, province, country;
+			if (con.getPrimaryAddress().getStreet()!=null && !con.getPrimaryAddress().getStreet().equalsIgnoreCase("")) {
+				street = con.getPrimaryAddress().getStreet() + ",";
+			} else {
+				street = "";
+			}
+			if (con.getPrimaryAddress().getCity()!=null && !con.getPrimaryAddress().getCity().equalsIgnoreCase("")) {
+
+				city = con.getPrimaryAddress().getCity() + ",";
+			} else {
+				city = "";
+			}
+			if (con.getPrimaryAddress().getPostal() != null
+					&& !con.getPrimaryAddress().getPostal()
+					.equalsIgnoreCase("")) {
+				postal = con.getPrimaryAddress().getPostal() + ",";
+			} else {
+				postal = "";
+			}
+			if (con.getPrimaryAddress().getProvince() !=null && !con.getPrimaryAddress().getProvince().equalsIgnoreCase("")) {
+				province = con.getPrimaryAddress().getProvince() + ",";
+			} else {
+				province = "";
+			}
+			if (con.getPrimaryAddress().getCountry() !=null && !con.getPrimaryAddress().getCountry().equalsIgnoreCase("")) {
+				country = con.getPrimaryAddress().getCountry() + ",";
+			} else {
+				country = "";
+			}
+
+			String address = street + city + postal + province + country;
+			Location loc = SharedMethods.getLocationInfo(address);
+			if (loc.getStatus().equalsIgnoreCase("OK")) {
+
+				Bundle bundle = new Bundle();
+				bundle.putSerializable("LOCATION", loc);
+				bundle.putString("TYPE", "LOCATION");
+				if (loc.getLat() != 0.0 && loc.getLng() != 0.0) {
+					Intent subCatList = new Intent(ContactList.this,
+							FRSMap.class);
+					subCatList.putExtras(bundle);
+					com.frontrow.ui.TabManager parentActivity = (TabManager) getParent();
+					parentActivity.startChild("MAP_Activity", subCatList);
+				} else {
+					Bundle bundle2 = new Bundle();
+					bundle2.putString(Constants.ERROR_D, getResources()
+							.getString(R.string.NO_LAT_LON_FOUND));
+					bundle2.putString(Constants.TYPE,
+							Constants.GENARAL_ERROR_TYPE);
+					getParent().showDialog(Constants.ERROR_DIALOG, bundle2);
+				}
+			} else {
+				Bundle bundle2 = new Bundle();
+				bundle2.putString(Constants.ERROR_D,
+						getResources().getString(R.string.NO_LAT_LON_FOUND));
+				bundle2.putString(Constants.TYPE, Constants.GENARAL_ERROR_TYPE);
+				getParent().showDialog(Constants.ERROR_DIALOG, bundle2);
+			}
+
+		}
+
+		else if (type == Constants.DIRECTION_BTN) {
+			String street, city, postal, province, country;
+			if (con.getPrimaryAddress().getStreet()!=null && !con.getPrimaryAddress().getStreet().equalsIgnoreCase("")) {
+				street = con.getPrimaryAddress().getStreet() + ",";
+			} else {
+				street = "";
+			}
+			if (con.getPrimaryAddress().getCity()!=null && !con.getPrimaryAddress().getCity().equalsIgnoreCase("")) {
+
+				city = con.getPrimaryAddress().getCity() + ",";
+			} else {
+				city = "";
+			}
+			if (con.getPrimaryAddress().getPostal() != null
+					&& !con.getPrimaryAddress().getPostal()
+					.equalsIgnoreCase("")) {
+				postal = con.getPrimaryAddress().getPostal() + ",";
+			} else {
+				postal = "";
+			}
+			if (con.getPrimaryAddress().getProvince()!=null && !con.getPrimaryAddress().getProvince().equalsIgnoreCase("")) {
+				province = con.getPrimaryAddress().getProvince() + ",";
+			} else {
+				province = "";
+			}
+			if (con.getPrimaryAddress().getCountry()!=null && !con.getPrimaryAddress().getCountry().equalsIgnoreCase("")) {
+				country = con.getPrimaryAddress().getCountry() + ",";
+			} else {
+				country = "";
+			}
+
+			String address = street + city + postal + province + country;
+			Location loc = SharedMethods.getLocationInfo(address);
+
+			if (loc.getStatus().equalsIgnoreCase("OK")) {
+				if (loc.getLat() != 0.0 && loc.getLng() != 0.0) {
+					double lat = loc.getLat();
+					double lon = loc.getLng();
+					String fullPath = Constants.NATIVE_MAP_PATH
+							+ Constants.SADDR
+							+ Double.toString(appUsr.getLat()) + ","
+							+ Double.toString(appUsr.getLon()) + "&"
+							+ Constants.DADDR + Double.toString(lat) + ","
+							+ Double.toString(lon);
+					final Intent intent = new Intent(Intent.ACTION_VIEW,
+							Uri.parse(fullPath));
+					intent.setClassName("com.google.android.apps.maps",
+							"com.google.android.maps.MapsActivity");
+					startActivity(intent);
+				} else {
+					Bundle bundle2 = new Bundle();
+					bundle2.putString(Constants.ERROR_D, getResources()
+							.getString(R.string.NO_LAT_LON_FOUND));
+					bundle2.putString(Constants.TYPE,
+							Constants.GENARAL_ERROR_TYPE);
+					getParent().showDialog(Constants.ERROR_DIALOG, bundle2);
+				}
+			} else {
+				Bundle bundle2 = new Bundle();
+				bundle2.putString(Constants.ERROR_D,
+						getResources().getString(R.string.NO_LAT_LON_FOUND));
+				bundle2.putString(Constants.TYPE, Constants.GENARAL_ERROR_TYPE);
+				getParent().showDialog(Constants.ERROR_DIALOG, bundle2);
+			}
+
+		}
+
+		else if (type == Constants.EMAIL_BTN) {
+
+			if (con.getEmail() != "") {
+
+				SharedMethods.sendEmail(this, con.getEmail());
+			} else {
+				Bundle bundle2 = new Bundle();
+				bundle2.putString(Constants.ERROR_D,
+						getResources().getString(R.string.NO_EMAIL));
+				bundle2.putString(Constants.TYPE, Constants.GENARAL_ERROR_TYPE);
+				getParent().showDialog(Constants.ERROR_DIALOG, bundle2);
+			}
+
+		}
+
+	}
+
+	private void addActionlisteners() {
+		contactList.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View arg1,
+					int position, long arg3) {
+				// TODO Auto-generated method stub
+				Bundle bundle = new Bundle();
+				// parent.getChildAt(position).setBackgroundColor(getResources().getColor(R.color.ListSelectorColor));
+				Contact contact = (Contact) contactList
+						.getItemAtPosition(position);
+				bundle.putBoolean(Constants.NEW_CONTACT_RECORD, true);
+				//bundle.putSerializable(Constants.NOTE_TEXT, contact);
+				//bundle.putString(Constants.CLIENT_NAME, clientname);
+
+				//Intent intent;
+
+				Intent intent;
+				intent = new Intent(ContactList.this,FRSContactMaintenance.class);
+				intent.putExtras(bundle);
+				com.frontrow.ui.TabManager parentActivity = (TabManager) getParent();
+				parentActivity.startChild("ContactMaintance_Activity",
+						intent);
+
+			}
+		});
+
+
+	}
+
+	@Override
+	public void addContact(View v) {
+		// TODO Auto-generated method stub
+		Bundle bundle = new Bundle();
+		Constants.contactType = ContactType.Add_Contact;
+		bundle.putBoolean(Constants.NEW_CONTACT_RECORD, true);
+		bundle.putInt(Constants.CLIENT_ID, clientId);
+		Intent intent;
+		intent = new Intent(ContactList.this,FRSContactMaintenance.class);
+		intent.putExtras(bundle);
+		com.frontrow.ui.TabManager parentActivity = (TabManager) getParent();
+		parentActivity.startChild("ContactMaintance_Activity",
+				intent);
+	}
+}

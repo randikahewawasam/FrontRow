@@ -1,0 +1,104 @@
+package com.frontrow.android.db;
+
+import java.sql.SQLClientInfoException;
+import java.sql.SQLDataException;
+import java.util.ArrayList;
+
+import com.frontrow.common.SharedMethods;
+import com.row.mix.beans.Client;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDatabase.CursorFactory;
+
+public class ClientDB extends FrontRowDBHelper{
+
+	public static final String CARD_TYPE = "CardType";
+	public static final String CLIENT_NAME = "ClientName";
+	public static final String CLIENT_NUMBER = "ClientNumber";
+	public static final String CLIENT_ID = "ClientId";
+	public static final String ID = "_id";
+	public static final String USER_ID = "UserId";
+	public final static String TABLE = "Client";
+	public static final String CLIENT_CARD_ID = "ClientCardId";
+
+	public static ClientDB instance;
+
+/*	public static ClientDB getSharedInstance(){
+		if(instance == null){
+			instance = new ClientDB();
+		}
+		return instance;
+	}*/
+
+
+	public ClientDB(Context ctx) {
+		// TODO Auto-generated constructor stub 
+		super(); 
+	}
+
+	public long addClients(ArrayList<Client> clientList,int usrId){
+		long count = 0;
+		isClientsAvailable();
+		SQLiteDatabase db= this.getWritableDatabase();
+		for(Client client : clientList){
+			ContentValues cardValues = new ContentValues();
+			cardValues.put(CARD_TYPE, client.getCardtype());
+			cardValues.put(CLIENT_NAME, client.getClientName());
+			cardValues.put(CLIENT_NUMBER, client.getClientNumber());
+			cardValues.put(CLIENT_ID, client.getClientId());
+			cardValues.put(USER_ID, usrId);
+			cardValues.put(CLIENT_CARD_ID, client.getCardId());
+			//SharedMethods.logError("Clinet Name : "+ client.getClientName() );
+			try{
+				count =db.insertWithOnConflict(TABLE, null, cardValues,SQLiteDatabase.CONFLICT_REPLACE);
+			}catch (SQLException e) {
+				// TODO: handle exception
+				SharedMethods.logError("SQL "+e.getMessage());
+			}
+		}
+		db.close();
+		return count;
+
+	}
+
+	public void isClientsAvailable(){
+		boolean b= false;
+		Cursor cursor = this.getWritableDatabase().query(TABLE, null, null, null, null, null, null);
+		if(cursor != null){
+			if(cursor.moveToNext()){
+				this.getWritableDatabase().delete(TABLE, null, null);
+			}
+		}
+		cursor.close();
+	}
+
+	public ArrayList<Client> getAllClinets(int usrId){
+		SQLiteDatabase db= this.getWritableDatabase();
+		Cursor cursor = db.query(TABLE, null, USER_ID+"=?", new String[]{Integer.toString(usrId)}, null, null, CLIENT_NAME+ " COLLATE NOCASE ASC");
+		ArrayList<Client> clientList = new ArrayList<Client>(); 
+		if(cursor != null){
+			if(cursor.moveToNext()){
+				do {
+					Client client =  new Client();
+					String cardType = cursor.getString(cursor.getColumnIndex(CARD_TYPE));
+					String clientName = cursor.getString(cursor.getColumnIndex(CLIENT_NAME));
+					String clientNumber = cursor.getString(cursor.getColumnIndex(CLIENT_NUMBER));
+					int clientId = cursor.getInt(cursor.getColumnIndex(CLIENT_ID));
+					int cardId = cursor.getInt(cursor.getColumnIndex(CLIENT_CARD_ID));
+					client.setCardtype(cardType);
+					client.setClientName(clientName);
+					client.setClientNumber(clientNumber);
+					client.setClientId(clientId);
+					client.setCardId(cardId);
+					clientList.add(client);
+				} while (cursor.moveToNext());
+			}
+		}
+		db.close();
+		cursor.close();
+		return clientList;
+	}
+}

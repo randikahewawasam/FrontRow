@@ -1,0 +1,168 @@
+package com.frontrow.ui;
+
+import java.util.ArrayList;
+
+import com.frontrow.base.BaseActivity;
+import com.frontrow.common.Constants;
+import com.frontrow.common.Constants.AddressType;
+import com.frontrow.common.Constants.PhoneType;
+import com.frontrow.datamanagers.AuthDataManager;
+import com.frontrow.interfaces.FRSAddNewPhoneListener;
+import com.row.mix.beans.Address;
+import com.row.mix.beans.Contact;
+import com.row.mix.beans.ContactRelationship;
+import com.row.mix.beans.Phone;
+
+import android.os.Bundle;
+import android.app.Activity;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.AdapterView.OnItemSelectedListener;
+
+public class FRSPhoneMaintenance extends BaseActivity implements OnItemSelectedListener,FRSAddNewPhoneListener{
+
+	private int contactId;
+	private Contact contact;
+	private int clientId;
+	private Phone phone;
+	private EditText number;
+	private CheckBox primary;
+	private Spinner phonerelationshipTypeSpinner;
+	private ArrayList<RelationshipTypeSpinner> ptypeList;
+	private ArrayList<ContactRelationship> phoneRelationshipTypeList;
+	private Button deletebtn;
+	private Button addbtn;
+	
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        //super.onCreate(savedInstanceState);
+        //setContentView(R.layout.activity_frsphone_maintenance);
+        
+        
+    	setContentView(R.layout.activity_frsphone_maintenance);
+        View newAddressMaintanceView = LayoutInflater.from(this.getParent()).inflate(R.layout.activity_frsphone_maintenance, null);
+        setContentView(newAddressMaintanceView);
+        
+        if(getIntent().getExtras() != null){
+        	//address = getIntent().getExtras().getInt(Constants.CONTACT_ID);
+			//clientId = getIntent().getExtras().getInt(Constants.CLIENT_ID);
+        	contactId = getIntent().getExtras().getInt(Constants.CONTACT_ID);
+        	clientId =getIntent().getExtras().getInt(Constants.CLIENT_ID);
+        	if(Constants.phoneType == PhoneType.Delete_Phone){
+        		phone = (Phone) getIntent().getExtras().getSerializable(Constants.PHONE_TXT);
+			
+        	}
+		} 
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_frsphone_maintenance, menu);
+        return true;
+    }
+
+	@Override
+	public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
+			long arg3) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	@Override
+	public void onNothingSelected(AdapterView<?> arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void initializeUI() {
+		number = (EditText)findViewById(R.id.phnmain_numberid);
+		ptypeList =new ArrayList<RelationshipTypeSpinner>();
+		phonerelationshipTypeSpinner =(Spinner) findViewById(R.id.phnmain_reltypes);
+		primary = (CheckBox) findViewById(R.id.phnmain_primary_chk_boxid);
+		phoneRelationshipTypeList=AuthDataManager.getSharedInstance().getContactPhoneList();
+        deletebtn = (Button)findViewById(R.id.phndeletebtn); 
+        addbtn =(Button)findViewById(R.id.phn_addbtn); 
+        
+        for(ContactRelationship type : this.phoneRelationshipTypeList){
+			ptypeList.add(new RelationshipTypeSpinner(type.getRelationshipText(), type.getId()));
+		}
+
+
+	ArrayAdapter<RelationshipTypeSpinner> pTypeAdapter = new ArrayAdapter<RelationshipTypeSpinner>(this, R.layout.spinnertext, ptypeList);
+		pTypeAdapter.setDropDownViewResource(R.layout.spinnerdropdown);
+		phonerelationshipTypeSpinner.setAdapter(pTypeAdapter);
+		phonerelationshipTypeSpinner.setOnItemSelectedListener(this);
+		
+		if(Constants.phoneType == PhoneType.Edit_Phone){
+			enableComponents();
+		}
+		else
+		{
+			disableComponets();
+			setData();
+		}
+	}
+
+	@Override
+	protected void refreshUI() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void addPhone(View v) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	
+	
+	private void disableComponets() {
+
+        deletebtn.setVisibility(View.VISIBLE);
+        addbtn.setVisibility(View.GONE);
+		number.setEnabled(false);
+		phonerelationshipTypeSpinner.setEnabled(false);
+		primary.setEnabled(false);
+	}
+
+	private void enableComponents() {
+	
+		deletebtn.setVisibility(View.GONE);
+	    addbtn.setVisibility(View.VISIBLE);
+		number.setEnabled(true);
+		phonerelationshipTypeSpinner.setEnabled(true);
+		primary.setEnabled(true);
+		
+	}
+	
+	private void setData(){
+		int phoneRelationshipId = 0;
+		
+	
+				for(int i=0;i<phoneRelationshipTypeList.size();i++){
+					ContactRelationship cRelat = phoneRelationshipTypeList.get(i);
+					if(cRelat.getId() == phone.getPhnRelationshipId()){
+						phoneRelationshipId = i;
+						break;
+					}
+				}							
+		
+				phonerelationshipTypeSpinner.setSelection(phoneRelationshipId);
+		/* Set primary Address Values */
+		number.setText(phone.getPhoneNumber());
+		primary.setChecked(phone.getIsPrimary());
+	}
+}

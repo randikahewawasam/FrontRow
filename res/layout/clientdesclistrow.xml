@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/obsTbl"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/allclientsboxbg" >
+
+    <TableRow
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/cName"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:paddingLeft="3dip"
+            android:singleLine="true"
+            android:textColor="@color/ClientListFontColor"
+            android:textSize="@dimen/Clinet_List_Text_Size"
+            android:textStyle="bold" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp" >
+
+        <TextView
+            android:id="@+id/clientNumber"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.7"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textColor="@color/ClientListFontColor"
+            android:textSize="@dimen/Client_No"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.001" />
+
+        <TextView
+            android:id="@+id/cardType"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.3"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textColor="@color/ClientListFontColor"
+            android:textSize="@dimen/Client_No"
+            android:textStyle="bold" />
+    </TableRow>
+
+</TableLayout>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="LoginErrMsgTextColor">#f00</color>
+    <color name="ColorPlain">#ffffff</color>
+    <color name="ColorHeadingText">#F2F2F2</color>
+    <color name="ResturuantAddColor">#051129</color>
+    <color name="ColorPureWhite">#F2F2F2</color>
+    <color name="ListSelectorColor">#000000</color>
+
+</resources>
